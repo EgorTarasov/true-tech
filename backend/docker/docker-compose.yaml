@@ -1,0 +1,74 @@
+version: "3.9"
+
+networks:
+  docker_infra-vlan:
+    external: true
+
+volumes:
+  postgres-data:
+  redis-data:
+
+
+services:
+  app:
+    build:
+      context: "../"
+      dockerfile: "docker/Dockerfile"
+    restart: "no"
+    command: "./main --docker=true"
+    volumes:
+      - ../config.yaml:/app/config.yaml
+    env_file:
+      - "../.env"
+    ports:
+      - "9999:9999"
+      - "9000:9000"
+      - "9991:9991"
+    environment:
+      - "POSTGRES_HOST=postgres"
+    depends_on:
+      - postgres
+      - redis
+
+    networks:
+      - docker_infra-vlan
+      - default
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    ports:
+      - "9100:9100"
+    restart: unless-stopped
+    networks:
+      - docker_infra-vlan
+
+  postgres:
+    image: "postgres:16"
+    container_name: "database"
+    volumes:
+      - "postgres-data:/var/lib/postgresql/data"
+    env_file:
+      - "../.env"
+    ports:
+      - "5432:5432"
+    networks:
+      - docker_infra-vlan
+      - default
+
+  redis:
+    image: 'redis:7.2.4'
+    container_name: 'cache'
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis-data:/root/redis'

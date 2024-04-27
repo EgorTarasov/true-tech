@@ -1,0 +1,31 @@
+http-server:
+  port: 9999
+  domain: api.larek.tech
+  cors-origins:
+    - "http://localhost:3000"
+    - "https://hack.larek.tech"
+
+telemetry:
+  endpoint: 127.0.0.1:4318
+
+postgres:
+  user: "SuperPuperUser"
+  password: "SuperStrongPassword"
+  host: 127.0.0.1
+  port: 5432
+  db: "dev"
+  ssl: false
+
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: ""
+  db: 0
+
+vk-auth:
+  vk-client-id: 51747829
+  vk-secure-token: p78Ek0Aw1oQyZHwUez3T
+  vk-service-token: 0af69a830af69a830af69a835609e3017600af60af69a836ff6f5dfcf16576b11241df7
+  vk-redirect-uri:  http://localhost:5173/login #https://mts.larek.tech/login
+  vk-token-url: https://oauth.vk.com/access_token?client_id=%s&client_secret=%s&redirect_uri=%s&code=%s
