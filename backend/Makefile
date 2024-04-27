@@ -14,6 +14,10 @@ SMART_IMPORTS := ${LOCAL_BIN}/smartimports
 docker-up:
 	docker compose -f docker/docker-compose.yaml up -d --build
 
+.PHONY: dev
+dev:
+	go run cmd/main.go
+
 # build app
 .PHONY: build
 build:

@@ -3,15 +3,15 @@ package postgres
 import (
 	"fmt"
 
-	"github.com/EgorTarasov/true-tech/internal/auth/repository"
-	"github.com/EgorTarasov/true-tech/pkg/db"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/repository"
+	"github.com/EgorTarasov/true-tech/backend/pkg/db"
 	"go.opentelemetry.io/otel/trace"
 )
 
 import (
 	"context"
 
-	"github.com/EgorTarasov/true-tech/internal/auth/models"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/models"
 )
 
 // TODO: err handeling

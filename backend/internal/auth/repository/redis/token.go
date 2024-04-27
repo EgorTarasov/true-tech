@@ -3,8 +3,8 @@ package redis
 import (
 	"context"
 
-	"github.com/EgorTarasov/true-tech/internal/auth/models"
-	"github.com/EgorTarasov/true-tech/pkg/redis"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/models"
+	"github.com/EgorTarasov/true-tech/backend/pkg/redis"
 	"go.opentelemetry.io/otel/trace"
 )
 

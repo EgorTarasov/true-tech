@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/EgorTarasov/true-tech/internal/shared/constants"
+	"github.com/EgorTarasov/true-tech/backend/internal/shared/constants"
 )
 
 // TODO: вынести структуры вк

@@ -1,0 +1,6 @@
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-instrumentation-grpc
+grpcio
+grpcio-tools
+openai-whisper

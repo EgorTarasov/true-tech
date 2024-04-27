@@ -7,18 +7,22 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/EgorTarasov/true-tech/internal/auth/models"
-	authRouter "github.com/EgorTarasov/true-tech/internal/auth/rest/router"
-	"github.com/EgorTarasov/true-tech/internal/config"
-	_ "github.com/EgorTarasov/true-tech/internal/docs"
-	"github.com/EgorTarasov/true-tech/internal/metrics"
-	"github.com/EgorTarasov/true-tech/pkg/db"
-	"github.com/EgorTarasov/true-tech/pkg/redis"
-	"github.com/EgorTarasov/true-tech/pkg/telemetry"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/models"
+	authRouter "github.com/EgorTarasov/true-tech/backend/internal/auth/rest/router"
+	"github.com/EgorTarasov/true-tech/backend/internal/config"
+	detectionRouter "github.com/EgorTarasov/true-tech/backend/internal/detection/rest/router"
+	_ "github.com/EgorTarasov/true-tech/backend/internal/docs"
+	pb "github.com/EgorTarasov/true-tech/backend/internal/gen"
+	"github.com/EgorTarasov/true-tech/backend/internal/metrics"
+	"github.com/EgorTarasov/true-tech/backend/pkg/db"
+	"github.com/EgorTarasov/true-tech/backend/pkg/redis"
+	"github.com/EgorTarasov/true-tech/backend/pkg/telemetry"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	fiberSwagger "github.com/swaggo/fiber-swagger"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func Run(ctx context.Context, _ *sync.WaitGroup) error {
@@ -41,6 +45,7 @@ func Run(ctx context.Context, _ *sync.WaitGroup) error {
 		return fmt.Errorf("err during: %v", err.Error())
 	}
 	traceProvider := telemetry.NewTraceProvider(traceExporter)
+
 	tracer := traceProvider.Tracer("http-application")
 
 	pg, err := db.NewDb(ctx, &cfg.Database, tracer)
@@ -49,6 +54,16 @@ func Run(ctx context.Context, _ *sync.WaitGroup) error {
 	}
 
 	r := redis.New[models.UserDao](cfg.Redis)
+
+	// ml init
+	var grpcOpts []grpc.DialOption
+	grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	speechConn, err := grpc.NewClient("speech-to-text:10000", grpcOpts...)
+	if err != nil {
+		return fmt.Errorf("err during speechService init %v", err.Error())
+	}
+
+	speechClient := pb.NewSpeechServiceClient(speechConn)
 
 	// fiber init
 	app := fiber.New()
@@ -80,6 +95,11 @@ func Run(ctx context.Context, _ *sync.WaitGroup) error {
 	// инициализация group
 	if err = authRouter.InitAuthRouter(ctx, app, *cfg, pg, r, tracer); err != nil {
 		return fmt.Errorf("err during auth router init: %v", err.Error())
+	}
+
+	// ml
+	if err = detectionRouter.InitDetectionRouter(ctx, app, cfg, pg, speechClient, tracer); err != nil {
+		return fmt.Errorf("err during detection router init %v", err.Error())
 	}
 
 	// Запуск метрик сервиса

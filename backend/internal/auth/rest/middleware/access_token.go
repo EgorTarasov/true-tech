@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/EgorTarasov/true-tech/internal/auth/token"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/token"
 	jwtware "github.com/gofiber/contrib/jwt"
 )
 

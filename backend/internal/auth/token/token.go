@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/EgorTarasov/true-tech/internal/shared/constants"
+	"github.com/EgorTarasov/true-tech/backend/internal/shared/constants"
 	"github.com/golang-jwt/jwt/v5"
 )
 

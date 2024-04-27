@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/EgorTarasov/true-tech/internal/auth/models"
-	"github.com/EgorTarasov/true-tech/internal/auth/repository"
-	"github.com/EgorTarasov/true-tech/internal/auth/token"
-	"github.com/EgorTarasov/true-tech/internal/config"
-	"github.com/EgorTarasov/true-tech/internal/shared/constants"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/models"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/repository"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/token"
+	"github.com/EgorTarasov/true-tech/backend/internal/config"
+	"github.com/EgorTarasov/true-tech/backend/internal/shared/constants"
 	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/crypto/bcrypt"
 )

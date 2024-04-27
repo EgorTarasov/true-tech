@@ -3,8 +3,8 @@ package handler
 import (
 	"context"
 
-	"github.com/EgorTarasov/true-tech/internal/auth/models"
-	"github.com/EgorTarasov/true-tech/internal/auth/token"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/models"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/token"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"go.opentelemetry.io/otel/trace"
@@ -62,8 +62,10 @@ type errResponse struct {
 // @Success 200 {object} accessTokenResponse
 // @Failure 400 {object} errResponse
 // @Router /auth/login [post]
+
+// FIXME move tracer to middleware
 func (ac *authController) CreateAccountWithEmail(c *fiber.Ctx) error {
-	ctx, span := ac.tracer.Start(c.Context(), "fiber.LoginWithEmail")
+	ctx, span := ac.tracer.Start(c.Context(), "fiber.CreateAccountWithEmail")
 	defer span.End()
 
 	var payload RegisterData

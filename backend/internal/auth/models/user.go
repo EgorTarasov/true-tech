@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/EgorTarasov/true-tech/internal/shared/constants"
+	"github.com/EgorTarasov/true-tech/backend/internal/shared/constants"
 )
 
 // UserCreate данные необходимые для записи о пользователе

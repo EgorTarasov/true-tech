@@ -3,9 +3,9 @@ package config
 import (
 	"log"
 
-	"github.com/EgorTarasov/true-tech/pkg/db"
-	"github.com/EgorTarasov/true-tech/pkg/redis"
-	"github.com/EgorTarasov/true-tech/pkg/telemetry"
+	"github.com/EgorTarasov/true-tech/backend/pkg/db"
+	"github.com/EgorTarasov/true-tech/backend/pkg/redis"
+	"github.com/EgorTarasov/true-tech/backend/pkg/telemetry"
 	"github.com/ilyakaznacheev/cleanenv"
 )
 

@@ -3,16 +3,16 @@ package router
 import (
 	"context"
 
-	"github.com/EgorTarasov/true-tech/internal/auth/models"
-	"github.com/EgorTarasov/true-tech/internal/auth/repository/postgres"
-	"github.com/EgorTarasov/true-tech/internal/auth/repository/redis"
-	"github.com/EgorTarasov/true-tech/internal/auth/rest/middleware"
-	"github.com/EgorTarasov/true-tech/internal/config"
-	infra "github.com/EgorTarasov/true-tech/pkg/redis"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/models"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/repository/postgres"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/repository/redis"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/rest/middleware"
+	"github.com/EgorTarasov/true-tech/backend/internal/config"
+	infra "github.com/EgorTarasov/true-tech/backend/pkg/redis"
 
-	"github.com/EgorTarasov/true-tech/internal/auth/rest/handler"
-	"github.com/EgorTarasov/true-tech/internal/auth/service"
-	"github.com/EgorTarasov/true-tech/pkg/db"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/rest/handler"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/service"
+	"github.com/EgorTarasov/true-tech/backend/pkg/db"
 	"github.com/gofiber/fiber/v2"
 	"go.opentelemetry.io/otel/trace"
 )
