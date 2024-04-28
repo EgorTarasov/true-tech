@@ -3,12 +3,15 @@ package handler
 import (
 	"context"
 
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/token"
+	"github.com/EgorTarasov/true-tech/backend/internal/detection/models"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 	"go.opentelemetry.io/otel/trace"
 )
 
 type service interface {
-	Detect(ctx context.Context, audio []byte) (string, error)
+	DomainDetection(ctx context.Context, userId int64, request models.DetectionData) (models.DetectionResult, error)
 }
 
 type detectHandler struct {
@@ -23,30 +26,62 @@ func NewDetectHandler(_ context.Context, s service, tracer trace.Tracer) *detect
 	}
 }
 
-// Test godoc  Тестовая ручка для запуска whisper
+type mlDetectionResponse struct {
+	SessionId string                 `json:"sessionId"`
+	QueryId   int64                  `json:"queryId"`
+	Content   string                 `json:"content"`
+	Status    models.DetectionStatus `json:"detectionStatus"`
+	Error     string                 `json:"err"` // ошибка, которую можно отобразить пользователю
+}
+
+type mlDetectionRequest struct {
+	SessionId string `json:"sessionId"`
+	Query     string `json:"query"`
+}
+
+// ExecuteCommand godoc
 //
-// Запускает обработку через whisper
-func (dc *detectHandler) Test(c *fiber.Ctx) error {
-	ctx, span := dc.tracer.Start(c.Context(), "detection.Test")
+//	Обработка команды пользователя и запуск ее выполнения
+//
+// @Summary Запуск сценария из обработанного текста
+// @Description обработка запроса пользователя с разбиением на доступное действие и параметры для его запуска
+// @Tags ml
+// @Accept  json
+// @Produce  json
+// @Param sessionId body string true "сессия к которой относится запрос"
+// @Param query body string true "запрос пользователя"
+// @Success 200 {object} mlDetectionResponse
+// @Failure 400 {object} mlDetectionResponse
+// @Failure 422
+// @Router /detection/execute [post]
+func (dc *detectHandler) ExecuteCommand(c *fiber.Ctx) error {
+	ctx, span := dc.tracer.Start(c.Context(), "detection.ExecuteCommand")
 	defer span.End()
+	// получение данных пользователя из jwt response_time
+	user := c.Locals("userClaims").(*jwt.Token)
 
-	formData, err := c.FormFile("audio")
+	claims := user.Claims.(*token.UserClaims)
+
+	var request mlDetectionRequest
+
+	err := c.BodyParser(&request)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"err": err.Error()})
-	}
-	file, err := formData.Open()
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"err": err.Error()})
-	}
-	var rawBytes []byte
-	if _, err = file.Read(rawBytes); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"err": err.Error()})
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"err": err.Error()})
 	}
 
-	text, err := dc.s.Detect(ctx, rawBytes)
+	resp, err := dc.s.DomainDetection(ctx, claims.UserId, models.DetectionData{
+		SessionId: request.SessionId,
+		Query:     request.Query,
+	})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"err": err.Error()})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"text": text})
+	return c.Status(fiber.StatusOK).JSON(mlDetectionResponse{
+		SessionId: request.SessionId,
+		QueryId:   resp.QueryId,
+		Content:   resp.Content,
+		Status:    resp.Status,
+		Error:     resp.Response,
+	})
 }

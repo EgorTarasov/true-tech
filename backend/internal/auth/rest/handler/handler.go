@@ -10,19 +10,19 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-type service interface {
+type authService interface {
 	CreateUserEmail(ctx context.Context, data models.UserCreate, email, password, ip string) (string, error)
 	AuthorizeEmail(ctx context.Context, email, password, ip string) (string, error)
 	AuthorizeVk(ctx context.Context, accessCode string) (string, error)
 }
 
 type authController struct {
-	s      service
+	s      authService
 	tracer trace.Tracer
 }
 
 // NewAuthController создание контроллера для авторизации
-func NewAuthController(_ context.Context, s service, tracer trace.Tracer) *authController {
+func NewAuthController(_ context.Context, s authService, tracer trace.Tracer) *authController {
 	return &authController{
 		s:      s,
 		tracer: tracer,
@@ -48,6 +48,8 @@ type errResponse struct {
 	Err string `json:"error"`
 }
 
+// FIXME move tracer to response_time
+
 // CreateAccountWithEmail godoc
 //
 //	создание аккаунта с использованием почти как метода авторизации
@@ -62,8 +64,6 @@ type errResponse struct {
 // @Success 200 {object} accessTokenResponse
 // @Failure 400 {object} errResponse
 // @Router /auth/login [post]
-
-// FIXME move tracer to middleware
 func (ac *authController) CreateAccountWithEmail(c *fiber.Ctx) error {
 	ctx, span := ac.tracer.Start(c.Context(), "fiber.CreateAccountWithEmail")
 	defer span.End()
@@ -120,12 +120,11 @@ func (ac *authController) GetUserData(c *fiber.Ctx) error {
 	defer span.End()
 
 	user := c.Locals("userClaims").(*jwt.Token)
-	//slog.Info("usertoken", user.Raw)
 
 	claims := user.Claims.(*token.UserClaims)
 
 	//if err != nil {
-	//	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"err": err.Error()})
+	//	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"err": err.Response()})
 	//}
 	return c.JSON(claims.UserPayload)
 }

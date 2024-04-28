@@ -13,16 +13,16 @@ import (
 	_ "github.com/EgorTarasov/true-tech/backend/internal/docs"
 )
 
-// @title True tech api
-// @version 1.0
-// @description This is a sample swagger for Fiber
-// @termsOfService http://swagger.io/terms/
-// @contact.name API Support
-// @contact.email fiber@swagger.io
-// @license.name BSD 3-Clause License
-// @license.url https://raw.githubusercontent.com/EgorTarasov/true-tech/main/LICENSE
-// @host api.larek.tech:9999
-// @BasePath /
+// @title			True tech api
+// @version		1.0
+// @description	This is a sample swagger for Fiber
+// @termsOfService	http://swagger.io/terms/
+// @contact.name	API Support
+// @contact.email	fiber@swagger.io
+// @license.name	BSD 3-Clause License
+// @license.url	https://raw.githubusercontent.com/EgorTarasov/true-tech/main/LICENSE
+// @host			api.larek.tech
+// @BasePath		/
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	var wg sync.WaitGroup

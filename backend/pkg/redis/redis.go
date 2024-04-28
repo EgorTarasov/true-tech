@@ -14,7 +14,7 @@ type Redis[T any] struct {
 }
 
 // New создает новый экземпляр Redis
-func New[T any](cfg Config) *Redis[T] {
+func New[T any](cfg *Config) *Redis[T] {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
 		Password: cfg.Password,

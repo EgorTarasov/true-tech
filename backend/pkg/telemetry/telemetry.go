@@ -27,12 +27,12 @@ func NewOTLPExporter(ctx context.Context, endpoint string) (oteltrace.SpanExport
 }
 
 // NewTraceProvider фабрика для создания провайдера трейсера
-func NewTraceProvider(exp sdktrace.SpanExporter) *sdktrace.TracerProvider {
+func NewTraceProvider(exp sdktrace.SpanExporter, appName string) *sdktrace.TracerProvider {
 	r, err := resource.Merge(
 		resource.Default(),
 		resource.NewWithAttributes(
 			semconv.SchemaURL,
-			semconv.ServiceName("myapp"),
+			semconv.ServiceName(appName),
 		),
 	)
 

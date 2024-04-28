@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+
+option go_package = "./;pb";
+
+
+service DomainDetectionService {
+  rpc DetectDomain(DomainDetectionRequest) returns (DomainDetectionResponse);
+}
+
+message DomainDetectionRequest {
+  string query  = 1;
+}
+
+message DomainDetectionResponse {
+  string label = 1;
+}

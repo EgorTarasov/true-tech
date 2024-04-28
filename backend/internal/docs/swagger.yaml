@@ -5,7 +5,36 @@ definitions:
       AccessToken:
         type: string
     type: object
-host: api.larek.tech:9999
+  handler.errResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  handler.mlDetectionResponse:
+    properties:
+      content:
+        type: string
+      detectionStatus:
+        $ref: '#/definitions/models.DetectionStatus'
+      err:
+        description: ошибка, которую можно отобразить пользователю
+        type: string
+      queryId:
+        type: integer
+      sessionId:
+        type: string
+    type: object
+  models.DetectionStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-varnames:
+    - InternalErr
+    - NotEnoughParams
+    - Success
+host: api.larek.tech
 info:
   contact:
     email: fiber@swagger.io
@@ -13,7 +42,7 @@ info:
   description: This is a sample swagger for Fiber
   license:
     name: BSD 3-Clause License
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
+    url: https://raw.githubusercontent.com/EgorTarasov/true-tech/main/LICENSE
   termsOfService: http://swagger.io/terms/
   title: True tech api
   version: "1.0"
@@ -46,8 +75,43 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handler.accessTokenResponse'
+            $ref: '#/definitions/handler.errResponse'
       summary: User login
       tags:
       - auth
+  /detection/execute:
+    post:
+      consumes:
+      - application/json
+      description: обработка запроса пользователя с разбиением на доступное действие
+        и параметры для его запуска
+      parameters:
+      - description: сессия к которой относится запрос
+        in: body
+        name: sessionId
+        required: true
+        schema:
+          type: string
+      - description: запрос пользователя
+        in: body
+        name: query
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.mlDetectionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.mlDetectionResponse'
+        "422":
+          description: Unprocessable Entity
+      summary: Запуск сценария из обработанного текста
+      tags:
+      - ml
 swagger: "2.0"

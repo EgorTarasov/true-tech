@@ -7,12 +7,14 @@ SMART_IMPORTS := ${LOCAL_BIN}/smartimports
 
 
 .PHONY: install-swag
+install-swag:
 	go install github.com/swaggo/swag/cmd/swag@latest
 
 
-.PHONY: docker-up
-docker-up:
-	docker compose -f docker/docker-compose.yaml up -d --build
+.PHONY: create-swag
+create-swag:
+	swag init -g ./cmd/main.go  -o ./internal/docs
+
 
 .PHONY: dev
 dev:
@@ -66,7 +68,7 @@ ifeq (,$(wildcard .env))
     POSTGRES_USER := 'SuperPuperUser'
     POSTGRES_PASSWORD := 'SuperStrongPassword'
     POSTGRES_DB := 'dev'
-    POSTGRES_HOST := 'localhost'
+    POSTGRES_HOST := '192.168.1.70'
     POSTGRES_PORT := 5432
 else
     # Иначе, подключаем переменные из файла .env
@@ -90,3 +92,4 @@ migration-up:
 .PHONY: migration-down
 migration-down:
 	goose -dir "$(MIGRATION_FOLDER)" postgres "$(POSTGRES_SETUP_TEST)" down
+

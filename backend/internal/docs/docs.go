@@ -16,7 +16,7 @@ const docTemplate = `{
         },
         "license": {
             "name": "BSD 3-Clause License",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+            "url": "https://raw.githubusercontent.com/EgorTarasov/true-tech/main/LICENSE"
         },
         "version": "{{.Version}}"
     },
@@ -66,8 +66,60 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.accessTokenResponse"
+                            "$ref": "#/definitions/handler.errResponse"
                         }
+                    }
+                }
+            }
+        },
+        "/detection/execute": {
+            "post": {
+                "description": "обработка запроса пользователя с разбиением на доступное действие и параметры для его запуска",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ml"
+                ],
+                "summary": "Запуск сценария из обработанного текста",
+                "parameters": [
+                    {
+                        "description": "сессия к которой относится запрос",
+                        "name": "sessionId",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "запрос пользователя",
+                        "name": "query",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.mlDetectionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.mlDetectionResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
                     }
                 }
             }
@@ -81,6 +133,48 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "handler.errResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.mlDetectionResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "detectionStatus": {
+                    "$ref": "#/definitions/models.DetectionStatus"
+                },
+                "err": {
+                    "description": "ошибка, которую можно отобразить пользователю",
+                    "type": "string"
+                },
+                "queryId": {
+                    "type": "integer"
+                },
+                "sessionId": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.DetectionStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-varnames": [
+                "InternalErr",
+                "NotEnoughParams",
+                "Success"
+            ]
         }
     }
 }`
@@ -88,7 +182,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "api.larek.tech:9999",
+	Host:             "api.larek.tech",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "True tech api",

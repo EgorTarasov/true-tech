@@ -8,6 +8,7 @@ volumes:
   postgres-data:
   redis-data:
   whisper-models:
+  grafana-storage:
 
 
 services:
@@ -47,6 +48,30 @@ services:
     networks:
       - default
       - infra-vlan
+
+  domain-detection:
+    build:
+      context: "../domain-detection"
+      dockerfile: "Dockerfile"
+    command: python3 main.py
+
+    ports:
+      - "10002:10002"
+    networks:
+      - default
+      - infra-vlan
+
+#   text-processor:
+#    build:
+#      context: "../text-processor/"
+#      dockerfile: "Dockerfile"
+#    command: python3 main.py
+#    ports:
+#      - "10001:10001"
+#    networks:
+#      - default
+#      - infra-vlan
+
   jaeger:
     image: jaegertracing/all-in-one
     environment:
@@ -87,6 +112,12 @@ services:
     networks:
       - infra-vlan
       - default
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    env_file:
+      - ../.env # stores credentials
+    environment:
+      - GF_USERS_ALLOW_SIGN_UP=false
 
 
   node-exporter:

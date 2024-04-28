@@ -32,12 +32,12 @@ type TokenRepo interface {
 
 type service struct {
 	tracer trace.Tracer
-	cfg    config.Config
+	cfg    *config.Config
 	ur     UserRepo
 	tr     TokenRepo
 }
 
-func New(_ context.Context, cfg config.Config, userRepo UserRepo, tokenRepo TokenRepo, tracer trace.Tracer) *service {
+func New(_ context.Context, cfg *config.Config, userRepo UserRepo, tokenRepo TokenRepo, tracer trace.Tracer) *service {
 	return &service{
 		cfg:    cfg,
 		tracer: tracer,

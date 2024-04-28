@@ -3,41 +3,26 @@ package router
 import (
 	"context"
 
-	"github.com/EgorTarasov/true-tech/backend/internal/auth/models"
-	"github.com/EgorTarasov/true-tech/backend/internal/auth/repository/postgres"
-	"github.com/EgorTarasov/true-tech/backend/internal/auth/repository/redis"
 	"github.com/EgorTarasov/true-tech/backend/internal/auth/rest/middleware"
-	"github.com/EgorTarasov/true-tech/backend/internal/config"
-	infra "github.com/EgorTarasov/true-tech/backend/pkg/redis"
 
-	"github.com/EgorTarasov/true-tech/backend/internal/auth/rest/handler"
-	"github.com/EgorTarasov/true-tech/backend/internal/auth/service"
-	"github.com/EgorTarasov/true-tech/backend/pkg/db"
 	"github.com/gofiber/fiber/v2"
-	"go.opentelemetry.io/otel/trace"
 )
 
-// TODO: implement auth router with next groups of endpoints
-// "basic auth"  - auth via email + password
-// "vk auth" - via vk id like gagarin hack
-// saves some user data like:
-// first, last name
-// bdate, city
-// "ya id"???
+type handler interface {
+	LoginWithEmail(c *fiber.Ctx) error
+	CreateAccountWithEmail(c *fiber.Ctx) error
+	AuthWithEmail(c *fiber.Ctx) error
+	GetUserData(c *fiber.Ctx) error
+	AuthWithVk(c *fiber.Ctx) error
+}
 
-func InitAuthRouter(ctx context.Context, app *fiber.App, cfg config.Config, pg *db.Database, r *infra.Redis[models.UserDao], tracer trace.Tracer) error {
-	// TODO: tracing
-	// TODO: auth handler
-	userRepo := postgres.NewUserRepo(pg, tracer)
-	tokenRepo := redis.New(ctx, r, tracer)
-	s := service.New(ctx, cfg, userRepo, tokenRepo, tracer)
-	controller := handler.NewAuthController(ctx, s, tracer)
+func InitAuthRouter(_ context.Context, app *fiber.App, authHandler handler) error {
 
 	auth := app.Group("/auth")
-	auth.Post("/login", controller.AuthWithEmail)
-	auth.Post("/register", controller.CreateAccountWithEmail)
-	auth.Get("/me", middleware.UserClaimsMiddleware, controller.GetUserData)
-	auth.Post("/vk", controller.AuthWithVk)
+	auth.Post("/login", authHandler.AuthWithEmail)
+	auth.Post("/register", authHandler.CreateAccountWithEmail)
+	auth.Get("/me", middleware.UserClaimsMiddleware, authHandler.GetUserData)
+	auth.Post("/vk", authHandler.AuthWithVk)
 	auth.Post("/password-code", func(ctx *fiber.Ctx) error {
 		return nil
 	})

@@ -4,17 +4,6 @@ import whisper
 
 import grpc
 from grpc import ServicerContext, server
-from opentelemetry import trace
-from opentelemetry.instrumentation.grpc import GrpcInstrumentorClient
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import (
-    ConsoleSpanExporter,
-    SimpleSpanProcessor,
-)
-
-from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 from concurrent import futures
 import speech_pb2, speech_pb2_grpc

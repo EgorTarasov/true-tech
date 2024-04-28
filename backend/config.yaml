@@ -29,3 +29,7 @@ vk-auth:
   vk-service-token: 0af69a830af69a830af69a835609e3017600af60af69a836ff6f5dfcf16576b11241df7
   vk-redirect-uri:  http://localhost:5173/login #https://mts.larek.tech/login
   vk-token-url: https://oauth.vk.com/access_token?client_id=%s&client_secret=%s&redirect_uri=%s&code=%s
+
+domain-service:
+  host: 127.0.0.1
+  port: 10002
