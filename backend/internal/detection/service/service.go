@@ -76,12 +76,12 @@ func (s *service) DomainDetection(ctx context.Context, userId int64, request mod
 			return response, err
 		}
 
-		slog.Info("session was already created  id:", "sessionId", sessionId, "lastQueryContent", lastQueryContent, "currentQuery", request.Query)
+		slog.Debug("session was already created  id:", "sessionId", sessionId, "lastQueryContent", lastQueryContent, "currentQuery", request.Query)
 		request.Query = lastQueryContent + " " + request.Query
 	}
 
 	// ml model call
-	slog.Info("sending request to ml", "query", request.Query)
+	slog.Debug("sending request to ml", "query", request.Query)
 
 	ctx, mlSpan := s.tracer.Start(ctx, "ml.DetectDomain")
 	resp, err := s.domainService.DetectDomain(ctx, &pb.DomainDetectionRequest{Query: request.Query})
@@ -105,12 +105,12 @@ func (s *service) DomainDetection(ctx context.Context, userId int64, request mod
 		DetectedKeys: nil,
 	})
 	if err != nil {
-		slog.Info("err during saving query", "err", err.Error())
+		slog.Debug("err during saving query", "err", err.Error())
 	}
 
 	response.QueryId = lastQueryId
 
-	slog.Info("detection status:", "response label", resp.Label, "session UUID", request.SessionId)
+	slog.Debug("detection status:", "response label", resp.Label, "session UUID", request.SessionId)
 
 	return response, nil
 }
