@@ -82,10 +82,10 @@ func (dr *detectionRepo) GetLastQueryContent(ctx context.Context, sessionUUID uu
 		sessionId        int64
 	)
 	row := dr.pg.ExecQueryRow(ctx, query, sessionUUID.String())
-	slog.Info("repo", "row", row)
+	slog.Debug("repo", "row", row)
 
 	err := row.Scan(&sessionId, &lastQueryContent)
-	slog.Info("repo", "sessionId", sessionId, "last q ", lastQueryContent)
+	slog.Debug("repo", "sessionId", sessionId, "last q ", lastQueryContent)
 	if err != nil {
 		return 0, "", err
 	}

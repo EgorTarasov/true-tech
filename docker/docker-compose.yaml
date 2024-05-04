@@ -49,17 +49,28 @@ services:
       - default
       - infra-vlan
 
-  domain-detection:
+  domain-detection1:
     build:
       context: "../domain-detection"
       dockerfile: "Dockerfile"
     command: python3 main.py
-
+    container_name: domain-1
     ports:
       - "10002:10002"
     networks:
       - default
       - infra-vlan
+  domain-detection2:
+      build:
+        context: "../domain-detection"
+        dockerfile: "Dockerfile"
+      command: python3 main.py
+      container_name: domain-2
+      ports:
+        - "10003:10002"
+      networks:
+        - default
+        - infra-vlan
 
 #   text-processor:
 #    build:

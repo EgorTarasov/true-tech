@@ -18,13 +18,13 @@ import (
 	authRouter "github.com/EgorTarasov/true-tech/backend/internal/auth/rest/router"
 	authSsrvice "github.com/EgorTarasov/true-tech/backend/internal/auth/service"
 	"github.com/EgorTarasov/true-tech/backend/internal/config"
+	"github.com/EgorTarasov/true-tech/backend/internal/detection/service/domain_client"
 
 	detectionPostgresRepository "github.com/EgorTarasov/true-tech/backend/internal/detection/repository/postgres"
 	detectionHandler "github.com/EgorTarasov/true-tech/backend/internal/detection/rest/handler"
 	detectionRouter "github.com/EgorTarasov/true-tech/backend/internal/detection/rest/router"
 	detectionService "github.com/EgorTarasov/true-tech/backend/internal/detection/service"
 	_ "github.com/EgorTarasov/true-tech/backend/internal/docs"
-	pb "github.com/EgorTarasov/true-tech/backend/internal/gen"
 	"github.com/EgorTarasov/true-tech/backend/internal/metrics"
 	"github.com/EgorTarasov/true-tech/backend/pkg/db"
 	"github.com/EgorTarasov/true-tech/backend/pkg/redis"
@@ -33,8 +33,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	fiberSwagger "github.com/swaggo/fiber-swagger"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 func Run(ctx context.Context, _ *sync.WaitGroup) error {
@@ -50,7 +48,6 @@ func Run(ctx context.Context, _ *sync.WaitGroup) error {
 		cfg.Database.Host = "database"
 		appName = "api-prod"
 	}
-
 	// Tracing with open telemetry
 
 	traceExporter, err := telemetry.NewOTLPExporter(ctx, cfg.Telemetry.OTLPEndpoint)
@@ -69,14 +66,7 @@ func Run(ctx context.Context, _ *sync.WaitGroup) error {
 	userDaoRedis := redis.New[authModels.UserDao](cfg.Redis)
 
 	// ml init
-	var grpcOpts []grpc.DialOption
-	grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	domainDetectionConn, err := grpc.NewClient(fmt.Sprintf("%s:%d", cfg.DomainService.Host, cfg.DomainService.Port), grpcOpts...)
-	if err != nil {
-		return fmt.Errorf("err during speechService init %v", err.Error())
-	}
-
-	domainClient := pb.NewDomainDetectionServiceClient(domainDetectionConn)
+	domainClient := domain_client.New(cfg.DomainService)
 
 	// fiber init
 	app := fiber.New()

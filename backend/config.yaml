@@ -11,14 +11,14 @@ telemetry:
 postgres:
   user: "SuperPuperUser"
   password: "SuperStrongPassword"
-  host: 127.0.0.1
+  host: "192.168.1.70"
   port: 5432
   db: "dev"
   ssl: false
 
 
 redis:
-  host: 127.0.0.1
+  host: "127.0.0.1"
   port: 6379
   password: ""
   db: 0
@@ -30,6 +30,11 @@ vk-auth:
   vk-redirect-uri:  http://localhost:5173/login #https://mts.larek.tech/login
   vk-token-url: https://oauth.vk.com/access_token?client_id=%s&client_secret=%s&redirect_uri=%s&code=%s
 
-domain-service:
-  host: 127.0.0.1
-  port: 10002
+domain:
+  servers:
+    - host: "127.0.0.1"
+      port: 10002
+    - host: "127.0.0.1"
+      port: 10003
+
+

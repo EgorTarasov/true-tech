@@ -11,6 +11,7 @@ import (
 	pb "github.com/EgorTarasov/true-tech/backend/internal/gen"
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/trace"
+	"google.golang.org/grpc"
 )
 
 type detectionRepository interface {
@@ -19,8 +20,12 @@ type detectionRepository interface {
 	GetLastQueryContent(ctx context.Context, sessionUUID uuid.UUID) (int64, string, error)
 }
 
+type domainGrpcClient interface {
+	DetectDomain(ctx context.Context, in *pb.DomainDetectionRequest, opts ...grpc.CallOption) (*pb.DomainDetectionResponse, error)
+}
+
 type service struct {
-	domainService pb.DomainDetectionServiceClient
+	domainService domainGrpcClient
 	detectionRepo detectionRepository
 	tracer        trace.Tracer
 }

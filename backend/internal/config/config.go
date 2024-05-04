@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 
+	"github.com/EgorTarasov/true-tech/backend/internal/detection/service/domain_client"
 	"github.com/EgorTarasov/true-tech/backend/pkg/db"
 	"github.com/EgorTarasov/true-tech/backend/pkg/redis"
 	"github.com/EgorTarasov/true-tech/backend/pkg/telemetry"
@@ -25,19 +26,14 @@ type vkAuth struct {
 	VkRedirectUri  string `yaml:"vk-redirect-uri"`
 }
 
-type domainDetectionService struct {
-	Host string `yaml:"host"`
-	Port int    `yaml:"port"`
-}
-
 // Config для запуска приложения
 type Config struct {
-	Server        *server                 `yaml:"http-server"`
-	Telemetry     *telemetry.Config       `yaml:"telemetry"`
-	Database      *db.Config              `yaml:"postgres"`
-	Redis         *redis.Config           `yaml:"redis"`
-	VkAuth        *vkAuth                 `yaml:"vk-auth"`
-	DomainService *domainDetectionService `yaml:"domain-service"`
+	Server        *server               `yaml:"http-server"`
+	Telemetry     *telemetry.Config     `yaml:"telemetry"`
+	Database      *db.Config            `yaml:"postgres"`
+	Redis         *redis.Config         `yaml:"redis"`
+	VkAuth        *vkAuth               `yaml:"vk-auth"`
+	DomainService *domain_client.Config `yaml:"domain"`
 }
 
 // MustNew создает новый конфиг из файла и завершает программу в случае ошибки
