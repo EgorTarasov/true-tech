@@ -3,14 +3,24 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/models"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/repository"
+	"github.com/EgorTarasov/true-tech/backend/internal/auth/token"
 	"github.com/EgorTarasov/true-tech/backend/internal/shared/constants"
 )
+
+type VkUserRepo interface {
+	GetVkUserData(ctx context.Context, vkId int64) (models.UserDao, error)
+	SaveVkUserData(ctx context.Context, userData models.VkUserData) error
+	UpdateVkUserData(ctx context.Context, userData models.VkUserData) error
+}
 
 // TODO: вынести структуры вк
 type vkCodeResponse struct {
@@ -45,6 +55,61 @@ type vkUserResponse struct {
 		CanAccessClosed bool          `json:"can_access_closed"`
 		IsClosed        bool          `json:"is_closed"`
 	} `json:"response"`
+}
+
+// AuthorizeVk авторизация через vk mini apps
+// https://dev.vk.com/ru/mini-apps/getting-started
+// использует старое API с возможностью получения ФИО + групп пользователя
+func (s *service) AuthorizeVk(ctx context.Context, accessCode string) (string, error) {
+	ctx, span := s.tracer.Start(ctx, "service.AuthorizeVk")
+	defer span.End()
+
+	vkResponse, err := s.getVkUserData(ctx, accessCode)
+	if err != nil {
+		return "", fmt.Errorf("err during vk auth: %v", err.Error())
+	}
+	vkUserData := vkResponse.Response[0]
+	// проверяем есть ли уже запись с таким пользователем
+	user, err := s.ur.GetVkUserData(ctx, vkUserData.ID)
+	if err != nil && errors.Is(err, repository.ErrVkUserNotFound) {
+		// аккаунт пользователя не найден создаем новый аккаунт
+		id, vkErr := s.ur.Create(ctx, models.UserCreate{
+			FirstName: vkUserData.FirstName,
+			LastName:  vkUserData.LastName,
+			Role:      constants.User,
+		})
+		if vkErr != nil {
+			return "", vkErr
+		}
+		//D.M.YYYY
+
+		vkErr = s.ur.SaveVkUserData(ctx, models.VkUserData{
+			UserId:    id,
+			VkId:      vkUserData.ID,
+			FirstName: vkUserData.FirstName,
+			LastName:  vkUserData.LastName,
+			BirthDate: parseBirthDate(vkUserData.Bdate),
+			City:      vkUserData.City.Title,
+			Photo:     vkUserData.Photo200,
+			Sex:       vkUserData.Sex,
+		})
+		user, vkErr = s.ur.GetVkUserData(ctx, vkUserData.ID)
+		if vkErr != nil {
+			return "", vkErr
+		}
+	} else if err != nil {
+		return "", err
+	} else {
+
+	}
+
+	accessToken, err := token.Encode(ctx, token.UserPayload{
+		UserId:   user.Id,
+		AuthType: "vk",
+		Role:     user.Role,
+	})
+
+	return accessToken, nil
 }
 
 // parseBirthDate преобразование даты рождения вк в time.Time

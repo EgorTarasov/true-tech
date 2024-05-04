@@ -23,14 +23,14 @@ func New(_ context.Context, r *redis.Redis[models.UserDao], tracer trace.Tracer)
 
 // Set сохраняет данные пользователя с токеном
 func (tr *tokenRepo) Set(ctx context.Context, token string, data models.UserDao) error {
-	ctx, span := tr.tracer.Start(ctx, "tokenRepo.Set")
+	ctx, span := tr.tracer.Start(ctx, "webAuthSessionRepo.Set")
 	defer span.End()
 	return tr.r.Set(ctx, token, data)
 }
 
 // Get получения данных по токену
 func (tr *tokenRepo) Get(ctx context.Context, token string) (models.UserDao, error) {
-	ctx, span := tr.tracer.Start(ctx, "tokenRepo.Get")
+	ctx, span := tr.tracer.Start(ctx, "webAuthSessionRepo.Get")
 	defer span.End()
 	return tr.r.Get(ctx, token)
 }

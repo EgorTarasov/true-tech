@@ -29,7 +29,6 @@ import (
 	"github.com/EgorTarasov/true-tech/backend/pkg/db"
 	"github.com/EgorTarasov/true-tech/backend/pkg/redis"
 	"github.com/EgorTarasov/true-tech/backend/pkg/telemetry"
-	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -67,21 +66,7 @@ func Run(ctx context.Context, _ *sync.WaitGroup) error {
 		return fmt.Errorf("err during db init: %v", err.Error())
 	}
 
-	r := redis.New[authModels.UserDao](cfg.Redis)
-
-	//webAuthn
-	var webAuthn *webauthn.WebAuthn
-	webAuthCfg := &webauthn.Config{
-		RPDisplayName: "True Tech Demo",       // Display Name for your site
-		RPID:          "mts.larek.tech",       // Generally the FQDN for your site
-		RPOrigins:     cfg.Server.CorsOrigins, // The origin URLs allowed for WebAuthn requests
-	}
-
-	if webAuthn, err = webauthn.New(webAuthCfg); err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Println(webAuthn)
+	userDaoRedis := redis.New[authModels.UserDao](cfg.Redis)
 
 	// ml init
 	var grpcOpts []grpc.DialOption
@@ -126,7 +111,7 @@ func Run(ctx context.Context, _ *sync.WaitGroup) error {
 	// auth route group
 
 	userRepo := authPostgresRepository.NewUserRepo(pg, tracer)
-	tokenRepo := authRedisRepository.New(ctx, r, tracer)
+	tokenRepo := authRedisRepository.New(ctx, userDaoRedis, tracer)
 	s := authSsrvice.New(ctx, cfg, userRepo, tokenRepo, tracer)
 	controller := authHandler.NewAuthController(ctx, s, tracer)
 

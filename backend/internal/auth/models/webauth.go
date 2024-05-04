@@ -25,17 +25,17 @@ func (wau *WebAuthUser) WebAuthnID() []byte {
 }
 
 func (wau *WebAuthUser) WebAuthnName() string {
-	return "newUser"
+	return wau.Name
 }
 
 func (wau *WebAuthUser) WebAuthnDisplayName() string {
-	return "New User"
+	return wau.DisplayName
 }
 
 func (wau *WebAuthUser) WebAuthnIcon() string {
-	return "https://pics.com/avatar.png"
+	return wau.Icon
 }
 
 func (wau *WebAuthUser) WebAuthnCredentials() []webauthn.Credential {
-	return []webauthn.Credential{}
+	return wau.CredJson
 }

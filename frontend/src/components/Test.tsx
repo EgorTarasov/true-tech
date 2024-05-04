@@ -10,7 +10,8 @@ const Test = () => {
         hasRecognitionSupport
     } = useSpeechRecognition();
 
-
+    console.log(isListening)
+    console.log(stopListening)
     return (
         <div>
             <div>
