@@ -7,6 +7,10 @@ import (
 	"strings"
 	"sync"
 
+	accountsPostgresRepository "github.com/EgorTarasov/true-tech/backend/internal/accounts/repository/postgres"
+	accountsHandler "github.com/EgorTarasov/true-tech/backend/internal/accounts/rest/handler"
+	accountsRouter "github.com/EgorTarasov/true-tech/backend/internal/accounts/rest/router"
+	accountsService "github.com/EgorTarasov/true-tech/backend/internal/accounts/service"
 	authModels "github.com/EgorTarasov/true-tech/backend/internal/auth/models"
 	authPostgresRepository "github.com/EgorTarasov/true-tech/backend/internal/auth/repository/postgres"
 	authRedisRepository "github.com/EgorTarasov/true-tech/backend/internal/auth/repository/redis"
@@ -14,6 +18,7 @@ import (
 	authRouter "github.com/EgorTarasov/true-tech/backend/internal/auth/rest/router"
 	authSsrvice "github.com/EgorTarasov/true-tech/backend/internal/auth/service"
 	"github.com/EgorTarasov/true-tech/backend/internal/config"
+
 	detectionPostgresRepository "github.com/EgorTarasov/true-tech/backend/internal/detection/repository/postgres"
 	detectionHandler "github.com/EgorTarasov/true-tech/backend/internal/detection/rest/handler"
 	detectionRouter "github.com/EgorTarasov/true-tech/backend/internal/detection/rest/router"
@@ -109,7 +114,8 @@ func Run(ctx context.Context, _ *sync.WaitGroup) error {
 
 	// Changing TimeZone & TimeFormat
 	app.Use(logger.New(logger.Config{
-		Format:     "${pid} ${status} - ${method} ${path}\n",
+		Format: "${pid} [${ip}]:${port} ${status} - ${method} ${path} ${latency}​\n",
+		//Format:     "${pid} ${status} - ${method} ${path}\n",
 		TimeFormat: "02-Jan-2006",
 		TimeZone:   "Europe/Moscow",
 	}))
@@ -136,6 +142,16 @@ func Run(ctx context.Context, _ *sync.WaitGroup) error {
 
 	if err = detectionRouter.InitDetectionRouter(ctx, app, detectionController); err != nil {
 		return fmt.Errorf("err during detection router init %v", err.Error())
+	}
+
+	// accounts routes
+
+	accountsRepository := accountsPostgresRepository.NewPaymentAccountRepo(pg, tracer)
+	accountService := accountsService.New(cfg, accountsRepository, tracer)
+	accountsController := accountsHandler.New(accountService, tracer)
+
+	if err = accountsRouter.InitAccountsRouter(ctx, app, accountsController); err != nil {
+		return fmt.Errorf("err during accounts router init")
 	}
 
 	// Запуск метрик сервиса

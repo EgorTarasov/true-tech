@@ -23,6 +23,93 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/accounts/create": {
+            "post": {
+                "description": "создание тестового счета для проведения операций",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "summary": "создание платежного аккаунта с использованием банковских карт",
+                "parameters": [
+                    {
+                        "description": "Create account",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.createAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/my": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "description": "Create account",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.createAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.getAccountsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "description": "Login with email",
@@ -123,13 +210,220 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/payments/kvartplata/card": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "kvartplata"
+                ],
+                "summary": "Оплата услуг ЖКХ с использованием данных банковской карты",
+                "parameters": [
+                    {
+                        "description": "HPUWithCardData",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.HPUWithCardData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.TopUpMobilePhoneResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/payments/kvartplata/id": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "kvartplata"
+                ],
+                "summary": "Оплата услуг жкх",
+                "parameters": [
+                    {
+                        "description": "HPUPayment",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.HPUWithAccountId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.HPUPaymentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/payments/mobile/card": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "mobile"
+                ],
+                "summary": "Оплата телефона с использованием данных банковской карты",
+                "parameters": [
+                    {
+                        "description": "mobileTopUpRequest",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.PhoneRefillDataWithCardData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.TopUpMobilePhoneResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/payments/mobile/id": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "mobile"
+                ],
+                "summary": "пополнение телефона с помощью платежного аккаунта",
+                "parameters": [
+                    {
+                        "description": "mobileTopUpRequest",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.PhoneRefillDataWithAccountId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.TopUpMobilePhoneResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "handler.HPUPaymentResponse": {
+            "type": "object",
+            "properties": {
+                "transactionId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handler.TopUpMobilePhoneResponse": {
+            "type": "object",
+            "properties": {
+                "transactionId": {
+                    "type": "integer"
+                }
+            }
+        },
         "handler.accessTokenResponse": {
             "type": "object",
             "properties": {
                 "AccessToken": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.createAccountRequest": {
+            "type": "object",
+            "properties": {
+                "cardInfo": {
+                    "$ref": "#/definitions/models.CardInfo"
+                },
+                "name": {
                     "type": "string"
                 }
             }
@@ -139,6 +433,17 @@ const docTemplate = `{
             "properties": {
                 "error": {
                     "type": "string"
+                }
+            }
+        },
+        "handler.getAccountsResponse": {
+            "type": "object",
+            "properties": {
+                "accounts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.PaymentAccountDto"
+                    }
                 }
             }
         },
@@ -163,6 +468,25 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CardInfo": {
+            "type": "object",
+            "required": [
+                "expirationDate"
+            ],
+            "properties": {
+                "cardNumber": {
+                    "type": "integer"
+                },
+                "cvc": {
+                    "type": "integer"
+                },
+                "expirationDate": {
+                    "type": "string",
+                    "maxLength": 7,
+                    "minLength": 7
+                }
+            }
+        },
         "models.DetectionStatus": {
             "type": "integer",
             "enum": [
@@ -175,6 +499,92 @@ const docTemplate = `{
                 "NotEnoughParams",
                 "Success"
             ]
+        },
+        "models.HPU": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "payerCode": {
+                    "type": "integer"
+                },
+                "year": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.HPUWithAccountId": {
+            "type": "object",
+            "properties": {
+                "accountId": {
+                    "type": "integer"
+                },
+                "hpu": {
+                    "$ref": "#/definitions/models.HPU"
+                }
+            }
+        },
+        "models.HPUWithCardData": {
+            "type": "object",
+            "properties": {
+                "bankCardInfo": {
+                    "$ref": "#/definitions/models.CardInfo"
+                },
+                "hpu": {
+                    "$ref": "#/definitions/models.HPU"
+                }
+            }
+        },
+        "models.PaymentAccountDto": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.PhoneReFillData": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "phoneNumber": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.PhoneRefillDataWithAccountId": {
+            "type": "object",
+            "properties": {
+                "accountId": {
+                    "type": "integer"
+                },
+                "phoneData": {
+                    "$ref": "#/definitions/models.PhoneReFillData"
+                }
+            }
+        },
+        "models.PhoneRefillDataWithCardData": {
+            "type": "object",
+            "properties": {
+                "bankCardInfo": {
+                    "$ref": "#/definitions/models.CardInfo"
+                },
+                "phoneData": {
+                    "$ref": "#/definitions/models.PhoneReFillData"
+                }
+            }
         }
     }
 }`
