@@ -1,3 +1,6 @@
+import { AuthEndpoint } from "api/endpoints/auth.endpoint";
+import { AuthDto } from "api/models/auth.model";
+import { removeStoredAuthToken, setStoredAuthToken } from "api/utils/authToken";
 import { makeAutoObservable } from "mobx";
 
 export type AuthState =
@@ -11,7 +14,9 @@ export type AuthState =
     }
   | {
       state: "authenticated";
-      data: { lol: 123 };
+      data: {
+        user: AuthDto.Item;
+      };
     };
 
 class authService {
@@ -22,6 +27,39 @@ class authService {
 
   constructor() {
     makeAutoObservable(this);
+    void this.init();
+  }
+
+  private async init() {
+    try {
+      const user = await AuthEndpoint.current();
+
+      this.item = {
+        state: "authenticated",
+        data: {
+          user
+        }
+      };
+    } catch {
+      this.item = { state: "anonymous", data: null };
+    }
+  }
+
+  async login(email: string, password: string) {
+    const res = await AuthEndpoint.login(email, password);
+    setStoredAuthToken(res.accessToken);
+    await this.init();
+  }
+
+  async register(email: string, password: string) {
+    const res = await AuthEndpoint.register(email, password);
+    setStoredAuthToken(res.accessToken);
+    await this.init();
+  }
+
+  logout() {
+    removeStoredAuthToken();
+    this.item = { state: "anonymous", data: null };
   }
 }
 

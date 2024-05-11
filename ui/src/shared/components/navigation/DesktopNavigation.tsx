@@ -3,6 +3,9 @@ import { NavLink } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import ExpandIcon from "./assets/expand.svg";
 import { Button, Logo } from "@/ui";
+import { SpeechWidget } from "../speech/speech.widget";
+import { observer } from "mobx-react-lite";
+import { AuthService } from "../../../stores/auth.store";
 
 interface LinkProps {
   to: string;
@@ -28,16 +31,27 @@ const Link: FC<LinkProps> = (x) => {
 
 const RibbonLink: FC<LinkProps> = (x) => {
   return (
-    <NavLink to={x.to} className={({ isActive }) => twMerge("")}>
+    <NavLink to={x.to} className={({ isActive }) => twMerge("px-3 cursor-pointer")}>
       {x.children}
     </NavLink>
   );
 };
 
-export const DesktopNavigation = () => {
+export const DesktopNavigation = observer(() => {
+  if (AuthService.item.state !== "authenticated") {
+    return (
+      <nav className="justify-between section flex items-center h-14">
+        <Logo />
+        <a href="tel:8-800-250-01-99" className="text-lg">
+          8 800 250-01-99
+        </a>
+      </nav>
+    );
+  }
+
   return (
     <nav className="w-full bg-bg">
-      <div className="section w-full flex items-center">
+      <div className="section w-full flex items-center gap-2">
         <ul className="flex items-center">
           <li>
             <Link to={"/"} className="pl-0">
@@ -51,27 +65,28 @@ export const DesktopNavigation = () => {
             </Link>
           </li>
         </ul>
-        <Button appearance="outline" className="ml-auto">
+        <SpeechWidget />
+        <Button onClick={() => AuthService.logout()} appearance="outline">
           Выйти
         </Button>
       </div>
       <div className="bg-white">
         <div className="section flex py-6 gap-24">
           <Logo />
-          <ul className="flex items-center font-medium text-lg *:px-3 *:cursor-pointer">
-            <li>
+          <ul className="flex items-center font-medium text-lg *:hidden">
+            <li className="!flex">
               <RibbonLink to="/">Главная</RibbonLink>
             </li>
-            <li>
+            <li className="!flex">
               <RibbonLink to="/">Платежи и переводы</RibbonLink>
             </li>
-            <li>
+            <li className="sm:flex">
               <RibbonLink to="/">История</RibbonLink>
             </li>
-            <li>
+            <li className="md:flex">
               <RibbonLink to="/">Банковские продукты</RibbonLink>
             </li>
-            <li>
+            <li className="content:flex">
               <RibbonLink to="/">Предложения</RibbonLink>
             </li>
           </ul>
@@ -79,4 +94,4 @@ export const DesktopNavigation = () => {
       </div>
     </nav>
   );
-};
+});

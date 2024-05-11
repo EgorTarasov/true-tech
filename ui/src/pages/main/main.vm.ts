@@ -1,4 +1,9 @@
-import { makeAutoObservable } from "mobx";
+import { DynamicFormViewModel } from "@/components/dynamic-form/dynamic-form.vm";
+import { FormEndpoint } from "api/endpoints/form.endpoint";
+import { FormDto } from "api/models/form.model";
+import { makeAutoObservable, toJS } from "mobx";
+
+export type CustomFormType = "bank-form" | "create-form";
 
 export class MainPageViewModel {
   constructor() {
@@ -6,7 +11,12 @@ export class MainPageViewModel {
     void this.init();
   }
 
-  async init() {}
-}
+  async init() {
+    this.forms = (await FormEndpoint.getTemplates()).forms;
+    console.log(toJS(this.forms));
+  }
 
-export const MainPageStore = new MainPageViewModel();
+  forms: FormDto.Item[] = [];
+  selectedCustomForm: CustomFormType | null = null;
+  selectedForm: DynamicFormViewModel | null = null;
+}

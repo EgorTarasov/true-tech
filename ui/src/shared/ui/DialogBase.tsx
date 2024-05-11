@@ -1,13 +1,13 @@
 import { Button } from "@/ui/Button";
 import { Dialog, Transition } from "@headlessui/react";
-import { FC, Fragment } from "react";
+import { FC, Fragment, ReactNode } from "react";
 import CrossIcon from "@/assets/icons/cross.svg";
 
 interface DialogBaseProps {
   isOpen: boolean;
   onCancel?: () => void;
-  children?: JSX.Element | JSX.Element[];
-  title: string;
+  children?: ReactNode;
+  title?: string;
   onConfirm?: () => void;
   confirmText?: string;
   width?: string | number;
@@ -59,9 +59,11 @@ export const DialogBase: FC<DialogBaseProps> = ({
                 className="w-fit transform text-text-primary bg-white border-border-primary border text-left align-middle transition-all rounded-2xl p-5"
                 style={{ width }}>
                 <Dialog.Title className="text-xl font-medium flex justify-between gap-1 mb-5">
-                  {title}
+                  <span>{title}</span>
                   {onCancel && (
-                    <CrossIcon className="cursor-pointer" onClick={onCancel} width={24} />
+                    <button aria-label="Закрыть" type="button">
+                      <CrossIcon className="cursor-pointer" onClick={onCancel} width={24} />
+                    </button>
                   )}
                 </Dialog.Title>
                 {children}

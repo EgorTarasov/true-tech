@@ -1,15 +1,17 @@
 import "./index.scss";
 import "./transitions.scss";
 import "@/assets/fonts/style.css";
-import { Route, Routes, useLocation } from "react-router-dom";
+import "regenerator-runtime/runtime";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import { CSSTransition, SwitchTransition } from "react-transition-group";
 import { RoutesStore } from "./routes";
 import { useLayoutEffect, useMemo } from "react";
 import { SkipToContent } from "@/components/SkipToContent";
 import { Footer } from "@/components/footer";
-import "react-datepicker/dist/react-datepicker.css";
 import { Navigation } from "@/components/navigation/Navigation";
+import { AuthService } from "../stores/auth.store";
+import { Loading } from "@/components/loading/Loading";
 
 const NotFound = () => {
   return (
@@ -23,8 +25,12 @@ const NotFound = () => {
 const App = observer(() => {
   const location = useLocation();
   const routeFallback = useMemo(() => {
+    if (AuthService.item.state === "anonymous") {
+      return <Navigate to="/login" />;
+    }
+
     return <NotFound />;
-  }, []);
+  }, [AuthService.item.state]);
 
   useLayoutEffect(() => {
     window.scrollTo({
@@ -37,6 +43,10 @@ const App = observer(() => {
       document.title = currentRoute.title;
     }
   }, [location.pathname]);
+
+  if (AuthService.item.state === "loading") {
+    return <Loading />;
+  }
 
   return (
     <div className="flex flex-col text-text-primary sm:bg-bg-desktop h-full">

@@ -24,6 +24,7 @@ export default {
         text: {
           primary: "#1D1D1D",
         },
+        link: "#007cff"
       },
     }
   },

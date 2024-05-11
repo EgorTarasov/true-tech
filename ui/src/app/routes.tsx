@@ -1,6 +1,8 @@
 import { ComponentType } from "react";
 import { makeAutoObservable } from "mobx";
 import { MainPage } from "../pages/main/main.page";
+import { AuthService } from "../stores/auth.store";
+import LoginPage from "../pages/login/login.page";
 
 export interface RouteType {
   path: string;
@@ -14,6 +16,14 @@ export const RoutesWithoutNav = [];
 
 export const globalRoutes: RouteType[] = [
   {
+    path: "/login",
+    component: () => <LoginPage />,
+    title: "Вход"
+  }
+];
+
+export const privateRoutes: RouteType[] = [
+  {
     path: "/",
     component: () => <MainPage />,
     title: "Главная"
@@ -25,8 +35,8 @@ class routesStore {
     makeAutoObservable(this);
   }
 
-  get routes() {
-    return globalRoutes;
+  get routes(): RouteType[] {
+    return [...globalRoutes, ...(AuthService.item.state === "authenticated" ? privateRoutes : [])];
   }
 }
 

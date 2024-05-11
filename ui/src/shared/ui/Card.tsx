@@ -75,11 +75,14 @@ interface IconCardProps {
   className?: string;
   icon: ReactNode;
   text: string;
+  onClick?: () => void;
 }
 
 const Icon: FC<IconCardProps> = (x) => {
   return (
-    <button className={twMerge("text-black space-y-5 rounded-[28px] p-8 bg-white", x.className)}>
+    <button
+      className={twMerge("text-black space-y-5 rounded-[28px] p-8 bg-white", x.className)}
+      onClick={x.onClick}>
       <div
         className="size-16 flex items-center justify-center *:size-5 rounded-full bg-stroke"
         aria-hidden>
