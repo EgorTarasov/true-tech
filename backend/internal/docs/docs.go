@@ -174,21 +174,12 @@ const docTemplate = `{
                 "summary": "Запуск сценария из обработанного текста",
                 "parameters": [
                     {
-                        "description": "сессия к которой относится запрос",
-                        "name": "sessionId",
+                        "description": "данные для запроса",
+                        "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "запрос пользователя",
-                        "name": "query",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/handler.MlDetectionRequest"
                         }
                     }
                 ],
@@ -552,6 +543,23 @@ const docTemplate = `{
                 }
             }
         },
+        "handler.MlDetectionRequest": {
+            "type": "object",
+            "properties": {
+                "names": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "query": {
+                    "type": "string"
+                },
+                "sessionId": {
+                    "type": "string"
+                }
+            }
+        },
         "handler.TopUpMobilePhoneResponse": {
             "type": "object",
             "properties": {
@@ -750,8 +758,20 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "inputmode": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
+                },
+                "placeholder": {
+                    "type": "string"
+                },
+                "spellcheck": {
+                    "type": "boolean"
                 },
                 "type": {
                     "type": "string"

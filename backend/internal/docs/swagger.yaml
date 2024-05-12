@@ -5,6 +5,17 @@ definitions:
       transactionId:
         type: integer
     type: object
+  handler.MlDetectionRequest:
+    properties:
+      names:
+        items:
+          type: string
+        type: array
+      query:
+        type: string
+      sessionId:
+        type: string
+    type: object
   handler.TopUpMobilePhoneResponse:
     properties:
       transactionId:
@@ -135,8 +146,16 @@ definitions:
     properties:
       id:
         type: integer
+      inputmode:
+        type: string
+      label:
+        type: string
       name:
         type: string
+      placeholder:
+        type: string
+      spellcheck:
+        type: boolean
       type:
         type: string
     type: object
@@ -285,18 +304,12 @@ paths:
       description: обработка запроса пользователя с разбиением на доступное действие
         и параметры для его запуска
       parameters:
-      - description: сессия к которой относится запрос
+      - description: данные для запроса
         in: body
-        name: sessionId
+        name: data
         required: true
         schema:
-          type: string
-      - description: запрос пользователя
-        in: body
-        name: query
-        required: true
-        schema:
-          type: string
+          $ref: '#/definitions/handler.MlDetectionRequest'
       produces:
       - application/json
       responses:

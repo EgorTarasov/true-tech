@@ -2,6 +2,8 @@ import json
 from typing import TypedDict
 import requests
 from typing import Any
+from transformers import pipeline
+import transformers
 import torch
 import requests
 import logging
@@ -59,53 +61,80 @@ REQUEST_TIME = Summary("request_processing_seconds", "Time spent processing requ
 
 
 class Ner:
+    _TAGS = [
+        "Payment Period",
+        "Payment Amount",
+        "Card Number",
+        "Expiration Date",
+        "CVC",
+        "Phone Number",
+        # "Card Number",
+        "Recipient's Account Number",
+        "Recipient's Bank BIC",
+        "Recipient's Tax Identification Number",
+        "Recipient's Company Name",
+        "Recipient's KPP",
+        "Payment Purpose",
+        "Sender's Full Name",
+        "Payment Month",
+        "Payment Year",
+        "Payer's Patronymic",
+        "Series and Number of Passport",
+        "Registration Address",
+    ]
 
-    def __init__(self, api_url: str) -> None:
-        self.api = api_url
+    # карта преобразований результатов NER во внутренние теги mts
+    TAG_MAP = {
+        "Payment Period": "jky_period",
+        "Payment Amount": "amount",
+        "Card Number": "cardNumber",
+        "Expiration Date": "validityPeriod",
+        "CVC": "CVC",
+        "Phone Number": "mobilianyi_telefon",
+        "Recipient's Account Number": "receiverAccount",
+        "Recipient's Bank BIC": "receiverBankBIC",
+        "Recipient's Tax Identification Number": "receiverINN",
+        "Recipient's Company Name": "receiverName",
+        "Recipient's KPP": "receiverKPP",
+        "Payment Purpose": "purpose",
+        "Sender's Full Name": "payerName",
+        "Payment Month": "id2",
+        "Payment Year": "id3",
+        "Payer's Patronymic": "id4",
+        "Series and Number of Passport": "id6",
+        "Registration Address": "id7",
+    }
 
-    def __ask_llama(self, user: str, system: str = "") -> str:
-        messages_json = {
-            "user": user,
-            "system": system,
-        }
-        try:
-            # Send the POST request with the input data
-            response = requests.post(self.api, json=messages_json)
+    def __init__(self, ner_pipeline: transformers.Pipeline) -> None:
+        self.pipeline = ner_pipeline
 
-            # Check if the request was successful (status code 200)
-            if response.status_code == 200:
-                # Process the response
-                result = response.json()
-                return result["responce"]
+    def __features_serialize(self, features: list[dict[str, Any]]) -> dict[str, Any]:
+        """Если модель выделила несколько фичей одного типа, то оставляем только валидную
+
+        Args:
+            features (list[dict[str, Any]]): _description_
+
+        Returns:
+            dict[str, Any]: _description_
+        """
+        result = dict()
+        for feature in features:
+            # проверяем мобильный телефон, если его длина больше 10 символов, то это не мобильный телефон
+            if feature["entity_group"] == "Phone Number" and len(feature["word"]) < 14:
+                continue
             else:
-                print("Failed to send request. Status code:", response.status_code)
+                result[feature["entity_group"]] = feature["word"]
+                continue
 
-        except Exception as e:
-            print("An error occurred:", e)
+        return result
 
-    def get_features(self, content: str, keys: dict[str, str]) -> dict[str, Any]:
-        key_str = ";".join([":".join([key, value]) for key, value in keys.items()])
-        done = False
-        data: dict | None = None
-        retries = 0
+    def get_features(self, content: str) -> dict[str, Any]:
+        result: list[dict] = self.pipeline(content)  # type: ignore
+        result = self.__features_serialize(result)
+        # change tags into mts tags
+        result = {self.TAG_MAP[k]: v for k, v in result.items() if k in self.TAG_MAP}
 
-        while not done:
-            response = self.__ask_llama(
-                system="ты NER модель, которая собирает именованные сущности в формат yaml, из текста если таких сущностей нет сделай значения в yaml пустой строкой, то есть yaml всегда должен иметь значения, даже если нет именованных сущностей, в ответе должен быть только словарь без вспомогательного текста, не меняй ключи в словаре и обязательно надо выводить все ключи.",
-                user=f"{key_str} найди эти именованные сущности в тексте {content}",
-            ).replace("'", '"')
-            print("got response", response)
-            try:
-                data = json.loads(response)
-            except Exception as e:
-                print(f"retrying {retries}", e)
-                retries += 1
-                data = None
-            finally:
-                done = True
-        if data is None:
-            raise ValueError("llm failed")
-        return data
+        return result
 
 
 class FeatureExtractor:
@@ -206,6 +235,20 @@ class FeatureExtractor:
 
 
 class SkillClassifier:
+    labels = {
+        0: "ood",
+        1: "check_balance",
+        2: "sbp",
+        3: "card2card",
+        4: "self",
+        5: "abroad",
+        6: "freepayment",
+        7: "kvartplata, jkh",
+        8: "mobile_phone",
+        9: "transport",
+        10: "ishop",
+    }
+
     def __init__(self, base_path):
         # self.prepare_model()
         self.path = base_path
@@ -213,12 +256,6 @@ class SkillClassifier:
             model=SkillClassifier.load_model(self),
             tokenizer=SkillClassifier.load_tokenizer(self),
         )
-        self.labels = {
-            "LABEL_0": "payment",
-            "LABEL_1": "balance",
-            "LABEL_2": "money_transfer",
-        }
-        self.required_keys = {"LABEL_2": ["target", "amount"]}
 
     def load_model(self):
         model = AutoModelForSequenceClassification.from_pretrained(
@@ -227,12 +264,11 @@ class SkillClassifier:
         return model
 
     def load_tokenizer(self):
-        tokenizer = AutoTokenizer.from_pretrained("deepvk/deberta-v1-distill")
+        tokenizer = AutoTokenizer.from_pretrained("ai-forever/ruRoberta-large")
         return tokenizer
 
-    @REQUEST_TIME.time()
     def get_response(self, text: str) -> str:
-        label = self.classifier(text)[0]["label"]
+        label = int(self.classifier(text)[0]["label"].split("_")[-1])
         return self.labels[label]
 
 
@@ -283,22 +319,8 @@ class DomainDetectionService(pb_gprc.DomainDetectionServiceServicer):
         """Missing associated documentation comment in .proto file."""
         try:
 
-            keys: dict = {}
-            while len(request.fields) > 0:
-                value: pb.ActionLabel = request.fields.pop()
-                keys[value.name] = value.type
+            resposne_data = self.ner.get_features(request.query)
 
-            max_retry = 10
-            retry = 0
-            resposne_data = self.ner.get_features(request.query, keys)
-            while resposne_data.keys() != keys.keys() or retry < max_retry:
-                resposne_data = self.ner.get_features(request.query, keys)
-                retry += 1
-            if retry > max_retry:
-                er = f"Error: exceeded max retry"
-                log.error(er)
-                context.set_code(grpc.StatusCode.INTERNAL)
-                context.set_details(f"Internal error: {er}")
             return pb.ExtractFormDataResponse(
                 fields=[
                     pb.ActionLabelData(name=name, value=value)
@@ -314,8 +336,10 @@ class DomainDetectionService(pb_gprc.DomainDetectionServiceServicer):
 
 def serve():
     s = server(futures.ThreadPoolExecutor(max_workers=1))
-    classifier = SkillClassifier("Classification_model_v1.0")
-    ner = Ner("https://864e-37-230-179-200.ngrok-free.app/llama/")
+    classifier = SkillClassifier("Classification_model_v2.0")
+
+    ner_model = pipeline("ner", model="./checkpoint-147", aggregation_strategy="max")
+    ner = Ner(ner_model)
     log.info("initializing driver")
     driver = webdriver.Remote(
         command_executor="http://selenium:4444", options=Options()

@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"sync"
 
-	pb "github.com/EgorTarasov/true-tech/backend/internal/gen"
+	pb "github.com/EgorTarasov/true-tech/backend/internal/stubs"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

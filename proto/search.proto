@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "./;pb";
+package search_engine;
+
+service SearchEngine {
+  rpc Respond (Query) returns (Response) {}
+  rpc RespondStream (Query) returns (stream Response) {}
+}
+
+message Query {
+  string body = 1;
+  string model = 2;
+}
+
+message Response {
+  string body = 1;
+  string context = 2;
+}

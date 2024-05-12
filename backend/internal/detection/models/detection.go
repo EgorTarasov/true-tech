@@ -24,6 +24,7 @@ const (
 type DetectionData struct {
 	SessionId string
 	Query     string
+	Names     []string
 }
 
 // DetectionResult обработки пользовательского запроса к модели

@@ -5,11 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"regexp"
 
 	"github.com/EgorTarasov/true-tech/backend/internal/detection/models"
 	"github.com/EgorTarasov/true-tech/backend/internal/detection/repository"
-	pb "github.com/EgorTarasov/true-tech/backend/internal/gen"
+	pb "github.com/EgorTarasov/true-tech/backend/internal/stubs"
 	"github.com/google/uuid"
+	"github.com/nyaruka/phonenumbers"
+	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 )
@@ -45,6 +48,31 @@ func New(_ context.Context, domainService pb.DomainDetectionServiceClient, dr de
 		actionRepo:    ac,
 		tracer:        tracer,
 	}
+}
+
+func formatQuery(query string) string {
+	re := regexp.MustCompile(`(\d)[ -](\d)`)
+	return re.ReplaceAllStringFunc(query, func(s string) string {
+		return string(s[0]) + string(s[2])
+	})
+}
+
+func getPhoneNumberFromQuery(query string) (string, error) {
+	// find first entry of +7 or 7 or 8 in string and remove all numbers before it
+	re := regexp.MustCompile(`(\+7|7|8)\d*`)
+	match := re.FindString(query)
+	if match != "" {
+		return match, nil
+	}
+
+	// parse our phone number
+	num, err := phonenumbers.Parse(query, "RU")
+	if err != nil {
+		return "", fmt.Errorf("failed to parse phone number: %v", err)
+	}
+
+	// format it using national format
+	return phonenumbers.Format(num, phonenumbers.NATIONAL), nil
 }
 
 // DomainDetection определение запроса пользователя
@@ -86,8 +114,9 @@ func (s *service) DomainDetection(ctx context.Context, userId int64, request mod
 		}
 
 		slog.Debug("session was already created  id:", "sessionId", sessionId, "lastQueryContent", lastQueryContent, "currentQuery", request.Query)
-		request.Query = lastQueryContent + " " + request.Query
+
 	}
+	request.Query = formatQuery(request.Query)
 
 	// ml model call
 	slog.Debug("sending request to ml", "query", request.Query)
@@ -95,6 +124,7 @@ func (s *service) DomainDetection(ctx context.Context, userId int64, request mod
 	ctx, mlSpan := s.tracer.Start(ctx, "ml.DetectDomain")
 	resp, err := s.domainService.DetectDomain(ctx, &pb.DomainDetectionRequest{Query: request.Query})
 	mlSpan.End()
+	log.Info().Str("ml detection class", resp.Label).Msg("SkillClassifier")
 
 	if err != nil {
 		// TODO: add detection errors
@@ -102,49 +132,37 @@ func (s *service) DomainDetection(ctx context.Context, userId int64, request mod
 		response.Status = models.NotEnoughParams
 		return response, err
 	}
+	//mlResponse := make(map[string]any)
+	// create map[string]any from request.Names
+	mlResponse := make(map[string]any)
+	for _, v := range request.Names {
+		mlResponse[v] = ""
+	}
 
 	response.Status = models.Success
 
-	mlResponse := make(map[string]any)
-
-	//if resp.Label == "payment" {
-	//Номер карты
-	//Срок действия
-	//CVC
-	// Номер телефона,tel
-	// Сумма платежа,text
-
-	requiredLabels := []*pb.ActionLabel{&pb.ActionLabel{
-		Name: "Номер телефона",
-		Type: "tel",
-	}, &pb.ActionLabel{
-		Name: "Сумма платежа",
-		Type: "text",
-	},
-		&pb.ActionLabel{
-			Name: "Номер карты",
-			Type: "text",
-		}, &pb.ActionLabel{
-			Name: "Срок действия",
-			Type: "text",
-		}, &pb.ActionLabel{
-			Name: "CVC",
-			Type: "password",
-		},
-	}
-
+	ctx, mlSpan = s.tracer.Start(ctx, "ml.ExtractFormData")
 	keys, err := s.domainService.ExtractFormData(ctx, &pb.ExtractFormDataRequest{
-		Fields: requiredLabels,
+		Fields: nil,
 		Query:  request.Query,
 	})
+	mlSpan.End()
 	if err != nil {
 		return response, err
 	}
 
 	for _, v := range keys.Fields {
+		if _, ok := mlResponse[v.Name]; !ok {
+			continue
+		}
 		mlResponse[v.Name] = v.Value
 	}
-	//}
+	phoneNumber, err := getPhoneNumberFromQuery(request.Query)
+	if err != nil {
+		slog.Debug("failed to parse phone number", "err", err.Error())
+	} else {
+		mlResponse["mobilianyi_telefon"] = phoneNumber
+	}
 
 	// можем достать все детекченные ключи в сессии и собрать один ответ
 	// только первый запрос определяет тип платежа / перевода

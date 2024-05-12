@@ -14,6 +14,7 @@ import (
 	"github.com/EgorTarasov/true-tech/backend/internal/auth/repository"
 	"github.com/EgorTarasov/true-tech/backend/internal/auth/token"
 	"github.com/EgorTarasov/true-tech/backend/internal/shared/constants"
+	"github.com/rs/zerolog/log"
 )
 
 type VkUserRepo interface {
@@ -66,8 +67,10 @@ func (s *service) AuthorizeVk(ctx context.Context, accessCode string) (string, e
 
 	vkResponse, err := s.getVkUserData(ctx, accessCode)
 	if err != nil {
+
 		return "", fmt.Errorf("err during vk auth: %v", err.Error())
 	}
+	log.Info().Str("vk response", fmt.Sprintf("%+v", vkResponse)).Msg("vk response")
 	vkUserData := vkResponse.Response[0]
 	// проверяем есть ли уже запись с таким пользователем
 	user, err := s.ur.GetVkUserData(ctx, vkUserData.ID)
@@ -145,7 +148,7 @@ func (s *service) getVkUserData(ctx context.Context, accessCode string) (vkUserR
 		Timeout: 0,
 	}
 	vkAccessTokenUrl := fmt.Sprintf(s.cfg.VkAuth.VkTokenUrl, s.cfg.VkAuth.VkClientId, s.cfg.VkAuth.VkSecureToken, s.cfg.VkAuth.VkRedirectUri, accessCode)
-
+	log.Info().Str("vk url", vkAccessTokenUrl).Msg("vk url")
 	var (
 		response vkCodeResponse
 		userData vkUserResponse
@@ -153,11 +156,17 @@ func (s *service) getVkUserData(ctx context.Context, accessCode string) (vkUserR
 
 	resp, err := client.Get(vkAccessTokenUrl)
 	if err != nil {
-		return userData, fmt.Errorf("err during vk auth %v", err.Error())
+
+		return userData, fmt.Errorf("err during vk auth %v", err)
 	}
 
 	rawBytes, err := io.ReadAll(resp.Body)
 	_ = resp.Body.Close()
+	if resp.StatusCode != 200 {
+		log.Info().Str("body", string(rawBytes)).Msg("vk response body")
+		return userData, fmt.Errorf("err during vk auth: %v", string(rawBytes))
+	}
+
 	if err != nil {
 		return userData, fmt.Errorf("err during vk auth token %v", err.Error())
 	}

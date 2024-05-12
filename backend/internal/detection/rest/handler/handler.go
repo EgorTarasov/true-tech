@@ -35,9 +35,10 @@ type mlDetectionResponse struct {
 	Error     string                 `json:"err"` // ошибка, которую можно отобразить пользователю
 }
 
-type mlDetectionRequest struct {
-	SessionId string `json:"sessionId"`
-	Query     string `json:"query"`
+type MlDetectionRequest struct {
+	SessionId  string   `json:"sessionId"`
+	Query      string   `json:"query"`
+	FieldNames []string `json:"names"`
 }
 
 // ExecuteCommand godoc
@@ -49,8 +50,7 @@ type mlDetectionRequest struct {
 // @Tags ml
 // @Accept  json
 // @Produce  json
-// @Param sessionId body string true "сессия к которой относится запрос"
-// @Param query body string true "запрос пользователя"
+// @Param data body MlDetectionRequest true "данные для запроса"
 // @Success 200 {object} mlDetectionResponse
 // @Failure 400 {object} mlDetectionResponse
 // @Failure 422
@@ -63,7 +63,7 @@ func (dc *detectHandler) ExecuteCommand(c *fiber.Ctx) error {
 
 	claims := user.Claims.(*token.UserClaims)
 
-	var request mlDetectionRequest
+	var request MlDetectionRequest
 
 	err := c.BodyParser(&request)
 	if err != nil {
@@ -72,7 +72,7 @@ func (dc *detectHandler) ExecuteCommand(c *fiber.Ctx) error {
 
 	resp, err := dc.s.DomainDetection(ctx, claims.UserId, models.DetectionData{
 		SessionId: request.SessionId,
-		Query:     request.Query,
+		Query:     request.Query, Names: request.FieldNames,
 	})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"err": err.Error()})

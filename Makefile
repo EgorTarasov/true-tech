@@ -1,14 +1,17 @@
 .PHONY:go-create-grpc
 go-create-grpc:
 	protoc -I proto proto/speech.proto \
-	--go_out=./backend/internal/gen/ \
-	--go-grpc_out=./backend/internal/gen/ && \
+	--go_out=./backend/internal/stubs/ \
+	--go-grpc_out=./backend/internal/stubs/ && \
 	protoc -I proto proto/preprocessor.proto \
-	--go_out=./backend/internal/gen/ \
-	--go-grpc_out=./backend/internal/gen/ && \
+	--go_out=./backend/internal/stubs/ \
+	--go-grpc_out=./backend/internal/stubs/ && \
 	protoc -I proto proto/domain.proto \
-    	--go_out=./backend/internal/gen/ \
-    	--go-grpc_out=./backend/internal/gen/\
+    	--go_out=./backend/internal/stubs/ \
+    	--go-grpc_out=./backend/internal/stubs/ && \
+	protoc -I proto proto/search.proto \
+    	--go_out=./backend/internal/stubs/ \
+    	--go-grpc_out=./backend/internal/stubs/
 
 
 .PHONY:python-speech-create-grpc
@@ -24,7 +27,9 @@ python-domain-grpc:
 	python -m grpc_tools.protoc -Iproto --python_out=domain-detection --pyi_out=domain-detection --grpc_python_out=domain-detection proto/domain.proto
 
 
-
+.PHONY:python-search-grpc
+python-search-grpc:
+	python -m grpc_tools.protoc -Iproto --python_out=faq --pyi_out=faq --grpc_python_out=faq proto/search.proto
 
 .PHONY: docker-up
 docker-up:

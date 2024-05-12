@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3"
 
 networks:
   infra-vlan:
@@ -9,6 +9,7 @@ volumes:
   redis-data:
   whisper-models:
   grafana-storage:
+  models-cache:
 
 
 services:
@@ -16,7 +17,7 @@ services:
     build:
       context: "../backend/"
       dockerfile: "Dockerfile"
-    restart: "no"
+    restart: "always"
     command: "./main --docker=true"
     volumes:
       - ../config.yaml:/app/config.yaml
@@ -73,6 +74,21 @@ services:
   #     networks:
   #       - default
   #       - infra-vlan
+
+  faq:
+    build:
+      context: ./faq
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - 'models-cache:/root/.cache/huggingface/hub/'
+    ports:
+      - '10000:10000'
+    command:
+      - python3
+      - server.py
+
+# инфраструктура
   selenium:
     image: selenium/standalone-chrome
     container_name: selenium
@@ -137,6 +153,39 @@ services:
     environment:
       - GF_USERS_ALLOW_SIGN_UP=false
 
+  click:
+     image: clickhouse/clickhouse-server:23.3-alpine
+     volumes:
+     - "./users.xml:/etc/clickhouse-server/users.xml"
+     - ./db:/var/lib/clickhouse
+     ports:
+     - "8123:8123"
+     - "8888:9000"
+     - "9009:9009"
+     ulimits:
+      nproc: 65535
+      nofile:
+       soft: 262144
+       hard: 262144
+
+  ollama:
+    volumes:
+      - ./ollama/ollama:/root/.ollama
+    container_name: ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    image: ollama/ollama:latest
+    ports:
+      - 11434:11434
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
   node-exporter:
     image: prom/node-exporter:latest

@@ -135,10 +135,10 @@ func (ac *authController) AuthWithVk(c *fiber.Ctx) error {
 
 	accessCode := c.Query("code")
 
-	url, err := ac.s.AuthorizeVk(ctx, accessCode)
+	accessToken, err := ac.s.AuthorizeVk(ctx, accessCode)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"err": err.Error()})
 	}
 
-	return c.JSON(fiber.Map{"url": url})
+	return c.JSON(fiber.Map{"accessToken": accessToken})
 }

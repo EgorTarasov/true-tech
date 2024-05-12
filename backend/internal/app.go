@@ -24,7 +24,12 @@ import (
 	detectionHandler "github.com/EgorTarasov/true-tech/backend/internal/detection/rest/handler"
 	detectionRouter "github.com/EgorTarasov/true-tech/backend/internal/detection/rest/router"
 	detectionService "github.com/EgorTarasov/true-tech/backend/internal/detection/service"
+
 	_ "github.com/EgorTarasov/true-tech/backend/internal/docs"
+	faqHandler "github.com/EgorTarasov/true-tech/backend/internal/faq/rest/handler"
+	faqRouter "github.com/EgorTarasov/true-tech/backend/internal/faq/rest/router"
+	faqService "github.com/EgorTarasov/true-tech/backend/internal/faq/service"
+	faqClient "github.com/EgorTarasov/true-tech/backend/internal/faq/service/client"
 	"github.com/EgorTarasov/true-tech/backend/internal/metrics"
 	"github.com/EgorTarasov/true-tech/backend/pkg/db"
 	"github.com/EgorTarasov/true-tech/backend/pkg/redis"
@@ -100,7 +105,7 @@ func Run(ctx context.Context, _ *sync.WaitGroup) error {
 
 	// auth route group
 
-	userRepo := authPostgresRepository.NewUserRepo(pg, tracer)
+	userRepo := authPostgresRepository.NewUserAccountRepo(pg, tracer)
 	tokenRepo := authRedisRepository.New(ctx, userDaoRedis, tracer)
 	s := authSsrvice.New(ctx, cfg, userRepo, tokenRepo, tracer)
 	controller := authHandler.NewAuthController(ctx, s, tracer)
@@ -129,6 +134,14 @@ func Run(ctx context.Context, _ *sync.WaitGroup) error {
 
 	if err = accountsRouter.InitAccountsRouter(ctx, app, accountsController); err != nil {
 		return fmt.Errorf("err during accounts router init")
+	}
+
+	// faq routes
+	faqGrpcClient := faqClient.New(cfg.FaqService)
+	faq := faqService.NewFaqService(faqGrpcClient)
+	faqController := faqHandler.NewFaqHandler(faq)
+	if err = faqRouter.InitFaqRouter(app, faqController); err != nil {
+		return fmt.Errorf("err during faq router init")
 	}
 
 	// Запуск метрик сервиса
