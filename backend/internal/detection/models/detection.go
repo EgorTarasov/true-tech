@@ -30,7 +30,7 @@ type DetectionData struct {
 type DetectionResult struct {
 	SessionUUID string
 	QueryId     int64
-	Content     string
+	Content     map[string]any
 	Status      DetectionStatus
 	Response    string
 }
