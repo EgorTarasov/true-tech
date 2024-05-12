@@ -10,7 +10,7 @@ import PinIcon from "../assets/pin.svg";
 export const MockFeatures = () => (
   <>
     <Section title="Кешбэк">
-      <button className="block text-left">
+      <button className="block text-left" onClick={onNotImplemented}>
         <Card big className="w-96 gap-0">
           <h3 className="font-medium text-lg">MTS Cashback</h3>
           <div className="flex items-center rounded-lg bg-red py-0.5 px-3 text-white w-fit gap-1">

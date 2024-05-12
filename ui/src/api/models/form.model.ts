@@ -3,22 +3,18 @@ export namespace FormDto {
     id: number;
     name: string;
     imgSrc: string;
-    fields: {
-      id: number;
-      type: string;
-      label: string;
-      placeholder?: string;
-    }[];
+    fields: Field[];
   }
 
-  export interface TemplateField {
+  export interface Field {
+    id: number;
     type: string;
     label: string;
     placeholder?: string;
   }
 
   export interface Template {
-    fields: TemplateField[];
+    fields: number[];
     name: string;
   }
 

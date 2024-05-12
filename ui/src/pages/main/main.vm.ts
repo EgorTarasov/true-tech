@@ -12,10 +12,14 @@ export class MainPageViewModel {
   }
 
   async init() {
-    this.forms = (await FormEndpoint.getTemplates()).forms;
-    console.log(toJS(this.forms));
+    try {
+      this.forms = (await FormEndpoint.getTemplates()).forms;
+    } finally {
+      this.isLoading = false;
+    }
   }
 
+  isLoading = true;
   forms: FormDto.Item[] = [];
   selectedCustomForm: CustomFormType | null = null;
   selectedForm: DynamicFormViewModel | null = null;

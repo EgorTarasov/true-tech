@@ -9,4 +9,8 @@ export namespace FormEndpoint {
   export const createForm = (form: FormDto.Template) => {
     return api.post<FormDto.Item>("/form/create", form);
   };
+
+  export const getFields = () => {
+    return api.get<{ fields: FormDto.Field[] }>("/form/fields");
+  };
 }

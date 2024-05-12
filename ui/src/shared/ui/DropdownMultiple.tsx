@@ -1,10 +1,9 @@
 import { Combobox, Transition } from "@headlessui/react";
 import ChevronSvg from "@/assets/icons/double-chevron.svg";
 import CheckSvg from "@/assets/icons/check.svg";
-import { FC, Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { twMerge } from "tailwind-merge";
-import { toJS } from "mobx";
 
 interface ComboboxMultipleProps<T> {
   value: T[];
@@ -30,16 +29,14 @@ const DropdownMultiple = observer(<T,>(p: ComboboxMultipleProps<T>) => {
             .includes(query.toLowerCase().replace(/\s+/g, ""))
         );
   const placeholder = p.value.map((v) => p.render(v)).join(", ");
-  const selectedOptions = useMemo(
-    () => p.options.filter((v) => p.value.some((vv) => p.render(vv) === p.render(v))),
-    [p.value, p.options]
-  );
 
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        event.stopPropagation();
-        setInputFocused(false);
+        if (inputFocused) {
+          event.stopPropagation();
+          setInputFocused(false);
+        }
       }
     };
 
@@ -48,10 +45,10 @@ const DropdownMultiple = observer(<T,>(p: ComboboxMultipleProps<T>) => {
     return () => {
       document.removeEventListener("keydown", closeOnEscape);
     };
-  }, []);
+  }, [inputFocused]);
 
   return (
-    <Combobox value={selectedOptions} multiple onChange={p.onChange}>
+    <Combobox value={p.value} multiple onChange={p.onChange}>
       <div className="relative text-sm">
         {p.label && (
           <Combobox.Label className="text-text-primary/60 text-base">{p.label}</Combobox.Label>
@@ -60,15 +57,16 @@ const DropdownMultiple = observer(<T,>(p: ComboboxMultipleProps<T>) => {
           <Combobox.Input
             className="whitespace-nowrap w-full cursor-pointer pr-8 text-ellipsis border border-text-primary/20 rounded-lg p-3"
             placeholder={placeholder}
-            onClick={() => setInputFocused((v) => !v)}
             onFocus={(e) => {
-              if (e.relatedTarget === null) return;
-
               e.preventDefault();
               setQuery("");
               setInputFocused(true);
             }}
-            onBlur={() => setInputFocused(false)}
+            onBlur={(e) => {
+              if (e.relatedTarget instanceof HTMLLIElement) return;
+
+              setInputFocused(false);
+            }}
             displayValue={(value: T[]) => (inputFocused ? "" : placeholder)}
             onChange={(event) => setQuery(event.target.value)}
           />

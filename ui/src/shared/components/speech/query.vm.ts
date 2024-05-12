@@ -18,26 +18,24 @@ export class QueryViewModel {
       id: this.sessionId
     });
 
-    say(this.message);
+    try {
+      const res = await DetectionEndpoint.execute(this.message, this.sessionId);
+      console.log(res);
 
-    // try {
-    //   const res = await DetectionEndpoint.execute(this.message, this.sessionId);
-    //   console.log(res);
+      toast.loading("Выполняем действия", {
+        id: this.sessionId
+      });
 
-    //   toast.loading("Выполняем действия", {
-    //     id: this.sessionId
-    //   });
-
-    //   setTimeout(() => {
-    //     toast.success("Команда успешно выполнена!", {
-    //       id: this.sessionId
-    //     });
-    //   }, 2000);
-    // } catch {
-    //   toast.error("Ошибка выполнения команды", {
-    //     id: this.sessionId
-    //   });
-    // }
-    // this.onCompleted();
+      setTimeout(() => {
+        toast.success("Команда успешно выполнена!", {
+          id: this.sessionId
+        });
+      }, 2000);
+    } catch {
+      toast.error("Ошибка выполнения команды", {
+        id: this.sessionId
+      });
+    }
+    this.onCompleted();
   }
 }

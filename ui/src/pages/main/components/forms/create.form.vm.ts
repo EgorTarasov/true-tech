@@ -6,27 +6,37 @@ import { FormEndpoint } from "api/endpoints/form.endpoint";
 export class CreateFormViewModel {
   constructor(private parentVm: MainPageViewModel) {
     makeAutoObservable(this);
-    this.createField();
+    void this.init();
   }
 
+  async init() {
+    try {
+      this.fields = (await FormEndpoint.getFields()).fields;
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  loading = true;
   name = "";
-  fields: FormDto.TemplateField[] = [];
-
-  createField() {
-    this.fields.push({ label: "", type: "text" });
-  }
-
-  deleteField(index: number) {
-    this.fields.splice(index, 1);
+  fields: FormDto.Field[] = [];
+  selectedFields: FormDto.Field[] = [];
+  get formValid() {
+    return this.selectedFields.length > 0 && this.name.length > 0;
   }
 
   async createForm() {
-    const res = await FormEndpoint.createForm({
-      name: this.name,
-      fields: this.fields
-    });
+    this.loading = true;
+    try {
+      const res = await FormEndpoint.createForm({
+        name: this.name,
+        fields: this.selectedFields.map((v) => v.id)
+      });
 
-    this.parentVm.forms.push(res);
-    this.parentVm.selectedCustomForm = null;
+      this.parentVm.forms.push(res);
+      this.parentVm.selectedCustomForm = null;
+    } finally {
+      this.loading = false;
+    }
   }
 }
