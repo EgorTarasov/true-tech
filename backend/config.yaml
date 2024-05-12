@@ -4,6 +4,7 @@ http-server:
   cors-origins:
     - "http://localhost:3000"
     - "https://hack.larek.tech"
+    - "https://mts.larek.tech"
 
 telemetry:
   endpoint: 127.0.0.1:4318
@@ -36,5 +37,9 @@ domain:
       port: 10002
     # - host: "127.0.0.1"
     #   port: 10003
+
+faq:
+  host: "127.0.0.1"
+  port: 10000
 
 

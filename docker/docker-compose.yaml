@@ -36,6 +36,14 @@ services:
     networks:
       - infra-vlan
       - default
+  frontend:
+    build:
+      context: "../ui"
+      dockerfile: Dockerfile
+    container_name: true-tech-front
+    restart: "always"
+    ports:
+      - "6500:3000"
 
 #  speech-to-text:
 #    build:
