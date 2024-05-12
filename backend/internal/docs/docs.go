@@ -211,6 +211,157 @@ const docTemplate = `{
                 }
             }
         },
+        "/detection/html": {
+            "post": {
+                "description": "получение полей и их типов из html страницы",
+                "consumes": [
+                    "application/json",
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ml"
+                ],
+                "summary": "Получение полей и типов из html страницы",
+                "parameters": [
+                    {
+                        "description": "html страница",
+                        "name": "html",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.PageCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.mlDetectionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.mlDetectionResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    }
+                }
+            }
+        },
+        "/form/create": {
+            "post": {
+                "description": "создание формы для оплаты услуги",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payments"
+                ],
+                "summary": "создание формы для оплаты услуги",
+                "parameters": [
+                    {
+                        "description": "Create payment form",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.createFormRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/form/fields": {
+            "get": {
+                "description": "получение списка доступных полей для формы",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payments"
+                ],
+                "summary": "получение списка доступных полей для формы",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.getFieldsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/form/list": {
+            "get": {
+                "description": "получение списка форм для оплаты услуг",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payments"
+                ],
+                "summary": "получение списка форм для оплаты услуг",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.getFormsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/payments/kvartplata/card": {
             "post": {
                 "consumes": [
@@ -412,7 +563,7 @@ const docTemplate = `{
         "handler.accessTokenResponse": {
             "type": "object",
             "properties": {
-                "AccessToken": {
+                "accessToken": {
                     "type": "string"
                 }
             }
@@ -422,6 +573,20 @@ const docTemplate = `{
             "properties": {
                 "cardInfo": {
                     "$ref": "#/definitions/models.CardInfo"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.createFormRequest": {
+            "type": "object",
+            "properties": {
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "name": {
                     "type": "string"
@@ -447,11 +612,34 @@ const docTemplate = `{
                 }
             }
         },
+        "handler.getFieldsResponse": {
+            "type": "object",
+            "properties": {
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.InputFieldDto"
+                    }
+                }
+            }
+        },
+        "handler.getFormsResponse": {
+            "type": "object",
+            "properties": {
+                "forms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FormDto"
+                    }
+                }
+            }
+        },
         "handler.mlDetectionResponse": {
             "type": "object",
             "properties": {
                 "content": {
-                    "type": "string"
+                    "type": "object",
+                    "additionalProperties": {}
                 },
                 "detectionStatus": {
                     "$ref": "#/definitions/models.DetectionStatus"
@@ -500,6 +688,23 @@ const docTemplate = `{
                 "Success"
             ]
         },
+        "models.FormDto": {
+            "type": "object",
+            "properties": {
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.InputFieldDto"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.HPU": {
             "type": "object",
             "properties": {
@@ -536,6 +741,31 @@ const docTemplate = `{
                 },
                 "hpu": {
                     "$ref": "#/definitions/models.HPU"
+                }
+            }
+        },
+        "models.InputFieldDto": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.PageCreate": {
+            "type": "object",
+            "properties": {
+                "html": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
                 }
             }
         },

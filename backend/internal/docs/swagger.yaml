@@ -12,13 +12,22 @@ definitions:
     type: object
   handler.accessTokenResponse:
     properties:
-      AccessToken:
+      accessToken:
         type: string
     type: object
   handler.createAccountRequest:
     properties:
       cardInfo:
         $ref: '#/definitions/models.CardInfo'
+      name:
+        type: string
+    type: object
+  handler.createFormRequest:
+    properties:
+      fields:
+        items:
+          type: integer
+        type: array
       name:
         type: string
     type: object
@@ -34,10 +43,25 @@ definitions:
           $ref: '#/definitions/models.PaymentAccountDto'
         type: array
     type: object
+  handler.getFieldsResponse:
+    properties:
+      fields:
+        items:
+          $ref: '#/definitions/models.InputFieldDto'
+        type: array
+    type: object
+  handler.getFormsResponse:
+    properties:
+      forms:
+        items:
+          $ref: '#/definitions/models.FormDto'
+        type: array
+    type: object
   handler.mlDetectionResponse:
     properties:
       content:
-        type: string
+        additionalProperties: {}
+        type: object
       detectionStatus:
         $ref: '#/definitions/models.DetectionStatus'
       err:
@@ -71,6 +95,17 @@ definitions:
     - InternalErr
     - NotEnoughParams
     - Success
+  models.FormDto:
+    properties:
+      fields:
+        items:
+          $ref: '#/definitions/models.InputFieldDto'
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   models.HPU:
     properties:
       amount:
@@ -95,6 +130,22 @@ definitions:
         $ref: '#/definitions/models.CardInfo'
       hpu:
         $ref: '#/definitions/models.HPU'
+    type: object
+  models.InputFieldDto:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      type:
+        type: string
+    type: object
+  models.PageCreate:
+    properties:
+      html:
+        type: string
+      url:
+        type: string
     type: object
   models.PaymentAccountDto:
     properties:
@@ -262,6 +313,105 @@ paths:
       summary: Запуск сценария из обработанного текста
       tags:
       - ml
+  /detection/html:
+    post:
+      consumes:
+      - application/json
+      - application/json
+      description: получение полей и их типов из html страницы
+      parameters:
+      - description: html страница
+        in: body
+        name: html
+        required: true
+        schema:
+          $ref: '#/definitions/models.PageCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.mlDetectionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.mlDetectionResponse'
+        "422":
+          description: Unprocessable Entity
+      summary: Получение полей и типов из html страницы
+      tags:
+      - ml
+  /form/create:
+    post:
+      consumes:
+      - application/json
+      description: создание формы для оплаты услуги
+      parameters:
+      - description: Create payment form
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/handler.createFormRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+      summary: создание формы для оплаты услуги
+      tags:
+      - payments
+  /form/fields:
+    get:
+      description: получение списка доступных полей для формы
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getFieldsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+      summary: получение списка доступных полей для формы
+      tags:
+      - payments
+  /form/list:
+    get:
+      description: получение списка форм для оплаты услуг
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getFormsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+      summary: получение списка форм для оплаты услуг
+      tags:
+      - payments
   /payments/kvartplata/card:
     post:
       consumes:

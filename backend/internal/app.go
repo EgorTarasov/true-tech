@@ -32,6 +32,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/rs/zerolog/log"
 	fiberSwagger "github.com/swaggo/fiber-swagger"
 )
 
@@ -41,15 +42,14 @@ func Run(ctx context.Context, _ *sync.WaitGroup) error {
 	)
 	flag.Parse()
 	appName := "api-dev"
-	cfg := config.MustNew("config.yaml")
+	cfg := config.MustNew("config.yaml", *dockerMode)
 	if *dockerMode {
-		cfg.Telemetry.OTLPEndpoint = "jaeger:4318"
-		cfg.Redis.Host = "redis"
-		cfg.Database.Host = "database"
 		appName = "api-prod"
 	}
-	// Tracing with open telemetry
+	log.Info().Msgf("running app with config %v", cfg)
+	//slog.Info("running app with config", "config", &cfg)
 
+	// Tracing with open telemetry
 	traceExporter, err := telemetry.NewOTLPExporter(ctx, cfg.Telemetry.OTLPEndpoint)
 	if err != nil {
 		return fmt.Errorf("err during: %v", err.Error())
@@ -112,7 +112,8 @@ func Run(ctx context.Context, _ *sync.WaitGroup) error {
 	// ml routes
 
 	detectionRepository := detectionPostgresRepository.NewDetectionRepo(pg, tracer)
-	mlService := detectionService.New(ctx, domainClient, detectionRepository, tracer)
+	actionsRepository := detectionPostgresRepository.NewActionRepo(pg, tracer)
+	mlService := detectionService.New(ctx, domainClient, detectionRepository, actionsRepository, tracer)
 	detectionController := detectionHandler.NewDetectHandler(ctx, mlService, tracer)
 
 	if err = detectionRouter.InitDetectionRouter(ctx, app, detectionController); err != nil {
@@ -122,7 +123,8 @@ func Run(ctx context.Context, _ *sync.WaitGroup) error {
 	// accounts routes
 
 	accountsRepository := accountsPostgresRepository.NewPaymentAccountRepo(pg, tracer)
-	accountService := accountsService.New(cfg, accountsRepository, tracer)
+	formsRepository := accountsPostgresRepository.NewFormRepo(pg, tracer)
+	accountService := accountsService.New(cfg, accountsRepository, formsRepository, tracer)
 	accountsController := accountsHandler.New(accountService, tracer)
 
 	if err = accountsRouter.InitAccountsRouter(ctx, app, accountsController); err != nil {

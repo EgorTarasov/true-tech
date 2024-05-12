@@ -41,7 +41,7 @@ func (ac *authController) LoginWithEmail(c *fiber.Ctx) error {
 }
 
 type accessTokenResponse struct {
-	AccessToken string `json:"AccessToken"`
+	AccessToken string `json:"accessToken"`
 }
 
 type errResponse struct {

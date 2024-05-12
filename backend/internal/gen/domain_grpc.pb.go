@@ -19,6 +19,8 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DomainDetectionServiceClient interface {
 	DetectDomain(ctx context.Context, in *DomainDetectionRequest, opts ...grpc.CallOption) (*DomainDetectionResponse, error)
+	ExtractLabels(ctx context.Context, in *LabelDetectionRequest, opts ...grpc.CallOption) (*LabelDetectionResponse, error)
+	ExtractFormData(ctx context.Context, in *ExtractFormDataRequest, opts ...grpc.CallOption) (*ExtractFormDataResponse, error)
 }
 
 type domainDetectionServiceClient struct {
@@ -38,11 +40,31 @@ func (c *domainDetectionServiceClient) DetectDomain(ctx context.Context, in *Dom
 	return out, nil
 }
 
+func (c *domainDetectionServiceClient) ExtractLabels(ctx context.Context, in *LabelDetectionRequest, opts ...grpc.CallOption) (*LabelDetectionResponse, error) {
+	out := new(LabelDetectionResponse)
+	err := c.cc.Invoke(ctx, "/DomainDetectionService/ExtractLabels", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *domainDetectionServiceClient) ExtractFormData(ctx context.Context, in *ExtractFormDataRequest, opts ...grpc.CallOption) (*ExtractFormDataResponse, error) {
+	out := new(ExtractFormDataResponse)
+	err := c.cc.Invoke(ctx, "/DomainDetectionService/ExtractFormData", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DomainDetectionServiceServer is the server API for DomainDetectionService service.
 // All implementations must embed UnimplementedDomainDetectionServiceServer
 // for forward compatibility
 type DomainDetectionServiceServer interface {
 	DetectDomain(context.Context, *DomainDetectionRequest) (*DomainDetectionResponse, error)
+	ExtractLabels(context.Context, *LabelDetectionRequest) (*LabelDetectionResponse, error)
+	ExtractFormData(context.Context, *ExtractFormDataRequest) (*ExtractFormDataResponse, error)
 	mustEmbedUnimplementedDomainDetectionServiceServer()
 }
 
@@ -52,6 +74,12 @@ type UnimplementedDomainDetectionServiceServer struct {
 
 func (UnimplementedDomainDetectionServiceServer) DetectDomain(context.Context, *DomainDetectionRequest) (*DomainDetectionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DetectDomain not implemented")
+}
+func (UnimplementedDomainDetectionServiceServer) ExtractLabels(context.Context, *LabelDetectionRequest) (*LabelDetectionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExtractLabels not implemented")
+}
+func (UnimplementedDomainDetectionServiceServer) ExtractFormData(context.Context, *ExtractFormDataRequest) (*ExtractFormDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExtractFormData not implemented")
 }
 func (UnimplementedDomainDetectionServiceServer) mustEmbedUnimplementedDomainDetectionServiceServer() {
 }
@@ -85,6 +113,42 @@ func _DomainDetectionService_DetectDomain_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DomainDetectionService_ExtractLabels_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LabelDetectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DomainDetectionServiceServer).ExtractLabels(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/DomainDetectionService/ExtractLabels",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DomainDetectionServiceServer).ExtractLabels(ctx, req.(*LabelDetectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DomainDetectionService_ExtractFormData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExtractFormDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DomainDetectionServiceServer).ExtractFormData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/DomainDetectionService/ExtractFormData",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DomainDetectionServiceServer).ExtractFormData(ctx, req.(*ExtractFormDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DomainDetectionService_ServiceDesc is the grpc.ServiceDesc for DomainDetectionService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -95,6 +159,14 @@ var DomainDetectionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DetectDomain",
 			Handler:    _DomainDetectionService_DetectDomain_Handler,
+		},
+		{
+			MethodName: "ExtractLabels",
+			Handler:    _DomainDetectionService_ExtractLabels_Handler,
+		},
+		{
+			MethodName: "ExtractFormData",
+			Handler:    _DomainDetectionService_ExtractFormData_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

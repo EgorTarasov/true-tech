@@ -20,20 +20,29 @@ type detectionRepository interface {
 	GetLastQueryContent(ctx context.Context, sessionUUID uuid.UUID) (int64, string, error)
 }
 
+type actionRepository interface {
+	SavePageInfo(ctx context.Context, page models.PageCreate, actions []models.InputField) (int64, error)
+	GetPageInfo(ctx context.Context, url string) (models.PageDto, error)
+}
+
 type domainGrpcClient interface {
 	DetectDomain(ctx context.Context, in *pb.DomainDetectionRequest, opts ...grpc.CallOption) (*pb.DomainDetectionResponse, error)
+	ExtractLabels(ctx context.Context, in *pb.LabelDetectionRequest, opts ...grpc.CallOption) (*pb.LabelDetectionResponse, error)
+	ExtractFormData(ctx context.Context, in *pb.ExtractFormDataRequest, opts ...grpc.CallOption) (*pb.ExtractFormDataResponse, error)
 }
 
 type service struct {
 	domainService domainGrpcClient
 	detectionRepo detectionRepository
+	actionRepo    actionRepository
 	tracer        trace.Tracer
 }
 
-func New(_ context.Context, domainService pb.DomainDetectionServiceClient, dr detectionRepository, tracer trace.Tracer) *service {
+func New(_ context.Context, domainService pb.DomainDetectionServiceClient, dr detectionRepository, ac actionRepository, tracer trace.Tracer) *service {
 	return &service{
 		domainService: domainService,
 		detectionRepo: dr,
+		actionRepo:    ac,
 		tracer:        tracer,
 	}
 }
@@ -50,7 +59,7 @@ func (s *service) DomainDetection(ctx context.Context, userId int64, request mod
 		SessionUUID: request.SessionId,
 		QueryId:     0,
 		Status:      models.InternalErr,
-		Content:     "",
+		Content:     make(map[string]any),
 		Response:    "", // FIXME как передавать описание ошибки, что нам не хватает полей для такой операции
 	}
 	var (
@@ -95,22 +104,93 @@ func (s *service) DomainDetection(ctx context.Context, userId int64, request mod
 	}
 
 	response.Status = models.Success
-	response.Content = resp.Label
 
+	mlResponse := make(map[string]any)
+
+	//if resp.Label == "payment" {
+	//Номер карты
+	//Срок действия
+	//CVC
+	// Номер телефона,tel
+	// Сумма платежа,text
+
+	requiredLabels := []*pb.ActionLabel{&pb.ActionLabel{
+		Name: "Номер телефона",
+		Type: "tel",
+	}, &pb.ActionLabel{
+		Name: "Сумма платежа",
+		Type: "text",
+	},
+		&pb.ActionLabel{
+			Name: "Номер карты",
+			Type: "text",
+		}, &pb.ActionLabel{
+			Name: "Срок действия",
+			Type: "text",
+		}, &pb.ActionLabel{
+			Name: "CVC",
+			Type: "password",
+		},
+	}
+
+	keys, err := s.domainService.ExtractFormData(ctx, &pb.ExtractFormDataRequest{
+		Fields: requiredLabels,
+		Query:  request.Query,
+	})
+	if err != nil {
+		return response, err
+	}
+
+	for _, v := range keys.Fields {
+		mlResponse[v.Name] = v.Value
+	}
+	//}
+
+	// можем достать все детекченные ключи в сессии и собрать один ответ
+	// только первый запрос определяет тип платежа / перевода
 	lastQueryId, err = s.detectionRepo.CreateQuery(ctx, models.DetectionQueryCreate{
 		SessionId:    sessionId,
 		Content:      request.Query,
 		Label:        resp.Label,
 		Status:       response.Status,
-		DetectedKeys: nil,
+		DetectedKeys: mlResponse,
 	})
 	if err != nil {
 		slog.Debug("err during saving query", "err", err.Error())
 	}
 
+	//rawJson, _ := json.Marshal(mlResponse)
+
+	response.Content = mlResponse
 	response.QueryId = lastQueryId
 
 	slog.Debug("detection status:", "response label", resp.Label, "session UUID", request.SessionId)
 
 	return response, nil
+}
+
+// CreateNewPage создание входной формы для страницы
+func (s *service) CreateNewPage(ctx context.Context, page models.PageCreate) (int64, error) {
+	ctx, span := s.tracer.Start(ctx, "service.CreateNewPage")
+	defer span.End()
+
+	response, err := s.domainService.ExtractLabels(ctx, &pb.LabelDetectionRequest{
+		Html: page.Html,
+	})
+	if err != nil {
+		return 0, err
+	}
+	actions := make([]models.InputField, len(response.Labels))
+	for i, field := range response.Labels {
+		actions[i] = models.InputField{
+			Name:        field.Name,
+			Type:        field.Type,
+			Label:       field.Label,
+			PlaceHolder: field.Placeholder,
+			InputMode:   field.Inputmode,
+			SpellCheck:  field.Splellcheck,
+		}
+	}
+
+	return s.actionRepo.SavePageInfo(ctx, page, actions)
 }

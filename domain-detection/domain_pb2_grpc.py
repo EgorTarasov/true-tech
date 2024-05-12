@@ -19,12 +19,34 @@ class DomainDetectionServiceStub(object):
                 request_serializer=domain__pb2.DomainDetectionRequest.SerializeToString,
                 response_deserializer=domain__pb2.DomainDetectionResponse.FromString,
                 )
+        self.ExtractLabels = channel.unary_unary(
+                '/DomainDetectionService/ExtractLabels',
+                request_serializer=domain__pb2.LabelDetectionRequest.SerializeToString,
+                response_deserializer=domain__pb2.LabelDetectionResponse.FromString,
+                )
+        self.ExtractFormData = channel.unary_unary(
+                '/DomainDetectionService/ExtractFormData',
+                request_serializer=domain__pb2.ExtractFormDataRequest.SerializeToString,
+                response_deserializer=domain__pb2.ExtractFormDataResponse.FromString,
+                )
 
 
 class DomainDetectionServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def DetectDomain(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ExtractLabels(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ExtractFormData(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -37,6 +59,16 @@ def add_DomainDetectionServiceServicer_to_server(servicer, server):
                     servicer.DetectDomain,
                     request_deserializer=domain__pb2.DomainDetectionRequest.FromString,
                     response_serializer=domain__pb2.DomainDetectionResponse.SerializeToString,
+            ),
+            'ExtractLabels': grpc.unary_unary_rpc_method_handler(
+                    servicer.ExtractLabels,
+                    request_deserializer=domain__pb2.LabelDetectionRequest.FromString,
+                    response_serializer=domain__pb2.LabelDetectionResponse.SerializeToString,
+            ),
+            'ExtractFormData': grpc.unary_unary_rpc_method_handler(
+                    servicer.ExtractFormData,
+                    request_deserializer=domain__pb2.ExtractFormDataRequest.FromString,
+                    response_serializer=domain__pb2.ExtractFormDataResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -62,5 +94,39 @@ class DomainDetectionService(object):
         return grpc.experimental.unary_unary(request, target, '/DomainDetectionService/DetectDomain',
             domain__pb2.DomainDetectionRequest.SerializeToString,
             domain__pb2.DomainDetectionResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ExtractLabels(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/DomainDetectionService/ExtractLabels',
+            domain__pb2.LabelDetectionRequest.SerializeToString,
+            domain__pb2.LabelDetectionResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ExtractFormData(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/DomainDetectionService/ExtractFormData',
+            domain__pb2.ExtractFormDataRequest.SerializeToString,
+            domain__pb2.ExtractFormDataResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

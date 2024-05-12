@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0c\x64omain.proto\"\'\n\x16\x44omainDetectionRequest\x12\r\n\x05query\x18\x01 \x01(\t\"(\n\x17\x44omainDetectionResponse\x12\r\n\x05label\x18\x01 \x01(\t2[\n\x16\x44omainDetectionService\x12\x41\n\x0c\x44\x65tectDomain\x12\x17.DomainDetectionRequest\x1a\x18.DomainDetectionResponseB\x07Z\x05./;pbb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0c\x64omain.proto\"\'\n\x16\x44omainDetectionRequest\x12\r\n\x05query\x18\x01 \x01(\t\"(\n\x17\x44omainDetectionResponse\x12\r\n\x05label\x18\x01 \x01(\t\"%\n\x15LabelDetectionRequest\x12\x0c\n\x04html\x18\x01 \x01(\t\"u\n\x0b\x41\x63tionLabel\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04type\x18\x02 \x01(\t\x12\r\n\x05label\x18\x03 \x01(\t\x12\x13\n\x0bplaceholder\x18\x04 \x01(\t\x12\x13\n\x0bsplellcheck\x18\x05 \x01(\x08\x12\x11\n\tinputmode\x18\x06 \x01(\t\"6\n\x16LabelDetectionResponse\x12\x1c\n\x06labels\x18\x01 \x03(\x0b\x32\x0c.ActionLabel\".\n\x0f\x41\x63tionLabelData\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\"E\n\x16\x45xtractFormDataRequest\x12\x1c\n\x06\x66ields\x18\x01 \x03(\x0b\x32\x0c.ActionLabel\x12\r\n\x05query\x18\x02 \x01(\t\";\n\x17\x45xtractFormDataResponse\x12 \n\x06\x66ields\x18\x01 \x03(\x0b\x32\x10.ActionLabelData2\xe3\x01\n\x16\x44omainDetectionService\x12\x41\n\x0c\x44\x65tectDomain\x12\x17.DomainDetectionRequest\x1a\x18.DomainDetectionResponse\x12@\n\rExtractLabels\x12\x16.LabelDetectionRequest\x1a\x17.LabelDetectionResponse\x12\x44\n\x0f\x45xtractFormData\x12\x17.ExtractFormDataRequest\x1a\x18.ExtractFormDataResponseB\x07Z\x05./;pbb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -26,6 +26,18 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['_DOMAINDETECTIONREQUEST']._serialized_end=55
   _globals['_DOMAINDETECTIONRESPONSE']._serialized_start=57
   _globals['_DOMAINDETECTIONRESPONSE']._serialized_end=97
-  _globals['_DOMAINDETECTIONSERVICE']._serialized_start=99
-  _globals['_DOMAINDETECTIONSERVICE']._serialized_end=190
+  _globals['_LABELDETECTIONREQUEST']._serialized_start=99
+  _globals['_LABELDETECTIONREQUEST']._serialized_end=136
+  _globals['_ACTIONLABEL']._serialized_start=138
+  _globals['_ACTIONLABEL']._serialized_end=255
+  _globals['_LABELDETECTIONRESPONSE']._serialized_start=257
+  _globals['_LABELDETECTIONRESPONSE']._serialized_end=311
+  _globals['_ACTIONLABELDATA']._serialized_start=313
+  _globals['_ACTIONLABELDATA']._serialized_end=359
+  _globals['_EXTRACTFORMDATAREQUEST']._serialized_start=361
+  _globals['_EXTRACTFORMDATAREQUEST']._serialized_end=430
+  _globals['_EXTRACTFORMDATARESPONSE']._serialized_start=432
+  _globals['_EXTRACTFORMDATARESPONSE']._serialized_end=491
+  _globals['_DOMAINDETECTIONSERVICE']._serialized_start=494
+  _globals['_DOMAINDETECTIONSERVICE']._serialized_end=721
 # @@protoc_insertion_point(module_scope)

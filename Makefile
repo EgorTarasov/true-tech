@@ -14,7 +14,7 @@ go-create-grpc:
 .PHONY:python-speech-create-grpc
 python-create-grpc:
 	python -m grpc_tools.protoc -Iproto --python_out=speech-to-text --pyi_out=speech-to-text --grpc_python_out=speech-to-text proto/speech.proto
-	
+
 .PHONY:python-text-grpc
 python-text-grpc:
 	python -m grpc_tools.protoc -Iproto --python_out=text-processor --pyi_out=text-processor --grpc_python_out=text-processor proto/preprocessor.proto
@@ -42,3 +42,11 @@ docker-dev:
     		-d --build
 
 
+.PHONY: deploy
+deploy:
+	docker kill docker_app-1 && docker rm docker_app-1 && \
+	docker compose -f docker/docker-compose.yaml up app --build -d
+
+.PHONY: server-sync
+server-sync:
+	 rsync -avz --exclude .venv --exclude .idea --exclude research --exclude frontend/node_modules /Users/egortarasov/uni/Хакатоны/true-tech etarasov@192.168.1.70:/home/etarasov/

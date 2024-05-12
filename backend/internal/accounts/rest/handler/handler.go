@@ -16,6 +16,9 @@ type accountService interface {
 	TopUpMobilePhone(ctx context.Context, request models.PhoneRefillDataWithAccountId) (int64, error)
 	HPUPaymentUnauthorized(ctx context.Context, request models.HPUWithCardData) (int64, error)
 	HPUPayment(ctx context.Context, request models.HPUWithAccountId) (int64, error)
+	CreateCustomPayment(ctx context.Context, name string, fields []int64) (int64, error)
+	ListCustomPayments(ctx context.Context) ([]models.FormDto, error)
+	ListAvailableFields(ctx context.Context) ([]models.InputFieldDto, error)
 }
 
 type handler struct {

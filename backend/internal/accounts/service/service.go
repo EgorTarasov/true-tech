@@ -23,12 +23,14 @@ type service struct {
 	tracer trace.Tracer
 	cfg    *config.Config
 	pa     PaymentAccountRepo
+	fr     FormRepo
 }
 
-func New(cfg *config.Config, repo PaymentAccountRepo, tracer trace.Tracer) *service {
+func New(cfg *config.Config, paymentRepo PaymentAccountRepo, formRepo FormRepo, tracer trace.Tracer) *service {
 	return &service{
 		tracer: tracer,
 		cfg:    cfg,
-		pa:     repo,
+		pa:     paymentRepo,
+		fr:     formRepo,
 	}
 }

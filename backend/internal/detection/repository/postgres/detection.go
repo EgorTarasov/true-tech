@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log/slog"
 
 	"github.com/EgorTarasov/true-tech/backend/internal/detection/models"
@@ -40,7 +39,7 @@ func (dr *detectionRepo) CreateSession(ctx context.Context, sessionId uuid.UUID,
 			pgErr *pgconn.PgError
 		)
 		if errors.As(err, &pgErr) {
-			fmt.Println(pgErr.Code, pgErr.Error())
+			slog.Debug(pgErr.Code, pgErr.Error())
 			switch pgErr.Code {
 			case "23505":
 				return 0, repository.ErrSessionAlreadyExists

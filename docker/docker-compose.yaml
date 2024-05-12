@@ -36,18 +36,18 @@ services:
       - infra-vlan
       - default
 
-  speech-to-text:
-    build:
-      context: "../speech-to-text/"
-      dockerfile: "Dockerfile"
-    command: python3 main.py
-    ports:
-      - "10000:10000"
-    volumes:
-      -  whisper-models:/root/.cache/whisper/
-    networks:
-      - default
-      - infra-vlan
+#  speech-to-text:
+#    build:
+#      context: "../speech-to-text/"
+#      dockerfile: "Dockerfile"
+#    command: python3 main.py
+#    ports:
+#      - "10000:10000"
+#    volumes:
+#      -  whisper-models:/root/.cache/whisper/
+#    networks:
+#      - default
+#      - infra-vlan
 
   domain-detection1:
     build:
@@ -57,21 +57,28 @@ services:
     container_name: domain-1
     ports:
       - "10002:10002"
+      - "9992:9991"
     networks:
       - default
       - infra-vlan
-  domain-detection2:
-      build:
-        context: "../domain-detection"
-        dockerfile: "Dockerfile"
-      command: python3 main.py
-      container_name: domain-2
-      ports:
-        - "10003:10002"
-      networks:
-        - default
-        - infra-vlan
-
+  # domain-detection2:
+  #     build:
+  #       context: "../domain-detection"
+  #       dockerfile: "Dockerfile"
+  #     command: python3 main.py
+  #     container_name: domain-2
+  #     ports:
+  #       - "10003:10002"
+  #       - "9993:9991"
+  #     networks:
+  #       - default
+  #       - infra-vlan
+  selenium:
+    image: selenium/standalone-chrome
+    container_name: selenium
+    ports:
+      - "4444:4444"
+  # docker run -d -p 4444:4444 selenium/standalone-chrome
 #   text-processor:
 #    build:
 #      context: "../text-processor/"

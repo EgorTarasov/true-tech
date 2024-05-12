@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/EgorTarasov/true-tech/backend/internal/detection/service/domain_client"
@@ -37,10 +38,22 @@ type Config struct {
 }
 
 // MustNew создает новый конфиг из файла и завершает программу в случае ошибки
-func MustNew(path string) *Config {
+func MustNew(path string, dockerMode bool) *Config {
 	cfg := &Config{}
 	if err := cleanenv.ReadConfig(path, cfg); err != nil {
 		log.Fatal(err)
 	}
+
+	if dockerMode {
+		cfg.Telemetry.OTLPEndpoint = "jaeger:4318"
+		cfg.Redis.Host = "redis"
+		cfg.Database.Host = "database"
+
+		for i, _ := range cfg.DomainService.Servers {
+			cfg.DomainService.Servers[i].Host = fmt.Sprintf("domain-%d", i+1)
+			cfg.DomainService.Servers[i].Port = 10002
+		}
+	}
+
 	return cfg
 }

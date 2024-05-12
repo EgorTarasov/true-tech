@@ -12,6 +12,7 @@ import (
 
 type service interface {
 	DomainDetection(ctx context.Context, userId int64, request models.DetectionData) (models.DetectionResult, error)
+	CreateNewPage(ctx context.Context, page models.PageCreate) (int64, error)
 }
 
 type detectHandler struct {
@@ -29,7 +30,7 @@ func NewDetectHandler(_ context.Context, s service, tracer trace.Tracer) *detect
 type mlDetectionResponse struct {
 	SessionId string                 `json:"sessionId"`
 	QueryId   int64                  `json:"queryId"`
-	Content   string                 `json:"content"`
+	Content   map[string]any         `json:"content"`
 	Status    models.DetectionStatus `json:"detectionStatus"`
 	Error     string                 `json:"err"` // ошибка, которую можно отобразить пользователю
 }
@@ -84,4 +85,35 @@ func (dc *detectHandler) ExecuteCommand(c *fiber.Ctx) error {
 		Status:    resp.Status,
 		Error:     resp.Response,
 	})
+}
+
+// ParsePage godoc
+//
+//	получение полей из формы
+//
+// @Summary Получение полей и типов из html страницы
+// @Description получение полей и их типов из html страницы
+// @Tags ml
+// @Accept  json
+// @Produce  json
+// @Accept  json
+// @Param html body models.PageCreate true "html страница"
+// @Success 200 {object} mlDetectionResponse
+// @Failure 400 {object} mlDetectionResponse
+// @Failure 422
+// @Router /detection/html [post]
+func (dc *detectHandler) ParsePage(c *fiber.Ctx) error {
+	ctx, span := dc.tracer.Start(c.Context(), "detection.ParsePage")
+	defer span.End()
+
+	var request models.PageCreate
+	err := c.BodyParser(&request)
+	if err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"err": err.Error()})
+	}
+	newId, err := dc.s.CreateNewPage(ctx, request)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"err": err.Error()})
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"id": newId})
 }

@@ -18,6 +18,9 @@ type handler interface {
 	TopUpMobilePhoneWithCardInfo(c *fiber.Ctx) error
 	HPUPayment(c *fiber.Ctx) error
 	HPUPaymentWithCardInfo(c *fiber.Ctx) error
+	CreateCustomForm(c *fiber.Ctx) error
+	ListForms(c *fiber.Ctx) error
+	ListFields(c *fiber.Ctx) error
 }
 
 func InitAccountsRouter(_ context.Context, app *fiber.App, accountsHandler handler) error {
@@ -40,5 +43,10 @@ func InitAccountsRouter(_ context.Context, app *fiber.App, accountsHandler handl
 	kvartplata.Post("/id", middleware.UserClaimsMiddleware, accountsHandler.HPUPayment)
 	kvartplata.Post("/card", accountsHandler.HPUPaymentWithCardInfo)
 
+	forms := app.Group("/form")
+
+	forms.Post("/create", middleware.UserClaimsMiddleware, accountsHandler.CreateCustomForm)
+	forms.Get("/list", accountsHandler.ListForms)
+	forms.Get("/fields", accountsHandler.ListFields)
 	return nil
 }

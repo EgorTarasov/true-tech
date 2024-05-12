@@ -15,6 +15,8 @@ type grpcServer struct {
 	client pb.DomainDetectionServiceClient
 }
 
+// domainClient реализует подключение к нескольким сервисам grpc
+// позволяет распределять нагрузку между несколькими instance domain-service
 type domainClient struct {
 	cfg           *Config
 	servers       []grpcServer
@@ -51,4 +53,22 @@ func (dc *domainClient) DetectDomain(ctx context.Context, in *pb.DomainDetection
 	slog.Debug("current grpc server: ", "serverId", dc.currentServer)
 	dc.mu.Unlock()
 	return server.client.DetectDomain(ctx, in, opts...)
+}
+
+func (dc *domainClient) ExtractLabels(ctx context.Context, in *pb.LabelDetectionRequest, opts ...grpc.CallOption) (*pb.LabelDetectionResponse, error) {
+	dc.mu.Lock()
+	server := dc.servers[dc.currentServer]
+	dc.currentServer = (dc.currentServer + 1) % len(dc.servers)
+	slog.Debug("current grpc server: ", "serverId", dc.currentServer)
+	dc.mu.Unlock()
+	return server.client.ExtractLabels(ctx, in, opts...)
+}
+
+func (dc *domainClient) ExtractFormData(ctx context.Context, in *pb.ExtractFormDataRequest, opts ...grpc.CallOption) (*pb.ExtractFormDataResponse, error) {
+	dc.mu.Lock()
+	server := dc.servers[dc.currentServer]
+	dc.currentServer = (dc.currentServer + 1) % len(dc.servers)
+	slog.Debug("current grpc server: ", "serverId", dc.currentServer)
+	dc.mu.Unlock()
+	return server.client.ExtractFormData(ctx, in, opts...)
 }
