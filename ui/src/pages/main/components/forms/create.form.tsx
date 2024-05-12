@@ -23,7 +23,13 @@ export const CreateForm: FCVM<MainPageViewModel> = observer(({ vm }) => {
       ) : (
         <DropdownMultiple
           value={formVm.selectedFields}
-          render={(v) => v.label}
+          compare={(v) => v.label}
+          render={(v) => (
+            <div className="flex flex-col">
+              <span>{v.label}</span>
+              <span className="text-xs text-grey23">{v.name}</span>
+            </div>
+          )}
           onChange={(v) => (formVm.selectedFields = v)}
           options={formVm.fields}
           label="Выберите поля"

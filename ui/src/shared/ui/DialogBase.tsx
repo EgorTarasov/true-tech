@@ -1,7 +1,7 @@
-import { Button } from "@/ui/Button";
 import { Dialog, Transition } from "@headlessui/react";
 import { FC, Fragment, ReactNode } from "react";
 import CrossIcon from "@/assets/icons/cross.svg";
+import { SmallSpeechWidget } from "@/components/speech/speech.widget";
 
 interface DialogBaseProps {
   isOpen: boolean;
@@ -13,6 +13,7 @@ interface DialogBaseProps {
   width?: string | number;
   bottom?: JSX.Element;
   confirmDisabled?: boolean;
+  ariaLabel?: string;
 }
 
 export const DialogBase: FC<DialogBaseProps> = ({
@@ -24,7 +25,8 @@ export const DialogBase: FC<DialogBaseProps> = ({
   confirmText,
   width,
   bottom,
-  confirmDisabled
+  confirmDisabled,
+  ariaLabel
 }) => {
   function closeModal() {
     onCancel?.();
@@ -32,7 +34,11 @@ export const DialogBase: FC<DialogBaseProps> = ({
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog className="relative z-100" onClose={closeModal} onSubmit={(e) => e.preventDefault()}>
+      <Dialog
+        className="relative z-100"
+        onClose={closeModal}
+        onSubmit={(e) => e.preventDefault()}
+        aria-label={ariaLabel}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -58,10 +64,12 @@ export const DialogBase: FC<DialogBaseProps> = ({
                 onSubmit={(e) => e.preventDefault()}
                 className="w-fit transform text-text-primary bg-white border-border-primary border text-left align-middle transition-all rounded-2xl p-5"
                 style={{ width }}>
-                <Dialog.Title className="text-xl font-medium flex justify-between gap-1 mb-5">
+                <Dialog.Title className="text-xl font-medium flex gap-1 mb-5 items-center">
                   <span>{title}</span>
+                  <div className="flex-1"></div>
+                  <SmallSpeechWidget />
                   {onCancel && (
-                    <button aria-label="Закрыть" type="button">
+                    <button aria-label="Закрыть" type="button" className="ml-1">
                       <CrossIcon className="cursor-pointer" onClick={onCancel} width={24} />
                     </button>
                   )}

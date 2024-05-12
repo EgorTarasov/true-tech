@@ -9,7 +9,8 @@ interface ComboboxMultipleProps<T> {
   value: T[];
   onChange: (value: T[]) => void;
   options: readonly T[];
-  render: (value: T) => string;
+  compare: (value: T) => string;
+  render: (value: T) => React.ReactNode;
   label?: string;
   placeholder?: string;
 }
@@ -23,12 +24,12 @@ const DropdownMultiple = observer(<T,>(p: ComboboxMultipleProps<T>) => {
       ? p.options
       : p.options.filter((option) =>
           p
-            .render(option)
+            .compare(option)
             .toLowerCase()
             .replace(/\s+/g, "")
             .includes(query.toLowerCase().replace(/\s+/g, ""))
         );
-  const placeholder = p.value.map((v) => p.render(v)).join(", ");
+  const placeholder = p.value.map((v) => p.compare(v)).join(", ");
 
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -95,7 +96,7 @@ const DropdownMultiple = observer(<T,>(p: ComboboxMultipleProps<T>) => {
                   value={option}
                   className={({ active }) =>
                     twMerge(
-                      "p-2 cursor-pointer flex justify-between hover:bg-text-primary/5",
+                      "p-2 cursor-pointer flex justify-between hover:bg-text-primary/5 items-center",
                       active && "bg-primary/5"
                     )
                   }>

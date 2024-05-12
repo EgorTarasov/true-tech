@@ -60,8 +60,8 @@ export const DesktopNavigation = observer(() => {
           </li>
           <li className="h-6 w-px bg-grey" />
           <li>
-            <Link to={"/map"} className="pr-2">
-              Все сайты <ExpandIcon />
+            <Link to={"/assistant"} className="pr-2">
+              Ассистент
             </Link>
           </li>
         </ul>

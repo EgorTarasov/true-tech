@@ -1,6 +1,12 @@
 import { makeAutoObservable } from "mobx";
 import { QueryViewModel } from "./query.vm";
 
+const sanitizeVoiceInput = (text: string) => {
+  const str = text.replace(/(?<=\d)[ -](?=\d)/g, ""); // "12-34 56" -> "123456"
+
+  return str;
+};
+
 class speechViewModel {
   constructor() {
     makeAutoObservable(this);
@@ -17,11 +23,10 @@ class speechViewModel {
       this.search = search;
     }
 
-    this.activeQuery = new QueryViewModel(
-      this.search,
-      this.sessionId,
-      () => (this.sessionId = crypto.randomUUID())
-    );
+    this.activeQuery = new QueryViewModel(sanitizeVoiceInput(this.search), this.sessionId, () => {
+      this.sessionId = crypto.randomUUID();
+      this.search = "";
+    });
   }
 }
 

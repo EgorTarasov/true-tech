@@ -5,6 +5,8 @@ import EyeOpenIcon from "@/assets/icons/eye-open.svg";
 import EyeCloseIcon from "@/assets/icons/eye-close.svg";
 import headerImage from "@/assets/images/header.png";
 
+// переведи 200 рублей на номер +79852309245, срок действия 21 дробь 2023. мой секретный код 123
+
 export const BankCardForm: FC<{
   onSubmit: (form: FormDto.MobileTopUpTemplate | null) => Promise<void>;
 }> = (x) => {
@@ -17,11 +19,11 @@ export const BankCardForm: FC<{
 
     const form = new FormData(e.currentTarget);
     const values = {
-      phoneNumber: form.get("phoneNumber") as string,
+      phoneNumber: form.get("mobilianyi_telefon") as string,
       amount: form.get("amount") as string,
       cardNumber: form.get("cardNumber") as string,
-      cardDate: form.get("cardDate") as string,
-      cardCvv: form.get("cardCvv") as string
+      cardDate: form.get("validityPeriod") as string,
+      cardCvv: form.get("CVC") as string
     };
 
     try {
@@ -52,8 +54,22 @@ export const BankCardForm: FC<{
         <h1 className="text-2xl font-bold">Оплата мобильных операторов РФ</h1>
       </div>
       <form onSubmit={onSubmit} className="w-full flex flex-col gap-2">
-        <Input disabled={loading} required label="Номер телефона" name="phoneNumber" type="tel" />
-        <Input disabled={loading} required label="Сумма платежа" name="amount" type="text" />
+        <Input
+          disabled={loading}
+          required
+          label="Номер телефона"
+          placeholder="+79XXXXXXXXX"
+          name="mobilianyi_telefon"
+          type="tel"
+        />
+        <Input
+          disabled={loading}
+          required
+          label="Сумма платежа"
+          name="amount"
+          type="text"
+          placeholder="0 руб."
+        />
         <fieldset
           aria-labelledby="bank-card"
           className="flex flex-col gap-4 p-8 rounded-3xl border mt-4">
@@ -75,7 +91,7 @@ export const BankCardForm: FC<{
               disabled={loading}
               required
               label="Срок действия"
-              name="cardDate"
+              name="validityPeriod"
               type="text"
               placeholder="ММ/ГГ"
             />
@@ -83,8 +99,8 @@ export const BankCardForm: FC<{
               disabled={loading}
               required
               label="CVC"
-              name="cardCvv"
-              type="password"
+              name="CVC"
+              type={showCvv ? "text" : "password"}
               rightIconIsButton
               onIconClick={() => setShowCvv(!showCvv)}
               rightIcon={showCvv ? <EyeOpenIcon /> : <EyeCloseIcon />}

@@ -3,6 +3,7 @@ import { makeAutoObservable } from "mobx";
 import { MainPage } from "../pages/main/main.page";
 import { AuthService } from "../stores/auth.store";
 import LoginPage from "../pages/login/login.page";
+import { AssistantPage } from "../pages/assistant/assistant.page";
 
 export interface RouteType {
   path: string;
@@ -27,6 +28,11 @@ export const privateRoutes: RouteType[] = [
     path: "/",
     component: () => <MainPage />,
     title: "Главная"
+  },
+  {
+    path: "/assistant",
+    component: () => <AssistantPage />,
+    title: "Ассистент"
   }
 ];
 

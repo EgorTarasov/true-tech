@@ -11,6 +11,18 @@ export namespace FormDto {
     type: string;
     label: string;
     placeholder?: string;
+    name: string;
+    inputmode:
+      | "search"
+      | "text"
+      | "none"
+      | "tel"
+      | "url"
+      | "email"
+      | "numeric"
+      | "decimal"
+      | undefined;
+    spellcheck: boolean;
   }
 
   export interface Template {

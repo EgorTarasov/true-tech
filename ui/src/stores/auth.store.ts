@@ -45,6 +45,17 @@ class authService {
     }
   }
 
+  public async loginVk(code: string): Promise<boolean> {
+    try {
+      const res = await AuthEndpoint.loginVk(code);
+      setStoredAuthToken(res.accessToken);
+      await this.init();
+    } catch {
+      this.item = { state: "anonymous", data: null };
+    }
+    return false;
+  }
+
   async login(email: string, password: string) {
     const res = await AuthEndpoint.login(email, password);
     setStoredAuthToken(res.accessToken);

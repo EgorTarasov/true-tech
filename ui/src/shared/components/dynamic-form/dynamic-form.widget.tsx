@@ -35,7 +35,10 @@ export const DynamicForm = observer((x: { vm: DynamicFormViewModel }) => {
             disabled={loading}
             className="w-full max-w-none"
             label={field.label}
-            name={field.id.toString()}
+            id={field.id.toString()}
+            name={field.name.toString()}
+            spellCheck={field.spellcheck}
+            inputMode={field.inputmode || undefined}
             placeholder={field.placeholder}
             onChange={(v) => x.vm.setField(field.id, v)}
             value={x.vm.getFieldValue(field.id)}

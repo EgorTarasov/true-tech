@@ -6,9 +6,11 @@ import { debounce } from "@/utils/debounce";
 import { cn } from "@/utils/cn";
 import { SpeechService } from "./speech.vm";
 import { toast } from "sonner";
+import { useLocation } from "react-router-dom";
 
 export const SpeechWidget = observer(() => {
   const vm = SpeechService;
+  const location = useLocation();
 
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } =
     useSpeechRecognition();
@@ -24,12 +26,13 @@ export const SpeechWidget = observer(() => {
   );
 
   useEffect(() => {
+    if (location.pathname === "/assistant") return;
     appendText(transcript);
     if (transcript.length === 0) return;
     toast.loading(`Новый запрос: ${transcript}`, {
       id: vm.sessionId
     });
-  }, [transcript, appendText, vm.sessionId]);
+  }, [transcript, appendText, vm.sessionId, location.pathname]);
 
   if (!browserSupportsSpeechRecognition) return null;
 
@@ -40,6 +43,8 @@ export const SpeechWidget = observer(() => {
       <button
         className="h-fit"
         type="button"
+        role="checkbox"
+        aria-checked={listening}
         onClick={() => {
           if (listening) {
             SpeechRecognition.stopListening();
@@ -48,8 +53,33 @@ export const SpeechWidget = observer(() => {
           SpeechRecognition.startListening({ language: "ru-RU", continuous: true });
         }}>
         <MicrophoneIcon className={cn("size-6", listening ? "text-red" : "text-grey")} />
-        <span className="sr-only">включить голосовое управление</span>
+        <span className="sr-only">голосовое управление</span>
       </button>
     </section>
+  );
+});
+
+export const SmallSpeechWidget = observer(() => {
+  const { listening } = useSpeechRecognition();
+
+  return (
+    <button
+      className="h-fit"
+      type="button"
+      role="checkbox"
+      aria-checked={listening}
+      onClick={() => {
+        if (listening) {
+          SpeechRecognition.stopListening();
+          return;
+        }
+        SpeechRecognition.startListening({ language: "ru-RU", continuous: true });
+      }}>
+      <MicrophoneIcon
+        stroke-width="1"
+        className={cn("size-5", listening ? "text-red" : "text-grey")}
+      />
+      <span className="sr-only">голосовое управление</span>
+    </button>
   );
 });

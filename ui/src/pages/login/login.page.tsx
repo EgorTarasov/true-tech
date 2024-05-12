@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { AuthService } from "../../stores/auth.store";
 import { Button, Input } from "@/ui";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { VKButton } from "@/components/buttons/VkLoginButton";
 
 const mockEmail = "tarasov.egor@mail.com";
 const mockPass = "Test123456";
@@ -41,6 +42,21 @@ export const LoginPage = observer(() => {
       }
     }
   };
+
+  useEffect(() => {
+    const vkLoginCode = new URLSearchParams(window.location.search).get("code");
+    if (vkLoginCode) {
+      setLoading(true);
+      AuthService.loginVk(vkLoginCode).then((isSuccess) => {
+        if (isSuccess) {
+          setTimeout(() => {
+            navigate("/");
+          }, 300);
+        }
+        setLoading(false);
+      });
+    }
+  }, [navigate]);
 
   return (
     <div className="size-full overflow-auto pb-10 flex flex-col items-center bg-white pt-20">
@@ -81,6 +97,7 @@ export const LoginPage = observer(() => {
         <Button type="submit" className="w-full" disabled={loading}>
           {loginView ? "Войти" : "Зарегистрироваться"}
         </Button>
+        <VKButton />
       </form>
     </div>
   );
