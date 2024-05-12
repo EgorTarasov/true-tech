@@ -11,6 +11,15 @@
 
 документация для сервиса доступна по ссылке: https://api.larek.tech/swagger/index.html
 
+### Скриншоты приложения 
+Главная страница
+![main-page](main-page.png)
+
+страница с ассистентом
+![chat](chat.png)
+
+заполнения формы
+![process](process.png)
 
 демо версия доступна по ссылке: https://mts.larek.tech
 ## Модель классификации навыков (Skill Classifier)
