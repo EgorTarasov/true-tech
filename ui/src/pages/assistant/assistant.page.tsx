@@ -40,7 +40,9 @@ export const AssistantPage = observer(() => {
       resetTranscript();
     }
     appendText(transcript);
-    onSpeech();
+    if (transcript.length > 0) {
+      onSpeech();
+    }
   }, [transcript, appendText, vm.loading, onSpeech]);
   console.log(transcript);
 
