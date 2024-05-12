@@ -11,3 +11,8 @@ type MlResponse struct {
 	Last     bool   `json:"last"`
 	Sender   string `json:"sender"`
 }
+
+type QueryCreate struct {
+	Text     string `json:"text"`
+	Response string `json:"response"`
+}
