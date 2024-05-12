@@ -1,0 +1,834 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample swagger for Fiber",
+        "title": "True tech api",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "email": "fiber@swagger.io"
+        },
+        "license": {
+            "name": "BSD 3-Clause License",
+            "url": "https://raw.githubusercontent.com/EgorTarasov/true-tech/main/LICENSE"
+        },
+        "version": "1.0"
+    },
+    "host": "api.larek.tech",
+    "basePath": "/",
+    "paths": {
+        "/accounts/create": {
+            "post": {
+                "description": "создание тестового счета для проведения операций",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "summary": "создание платежного аккаунта с использованием банковских карт",
+                "parameters": [
+                    {
+                        "description": "Create account",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.createAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/my": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "parameters": [
+                    {
+                        "description": "Create account",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.createAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.getAccountsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "description": "Login with email",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "User login",
+                "parameters": [
+                    {
+                        "description": "User Email",
+                        "name": "email",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "User Password",
+                        "name": "password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.accessTokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/detection/execute": {
+            "post": {
+                "description": "обработка запроса пользователя с разбиением на доступное действие и параметры для его запуска",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ml"
+                ],
+                "summary": "Запуск сценария из обработанного текста",
+                "parameters": [
+                    {
+                        "description": "данные для запроса",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.MlDetectionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.mlDetectionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.mlDetectionResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    }
+                }
+            }
+        },
+        "/detection/html": {
+            "post": {
+                "description": "получение полей и их типов из html страницы",
+                "consumes": [
+                    "application/json",
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ml"
+                ],
+                "summary": "Получение полей и типов из html страницы",
+                "parameters": [
+                    {
+                        "description": "html страница",
+                        "name": "html",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.PageCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.mlDetectionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.mlDetectionResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    }
+                }
+            }
+        },
+        "/form/create": {
+            "post": {
+                "description": "создание формы для оплаты услуги",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payments"
+                ],
+                "summary": "создание формы для оплаты услуги",
+                "parameters": [
+                    {
+                        "description": "Create payment form",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.createFormRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/form/fields": {
+            "get": {
+                "description": "получение списка доступных полей для формы",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payments"
+                ],
+                "summary": "получение списка доступных полей для формы",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.getFieldsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/form/list": {
+            "get": {
+                "description": "получение списка форм для оплаты услуг",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payments"
+                ],
+                "summary": "получение списка форм для оплаты услуг",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.getFormsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/payments/kvartplata/card": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "kvartplata"
+                ],
+                "summary": "Оплата услуг ЖКХ с использованием данных банковской карты",
+                "parameters": [
+                    {
+                        "description": "HPUWithCardData",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.HPUWithCardData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.TopUpMobilePhoneResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/payments/kvartplata/id": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "kvartplata"
+                ],
+                "summary": "Оплата услуг жкх",
+                "parameters": [
+                    {
+                        "description": "HPUPayment",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.HPUWithAccountId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.HPUPaymentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/payments/mobile/card": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "mobile"
+                ],
+                "summary": "Оплата телефона с использованием данных банковской карты",
+                "parameters": [
+                    {
+                        "description": "mobileTopUpRequest",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.PhoneRefillDataWithCardData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.TopUpMobilePhoneResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/payments/mobile/id": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "mobile"
+                ],
+                "summary": "пополнение телефона с помощью платежного аккаунта",
+                "parameters": [
+                    {
+                        "description": "mobileTopUpRequest",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.PhoneRefillDataWithAccountId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.TopUpMobilePhoneResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "handler.HPUPaymentResponse": {
+            "type": "object",
+            "properties": {
+                "transactionId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handler.MlDetectionRequest": {
+            "type": "object",
+            "properties": {
+                "names": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "query": {
+                    "type": "string"
+                },
+                "sessionId": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.TopUpMobilePhoneResponse": {
+            "type": "object",
+            "properties": {
+                "transactionId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handler.accessTokenResponse": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.createAccountRequest": {
+            "type": "object",
+            "properties": {
+                "cardInfo": {
+                    "$ref": "#/definitions/models.CardInfo"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.createFormRequest": {
+            "type": "object",
+            "properties": {
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.errResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.getAccountsResponse": {
+            "type": "object",
+            "properties": {
+                "accounts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.PaymentAccountDto"
+                    }
+                }
+            }
+        },
+        "handler.getFieldsResponse": {
+            "type": "object",
+            "properties": {
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.InputFieldDto"
+                    }
+                }
+            }
+        },
+        "handler.getFormsResponse": {
+            "type": "object",
+            "properties": {
+                "forms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FormDto"
+                    }
+                }
+            }
+        },
+        "handler.mlDetectionResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "detectionStatus": {
+                    "$ref": "#/definitions/models.DetectionStatus"
+                },
+                "err": {
+                    "description": "ошибка, которую можно отобразить пользователю",
+                    "type": "string"
+                },
+                "queryId": {
+                    "type": "integer"
+                },
+                "sessionId": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CardInfo": {
+            "type": "object",
+            "required": [
+                "expirationDate"
+            ],
+            "properties": {
+                "cardNumber": {
+                    "type": "integer"
+                },
+                "cvc": {
+                    "type": "integer"
+                },
+                "expirationDate": {
+                    "type": "string",
+                    "maxLength": 7,
+                    "minLength": 7
+                }
+            }
+        },
+        "models.DetectionStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-varnames": [
+                "InternalErr",
+                "NotEnoughParams",
+                "Success"
+            ]
+        },
+        "models.FormDto": {
+            "type": "object",
+            "properties": {
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.InputFieldDto"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.HPU": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "payerCode": {
+                    "type": "integer"
+                },
+                "year": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.HPUWithAccountId": {
+            "type": "object",
+            "properties": {
+                "accountId": {
+                    "type": "integer"
+                },
+                "hpu": {
+                    "$ref": "#/definitions/models.HPU"
+                }
+            }
+        },
+        "models.HPUWithCardData": {
+            "type": "object",
+            "properties": {
+                "bankCardInfo": {
+                    "$ref": "#/definitions/models.CardInfo"
+                },
+                "hpu": {
+                    "$ref": "#/definitions/models.HPU"
+                }
+            }
+        },
+        "models.InputFieldDto": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "inputmode": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "placeholder": {
+                    "type": "string"
+                },
+                "spellcheck": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.PageCreate": {
+            "type": "object",
+            "properties": {
+                "html": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.PaymentAccountDto": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.PhoneReFillData": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "phoneNumber": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.PhoneRefillDataWithAccountId": {
+            "type": "object",
+            "properties": {
+                "accountId": {
+                    "type": "integer"
+                },
+                "phoneData": {
+                    "$ref": "#/definitions/models.PhoneReFillData"
+                }
+            }
+        },
+        "models.PhoneRefillDataWithCardData": {
+            "type": "object",
+            "properties": {
+                "bankCardInfo": {
+                    "$ref": "#/definitions/models.CardInfo"
+                },
+                "phoneData": {
+                    "$ref": "#/definitions/models.PhoneReFillData"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,235 @@
+version: "3"
+
+networks:
+  infra-vlan:
+
+
+volumes:
+  postgres-data:
+  redis-data:
+  whisper-models:
+  grafana-storage:
+  models-cache:
+
+
+services:
+  app:
+    build:
+      context: "../backend/"
+      dockerfile: "Dockerfile"
+    restart: "always"
+    command: "./main --docker=true"
+    volumes:
+      - ../config.yaml:/app/config.yaml
+    env_file:
+      - "../.env"
+    ports:
+      - "9999:9999"
+      - "9000:9000"
+      - "9991:9991"
+    environment:
+      - "POSTGRES_HOST=postgres"
+    depends_on:
+      - postgres
+      - redis
+
+    networks:
+      - infra-vlan
+      - default
+  frontend:
+    build:
+      context: "../ui"
+      dockerfile: Dockerfile
+    container_name: true-tech-front
+    restart: "always"
+    ports:
+      - "6500:3000"
+
+#  speech-to-text:
+#    build:
+#      context: "../speech-to-text/"
+#      dockerfile: "Dockerfile"
+#    command: python3 main.py
+#    ports:
+#      - "10000:10000"
+#    volumes:
+#      -  whisper-models:/root/.cache/whisper/
+#    networks:
+#      - default
+#      - infra-vlan
+
+  domain-detection1:
+    build:
+      context: "../domain-detection"
+      dockerfile: "Dockerfile"
+    command: python3 main.py
+    container_name: domain-1
+    ports:
+      - "10002:10002"
+      - "9992:9991"
+    networks:
+      - default
+      - infra-vlan
+  # domain-detection2:
+  #     build:
+  #       context: "../domain-detection"
+  #       dockerfile: "Dockerfile"
+  #     command: python3 main.py
+  #     container_name: domain-2
+  #     ports:
+  #       - "10003:10002"
+  #       - "9993:9991"
+  #     networks:
+  #       - default
+  #       - infra-vlan
+
+  faq:
+    build:
+      context: ./faq
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - 'models-cache:/root/.cache/huggingface/hub/'
+    ports:
+      - '10000:10000'
+    command:
+      - python3
+      - server.py
+
+# инфраструктура
+  selenium:
+    image: selenium/standalone-chrome
+    container_name: selenium
+    ports:
+      - "4444:4444"
+  # docker run -d -p 4444:4444 selenium/standalone-chrome
+#   text-processor:
+#    build:
+#      context: "../text-processor/"
+#      dockerfile: "Dockerfile"
+#    command: python3 main.py
+#    ports:
+#      - "10001:10001"
+#    networks:
+#      - default
+#      - infra-vlan
+
+  jaeger:
+    image: jaegertracing/all-in-one
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "5775:5775"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14268:14268"
+      - "14250:14250"
+      - "9411:9411"
+      - "4317:4317"
+      - "4318:4318"
+    networks:
+      - infra-vlan
+      - default
+
+  prometheus:
+    image: prom/prometheus:v2.28.0
+    volumes:
+      - ./prometheus:/etc/prometheus/
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+    ports:
+      - "9090:9090"
+    networks:
+      - infra-vlan
+
+
+  grafana:
+    image: grafana/grafana:latest
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    networks:
+      - infra-vlan
+      - default
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    env_file:
+      - ../.env # stores credentials
+    environment:
+      - GF_USERS_ALLOW_SIGN_UP=false
+
+  click:
+     image: clickhouse/clickhouse-server:23.3-alpine
+     volumes:
+     - "./users.xml:/etc/clickhouse-server/users.xml"
+     - ./db:/var/lib/clickhouse
+     ports:
+     - "8123:8123"
+     - "8888:9000"
+     - "9009:9009"
+     ulimits:
+      nproc: 65535
+      nofile:
+       soft: 262144
+       hard: 262144
+
+  ollama:
+    volumes:
+      - ./ollama/ollama:/root/.ollama
+    container_name: ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    image: ollama/ollama:latest
+    ports:
+      - 11434:11434
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    ports:
+      - "9100:9100"
+    restart: unless-stopped
+    networks:
+      - infra-vlan
+
+  postgres:
+    image: "postgres:16"
+    container_name: "database"
+    volumes:
+      - "postgres-data:/var/lib/postgresql/data"
+    env_file:
+      - "../.env"
+    ports:
+      - "5432:5432"
+    networks:
+      - infra-vlan
+      - default
+
+  redis:
+    image: 'redis:7.2.4'
+    container_name: 'cache'
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis-data:/root/redis'

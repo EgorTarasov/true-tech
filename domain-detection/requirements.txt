@@ -1,0 +1,8 @@
+grpcio
+grpcio-tools
+transformers
+torch
+prometheus-client
+bs4
+requests
+selenium

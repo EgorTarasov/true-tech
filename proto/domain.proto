@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+
+option go_package = "./;pb";
+
+
+service DomainDetectionService {
+  rpc DetectDomain(DomainDetectionRequest) returns (DomainDetectionResponse);
+  rpc ExtractLabels(LabelDetectionRequest) returns (LabelDetectionResponse);
+  rpc ExtractFormData(ExtractFormDataRequest) returns (ExtractFormDataResponse);
+}
+
+
+
+message DomainDetectionRequest {
+  string query  = 1;
+}
+
+message DomainDetectionResponse {
+  string label = 1;
+}
+
+message LabelDetectionRequest {
+  string html = 1;
+}
+
+message ActionLabel {
+  string name = 1;
+  string type = 2;
+  string label = 3;
+  string placeholder = 4;
+  bool splellcheck = 5;
+  string inputmode = 6;
+}
+
+message LabelDetectionResponse {
+  repeated ActionLabel labels = 1;
+}
+
+
+message ActionLabelData{
+  string name = 1;
+  string value =2;
+}
+
+
+message ExtractFormDataRequest{
+  repeated ActionLabel fields = 1;
+  string query = 2;
+}
+
+message ExtractFormDataResponse{
+  repeated ActionLabelData fields = 1;
+}

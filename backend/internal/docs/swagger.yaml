@@ -1,0 +1,544 @@
+basePath: /
+definitions:
+  handler.HPUPaymentResponse:
+    properties:
+      transactionId:
+        type: integer
+    type: object
+  handler.MlDetectionRequest:
+    properties:
+      names:
+        items:
+          type: string
+        type: array
+      query:
+        type: string
+      sessionId:
+        type: string
+    type: object
+  handler.TopUpMobilePhoneResponse:
+    properties:
+      transactionId:
+        type: integer
+    type: object
+  handler.accessTokenResponse:
+    properties:
+      accessToken:
+        type: string
+    type: object
+  handler.createAccountRequest:
+    properties:
+      cardInfo:
+        $ref: '#/definitions/models.CardInfo'
+      name:
+        type: string
+    type: object
+  handler.createFormRequest:
+    properties:
+      fields:
+        items:
+          type: integer
+        type: array
+      name:
+        type: string
+    type: object
+  handler.errResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  handler.getAccountsResponse:
+    properties:
+      accounts:
+        items:
+          $ref: '#/definitions/models.PaymentAccountDto'
+        type: array
+    type: object
+  handler.getFieldsResponse:
+    properties:
+      fields:
+        items:
+          $ref: '#/definitions/models.InputFieldDto'
+        type: array
+    type: object
+  handler.getFormsResponse:
+    properties:
+      forms:
+        items:
+          $ref: '#/definitions/models.FormDto'
+        type: array
+    type: object
+  handler.mlDetectionResponse:
+    properties:
+      content:
+        additionalProperties: {}
+        type: object
+      detectionStatus:
+        $ref: '#/definitions/models.DetectionStatus'
+      err:
+        description: ошибка, которую можно отобразить пользователю
+        type: string
+      queryId:
+        type: integer
+      sessionId:
+        type: string
+    type: object
+  models.CardInfo:
+    properties:
+      cardNumber:
+        type: integer
+      cvc:
+        type: integer
+      expirationDate:
+        maxLength: 7
+        minLength: 7
+        type: string
+    required:
+    - expirationDate
+    type: object
+  models.DetectionStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-varnames:
+    - InternalErr
+    - NotEnoughParams
+    - Success
+  models.FormDto:
+    properties:
+      fields:
+        items:
+          $ref: '#/definitions/models.InputFieldDto'
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.HPU:
+    properties:
+      amount:
+        type: integer
+      month:
+        type: string
+      payerCode:
+        type: integer
+      year:
+        type: integer
+    type: object
+  models.HPUWithAccountId:
+    properties:
+      accountId:
+        type: integer
+      hpu:
+        $ref: '#/definitions/models.HPU'
+    type: object
+  models.HPUWithCardData:
+    properties:
+      bankCardInfo:
+        $ref: '#/definitions/models.CardInfo'
+      hpu:
+        $ref: '#/definitions/models.HPU'
+    type: object
+  models.InputFieldDto:
+    properties:
+      id:
+        type: integer
+      inputmode:
+        type: string
+      label:
+        type: string
+      name:
+        type: string
+      placeholder:
+        type: string
+      spellcheck:
+        type: boolean
+      type:
+        type: string
+    type: object
+  models.PageCreate:
+    properties:
+      html:
+        type: string
+      url:
+        type: string
+    type: object
+  models.PaymentAccountDto:
+    properties:
+      balance:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.PhoneReFillData:
+    properties:
+      amount:
+        type: integer
+      phoneNumber:
+        type: string
+    type: object
+  models.PhoneRefillDataWithAccountId:
+    properties:
+      accountId:
+        type: integer
+      phoneData:
+        $ref: '#/definitions/models.PhoneReFillData'
+    type: object
+  models.PhoneRefillDataWithCardData:
+    properties:
+      bankCardInfo:
+        $ref: '#/definitions/models.CardInfo'
+      phoneData:
+        $ref: '#/definitions/models.PhoneReFillData'
+    type: object
+host: api.larek.tech
+info:
+  contact:
+    email: fiber@swagger.io
+    name: API Support
+  description: This is a sample swagger for Fiber
+  license:
+    name: BSD 3-Clause License
+    url: https://raw.githubusercontent.com/EgorTarasov/true-tech/main/LICENSE
+  termsOfService: http://swagger.io/terms/
+  title: True tech api
+  version: "1.0"
+paths:
+  /accounts/create:
+    post:
+      consumes:
+      - application/json
+      description: создание тестового счета для проведения операций
+      parameters:
+      - description: Create account
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/handler.createAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+      summary: создание платежного аккаунта с использованием банковских карт
+      tags:
+      - account
+  /accounts/my:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create account
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/handler.createAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getAccountsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+      tags:
+      - account
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login with email
+      parameters:
+      - description: User Email
+        in: body
+        name: email
+        required: true
+        schema:
+          type: string
+      - description: User Password
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.accessTokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+      summary: User login
+      tags:
+      - auth
+  /detection/execute:
+    post:
+      consumes:
+      - application/json
+      description: обработка запроса пользователя с разбиением на доступное действие
+        и параметры для его запуска
+      parameters:
+      - description: данные для запроса
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/handler.MlDetectionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.mlDetectionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.mlDetectionResponse'
+        "422":
+          description: Unprocessable Entity
+      summary: Запуск сценария из обработанного текста
+      tags:
+      - ml
+  /detection/html:
+    post:
+      consumes:
+      - application/json
+      - application/json
+      description: получение полей и их типов из html страницы
+      parameters:
+      - description: html страница
+        in: body
+        name: html
+        required: true
+        schema:
+          $ref: '#/definitions/models.PageCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.mlDetectionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.mlDetectionResponse'
+        "422":
+          description: Unprocessable Entity
+      summary: Получение полей и типов из html страницы
+      tags:
+      - ml
+  /form/create:
+    post:
+      consumes:
+      - application/json
+      description: создание формы для оплаты услуги
+      parameters:
+      - description: Create payment form
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/handler.createFormRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+      summary: создание формы для оплаты услуги
+      tags:
+      - payments
+  /form/fields:
+    get:
+      description: получение списка доступных полей для формы
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getFieldsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+      summary: получение списка доступных полей для формы
+      tags:
+      - payments
+  /form/list:
+    get:
+      description: получение списка форм для оплаты услуг
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getFormsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+      summary: получение списка форм для оплаты услуг
+      tags:
+      - payments
+  /payments/kvartplata/card:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: HPUWithCardData
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/models.HPUWithCardData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.TopUpMobilePhoneResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+      summary: Оплата услуг ЖКХ с использованием данных банковской карты
+      tags:
+      - kvartplata
+  /payments/kvartplata/id:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: HPUPayment
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/models.HPUWithAccountId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.HPUPaymentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+      summary: Оплата услуг жкх
+      tags:
+      - kvartplata
+  /payments/mobile/card:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: mobileTopUpRequest
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/models.PhoneRefillDataWithCardData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.TopUpMobilePhoneResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+      summary: Оплата телефона с использованием данных банковской карты
+      tags:
+      - mobile
+  /payments/mobile/id:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: mobileTopUpRequest
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/models.PhoneRefillDataWithAccountId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.TopUpMobilePhoneResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errResponse'
+      summary: пополнение телефона с помощью платежного аккаунта
+      tags:
+      - mobile
+swagger: "2.0"

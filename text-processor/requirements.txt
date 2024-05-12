@@ -1,0 +1,5 @@
+torch
+transformers
+ollama
+grpcio
+grpcio-tools
