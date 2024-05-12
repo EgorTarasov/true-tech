@@ -1,10 +1,18 @@
 
-# Project Title
 
-A brief description of what this project does and who it's for
 
-# Документация проекта
+# Решение True Tech hack fintech команды Динозаврики МИСИС
+[![tech stack](https://skillicons.dev/icons?i=go,ts,react,python,pytorch,postgres,docker)](https://skillicons.dev)
+## Архитектура решения:
+![structure.png](structure.png)  
 
+
+основная логика содержится в Application которое собой представляет приложение на Go. Оно связано с сервисами на python с использованием кастомного load balancer который позволяет легко масштабировать решение путем развертывания дополнительных контейнеров. Сервисы на python не содержат в себе никакого состояния все содержится в application. Из особенностей можно отметить использование clickhouse как векторное хранилище для документов и информации из faq (https://support.mts.ru).
+
+документация для сервиса доступна по ссылке: https://api.larek.tech/swagger/index.html
+
+
+демо версия доступна по ссылке: https://mts.larek.tech
 ## Модель классификации навыков (Skill Classifier)
 
 ### Назначение
