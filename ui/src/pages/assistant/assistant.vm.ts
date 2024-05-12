@@ -30,9 +30,7 @@ export class AssistantViewModel {
     if (AuthService.item.state === "authenticated") {
       userId = AuthService.item.data.user.user_id.toString();
     }
-    this.ws = new WebSocket(
-      `${import.meta.env.VITE_SOCKET_URL}/${crypto.randomUUID()}?user_id=${userId}`
-    );
+    this.ws = new WebSocket(import.meta.env.VITE_SOCKET_URL);
 
     this.ws.addEventListener("open", () => {
       if (this.message) {

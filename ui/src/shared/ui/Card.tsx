@@ -52,7 +52,7 @@ const CardBase: FC<Props> = (x) => {
       )}>
       {x.title && (
         <button
-          aria-label={`Свернуть секцию: ${x.title}`}
+          aria-label={`${collapse ? "Развернуть" : "Свернуть"} секцию: ${x.title}`}
           aria-controls={id}
           aria-expanded={!collapse}
           className={twMerge(
