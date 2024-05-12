@@ -26,6 +26,7 @@ import (
 	detectionService "github.com/EgorTarasov/true-tech/backend/internal/detection/service"
 
 	_ "github.com/EgorTarasov/true-tech/backend/internal/docs"
+	faqRepository "github.com/EgorTarasov/true-tech/backend/internal/faq/repository/postgres"
 	faqHandler "github.com/EgorTarasov/true-tech/backend/internal/faq/rest/handler"
 	faqRouter "github.com/EgorTarasov/true-tech/backend/internal/faq/rest/router"
 	faqService "github.com/EgorTarasov/true-tech/backend/internal/faq/service"
@@ -138,7 +139,8 @@ func Run(ctx context.Context, _ *sync.WaitGroup) error {
 
 	// faq routes
 	faqGrpcClient := faqClient.New(cfg.FaqService)
-	faq := faqService.NewFaqService(faqGrpcClient)
+	repo := faqRepository.NewActionRepo(pg, tracer)
+	faq := faqService.NewFaqService(repo, faqGrpcClient)
 	faqController := faqHandler.NewFaqHandler(faq)
 	if err = faqRouter.InitFaqRouter(app, faqController); err != nil {
 		return fmt.Errorf("err during faq router init")

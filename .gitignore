@@ -24,4 +24,4 @@ go.work
 node-modules/
 .env
 research/
-domain-detection/
+llm/
