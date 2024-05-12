@@ -22,6 +22,17 @@
 ![process](process.png)
 
 демо версия доступна по ссылке: https://mts.larek.tech
+
+### Запуск приложения
+1. скачивание моделей и расположение в папке domain-detection
+
+2. установка параметров запуска в config.yaml и docker-compose.yaml
+
+3. запуск приложения через docker compose / docker swarm
+```bash
+docker compose -f docker/docker-compose.yaml up -d --build
+```
+
 ## Модель классификации навыков (Skill Classifier)
 
 ### Назначение
