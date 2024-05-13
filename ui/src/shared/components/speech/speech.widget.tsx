@@ -29,9 +29,18 @@ export const SpeechWidget = observer(() => {
     if (location.pathname === "/assistant") return;
     appendText(transcript);
     if (transcript.length === 0) return;
-    toast.loading(`Новый запрос: ${transcript}`, {
-      id: vm.sessionId
-    });
+
+    toast(
+      <div className="flex flex-col">
+        <h3>Слушаем...</h3>
+        <span aria-hidden="true" className="text-xs text-grey23">
+          {transcript} transcript
+        </span>
+      </div>,
+      {
+        id: vm.sessionId
+      }
+    );
   }, [transcript, appendText, vm.sessionId, location.pathname]);
 
   if (!browserSupportsSpeechRecognition) return null;
