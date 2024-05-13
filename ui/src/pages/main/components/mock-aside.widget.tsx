@@ -4,7 +4,7 @@ import PlusIcon from "@/assets/icons/plus.svg";
 import { Button, IconButton } from "@/ui";
 
 export const MockAside = () => (
-  <aside className="space-y-3 min-w-80 max-w-80">
+  <aside className="space-y-3 min-w-80 sm:max-w-80 w-full">
     <Card disablePadding title="Карты">
       <div className="px-6">
         <h4>Мой кошелек</h4>

@@ -37,7 +37,7 @@ export const MainPage = observer(() => {
   }, [vm.selectedForm, vm.selectedCustomForm]);
 
   return (
-    <div className="section pb-6 pt-20 min-h-full flex gap-16">
+    <div className="section pb-6 pt-6 sm:pt-20 min-h-full flex-col sm:flex-row flex gap-16">
       <DialogBase
         title={vm.selectedCustomForm === "create-form" ? "Создание формы" : undefined}
         width={550}
