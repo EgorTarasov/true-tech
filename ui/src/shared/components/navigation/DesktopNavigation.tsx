@@ -71,7 +71,7 @@ export const DesktopNavigation = observer(() => {
         </Button>
       </div>
       <div className="bg-white">
-        <div className="section flex py-6 gap-24">
+        <div className="section flex py-6 gap-6 sm:gap-24 flex-col sm:flex-row">
           <Logo />
           <ul className="flex items-center font-medium text-lg *:hidden">
             <li className="!flex">
