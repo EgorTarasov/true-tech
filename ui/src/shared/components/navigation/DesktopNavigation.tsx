@@ -1,5 +1,5 @@
-import { FC, ReactNode } from "react";
-import { NavLink } from "react-router-dom";
+import { FC, ReactNode, useEffect } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import ExpandIcon from "./assets/expand.svg";
 import { Button, Logo } from "@/ui";
@@ -38,6 +38,13 @@ const RibbonLink: FC<LinkProps> = (x) => {
 };
 
 export const DesktopNavigation = observer(() => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (AuthService.item.state === "authenticated") {
+      navigate("/");
+    }
+  }, [AuthService.item.state, navigate]);
+
   if (AuthService.item.state !== "authenticated") {
     return (
       <nav className="justify-between section flex items-center h-14">
