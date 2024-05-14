@@ -17,6 +17,7 @@ export class CreateFormViewModel {
     }
   }
 
+  formUrl = "";
   loading = true;
   name = "";
   fields: FormDto.Field[] = [];
@@ -28,12 +29,18 @@ export class CreateFormViewModel {
   async createForm() {
     this.loading = true;
     try {
+      if (this.formUrl.length > 0) {
+        const res = await FormEndpoint.createFormByUrl(this.formUrl);
+        this.parentVm.init();
+        this.parentVm.selectedCustomForm = null;
+        return;
+      }
       const res = await FormEndpoint.createForm({
         name: this.name,
         fields: this.selectedFields.map((v) => v.id)
       });
 
-      this.parentVm.forms.push(res);
+      this.parentVm.init();
       this.parentVm.selectedCustomForm = null;
     } finally {
       this.loading = false;

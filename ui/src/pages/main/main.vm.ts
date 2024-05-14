@@ -12,6 +12,7 @@ export class MainPageViewModel {
   }
 
   async init() {
+    this.isLoading = true;
     try {
       this.forms = (await FormEndpoint.getTemplates()).forms;
     } finally {

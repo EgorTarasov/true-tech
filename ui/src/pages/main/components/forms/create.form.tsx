@@ -35,11 +35,25 @@ export const CreateForm: FCVM<MainPageViewModel> = observer(({ vm }) => {
           label="Выберите поля"
         />
       )}
+      <div className="flex gap-2 items-center w-full">
+        <span className="border border-grey4 flex-1" />
+        <h4>или</h4>
+        <span className="border border-grey4 flex-1" />
+      </div>
+      <Input
+        label="Ссылка на форму"
+        placeholder="https://mts.ru/myform"
+        value={formVm.formUrl}
+        onChange={(v) => (formVm.formUrl = v)}
+      />
       <div className="flex justify-between">
         <Button
           className="gap-2 ml-auto"
           onClick={() => formVm.createForm()}
-          disabled={!formVm.formValid || !formVm.name.trim() || formVm.loading}>
+          disabled={
+            formVm.loading ||
+            (formVm.formUrl.trim().length === 0 && (!formVm.formValid || !formVm.name.trim()))
+          }>
           Создать
         </Button>
       </div>

@@ -56,7 +56,7 @@ const DropdownMultiple = observer(<T,>(p: ComboboxMultipleProps<T>) => {
         )}
         <div className={twMerge("relative h-fit flex items-center w-full", p.label && "mt-3")}>
           <Combobox.Input
-            className="whitespace-nowrap w-full cursor-pointer pr-8 text-ellipsis border border-text-primary/20 rounded-lg p-3"
+            className="whitespace-nowrap w-full cursor-pointer pr-8 text-ellipsis border-2 border-text-primary/20 rounded-lg p-3"
             placeholder={placeholder}
             onFocus={(e) => {
               e.preventDefault();

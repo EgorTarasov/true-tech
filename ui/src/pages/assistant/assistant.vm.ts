@@ -12,7 +12,7 @@ interface MessageItem {
 interface MessageEvent {
   query_id: number;
   text?: string;
-  metadata?: string[];
+  metadata?: string;
   last?: boolean;
 }
 
@@ -61,7 +61,7 @@ export class AssistantViewModel {
     const prevMessage = this.messages.find((x) => x.id === message.query_id);
     if (prevMessage) {
       if (message.last) {
-        prevMessage.links = message.metadata;
+        prevMessage.links = message.metadata?.split("links:")[1].split(";");
       }
       prevMessage.message += message.text;
     } else {

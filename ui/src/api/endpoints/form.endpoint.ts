@@ -10,6 +10,13 @@ export namespace FormEndpoint {
     return api.post<FormDto.Item>("/form/create", form);
   };
 
+  export const createFormByUrl = (url: string) => {
+    return api.post<FormDto.Item>("/detection/html", {
+      url,
+      html: url
+    });
+  };
+
   export const getFields = () => {
     return api.get<{ fields: FormDto.Field[] }>("/form/fields");
   };

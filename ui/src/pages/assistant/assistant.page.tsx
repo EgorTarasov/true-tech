@@ -6,6 +6,7 @@ import { Input } from "@/ui";
 import { SendHorizonal } from "lucide-react";
 import { useSpeechRecognition } from "react-speech-recognition";
 import { debounce } from "@/utils/debounce";
+import PdfIcon from "./pdf.svg";
 
 export const AssistantPage = observer(() => {
   const location = useLocation();
@@ -62,6 +63,32 @@ export const AssistantPage = observer(() => {
                     : "bg-text-primary/5 rounded-bl-none border border-text-primary/5"
                 }`}>
                 {item.message}
+                <ul className="space-y-1">
+                  {!item.isUser &&
+                    item.links?.map((link) => {
+                      const hasStupidCharachters = link.includes("й");
+
+                      return (
+                        <li key={link}>
+                          {hasStupidCharachters ? (
+                            <p
+                              className="text-[#2c56de] underline underline-offset-4"
+                              rel="noreferrer">
+                              {link}
+                            </p>
+                          ) : (
+                            <a
+                              href={link}
+                              target="_blank"
+                              className="text-[#2c56de] underline underline-offset-4 flex gap-1"
+                              rel="noreferrer">
+                              {link}
+                            </a>
+                          )}
+                        </li>
+                      );
+                    })}
+                </ul>
               </div>
             </li>
           ))}

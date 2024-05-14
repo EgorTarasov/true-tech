@@ -37,7 +37,7 @@ export const MainPage = observer(() => {
   }, [vm.selectedForm, vm.selectedCustomForm]);
 
   return (
-    <div className="section pb-6 pt-6 sm:pt-20 min-h-full flex-col sm:flex-row flex gap-16">
+    <div className="section pb-6 pt-6 sm:pt-20 min-h-full flex-col sm:flex-row flex gap-4 md:gap-16">
       <DialogBase
         title={vm.selectedCustomForm === "create-form" ? "Создание формы" : undefined}
         width={550}
@@ -56,7 +56,7 @@ export const MainPage = observer(() => {
           {vm.isLoading ? (
             <Loader />
           ) : (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 w-full">
+            <div className="flex flex-col md:grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 w-full">
               <Card.Icon
                 icon={<BillIcon />}
                 text="Пополнить телефон"

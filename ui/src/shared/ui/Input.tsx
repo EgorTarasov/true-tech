@@ -41,6 +41,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {leftIcon && <div className="absolute left-3">{leftIcon}</div>}
         <input
           ref={ref}
+          id={rest.id ?? rest.name}
           className={cn(
             "w-full p-3 h-11",
             "outline-none transition-colors border-2 border-text-primary/20 group-hover:border-text-primary/60 focus:!border-link rounded-lg",
