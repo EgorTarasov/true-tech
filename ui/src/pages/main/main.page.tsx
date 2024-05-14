@@ -15,6 +15,7 @@ import { BankCardForm } from "./components/forms/bank-card.form";
 import HistoryIcon from "./assets/history.svg";
 import { CreateForm } from "./components/forms/create.form";
 import Loader from "@/ui/Loader";
+import { Dialog } from "@headlessui/react";
 
 export const MainPage = observer(() => {
   const [vm] = useState(() => new MainPageViewModel());
@@ -43,6 +44,11 @@ export const MainPage = observer(() => {
         width={550}
         onCancel={hideForm}
         isOpen={!formHiding && isFormVisible}>
+        <Dialog.Description className="sr-only">
+          Необходимо заполнить поля:{" "}
+          {vm.selectedForm ? vm.selectedForm.form.fields.map((x) => x.label).join(", ") : ""}
+          {vm.selectedCustomForm === "bank-form" && "Банковские реквизиты, телефон и сумму"}
+        </Dialog.Description>
         {vm.selectedForm && <DynamicForm vm={vm.selectedForm} />}
         {vm.selectedCustomForm &&
           {

@@ -47,12 +47,11 @@ export const LoginPage = observer(() => {
     const vkLoginCode = new URLSearchParams(window.location.search).get("code");
     if (vkLoginCode) {
       setLoading(true);
-      AuthService.loginVk(vkLoginCode).then((isSuccess) => {
-        if (isSuccess) {
-          setTimeout(() => {
-            navigate("/");
-          }, 300);
-        }
+      AuthService.loginVk(vkLoginCode).then(() => {
+        setTimeout(() => {
+          navigate("/");
+        }, 300);
+        navigate("/");
         setLoading(false);
       });
     }
