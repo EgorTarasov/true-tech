@@ -14,6 +14,7 @@ interface DialogBaseProps {
   bottom?: JSX.Element;
   confirmDisabled?: boolean;
   ariaLabel?: string;
+  description?: ReactNode;
 }
 
 export const DialogBase: FC<DialogBaseProps> = ({
@@ -26,7 +27,8 @@ export const DialogBase: FC<DialogBaseProps> = ({
   width,
   bottom,
   confirmDisabled,
-  ariaLabel
+  ariaLabel,
+  description
 }) => {
   function closeModal() {
     onCancel?.();
@@ -66,6 +68,7 @@ export const DialogBase: FC<DialogBaseProps> = ({
                 style={{ width }}>
                 <Dialog.Title className="text-xl font-medium flex gap-1 mb-5 items-center">
                   <span>{title}</span>
+                  {description}
                   <div className="flex-1"></div>
                   <SmallSpeechWidget />
                   {onCancel && (

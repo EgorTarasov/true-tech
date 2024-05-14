@@ -34,7 +34,7 @@ export const SpeechWidget = observer(() => {
       <div className="flex flex-col">
         <h3>Слушаем...</h3>
         <span aria-hidden="true" className="text-xs text-grey23">
-          {transcript} transcript
+          {transcript}
         </span>
       </div>,
       {

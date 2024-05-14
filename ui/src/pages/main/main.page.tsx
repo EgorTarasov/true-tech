@@ -42,13 +42,15 @@ export const MainPage = observer(() => {
       <DialogBase
         title={vm.selectedCustomForm === "create-form" ? "Создание формы" : undefined}
         width={550}
+        description={
+          <div className="sr-only">
+            Необходимо заполнить поля:{" "}
+            {vm.selectedForm ? vm.selectedForm.form.fields.map((x) => x.label).join(", ") : ""}
+            {vm.selectedCustomForm === "bank-form" && "Банковские реквизиты, телефон и сумму"}
+          </div>
+        }
         onCancel={hideForm}
         isOpen={!formHiding && isFormVisible}>
-        <Dialog.Description className="sr-only">
-          Необходимо заполнить поля:{" "}
-          {vm.selectedForm ? vm.selectedForm.form.fields.map((x) => x.label).join(", ") : ""}
-          {vm.selectedCustomForm === "bank-form" && "Банковские реквизиты, телефон и сумму"}
-        </Dialog.Description>
         {vm.selectedForm && <DynamicForm vm={vm.selectedForm} />}
         {vm.selectedCustomForm &&
           {
