@@ -7,7 +7,12 @@ export namespace AuthEndpoint {
   };
 
   export const register = (email: string, password: string) => {
-    return api.post<{ accessToken: string }>("/auth/register", { email, password });
+    return api.post<{ accessToken: string }>("/auth/register", {
+      email,
+      password,
+      first_name: "Name",
+      last_name: "Lastname"
+    });
   };
 
   export const current = () => {
