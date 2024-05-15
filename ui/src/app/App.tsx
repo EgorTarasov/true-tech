@@ -6,12 +6,14 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import { CSSTransition, SwitchTransition } from "react-transition-group";
 import { RoutesStore } from "./routes";
-import { useLayoutEffect, useMemo } from "react";
+import { useEffect, useLayoutEffect, useMemo } from "react";
 import { SkipToContent } from "@/components/SkipToContent";
 import { Footer } from "@/components/footer";
 import { Navigation } from "@/components/navigation/Navigation";
 import { AuthService } from "../stores/auth.store";
 import { Loading } from "@/components/loading/Loading";
+import { toast } from "sonner";
+import { SpeechRecognitionAction } from "@/components/buttons/SpeechRecognitionAction";
 
 const NotFound = () => {
   return (

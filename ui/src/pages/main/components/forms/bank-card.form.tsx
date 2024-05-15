@@ -103,7 +103,13 @@ export const BankCardForm: FC<{
               type={showCvv ? "text" : "password"}
               rightIconIsButton
               onIconClick={() => setShowCvv(!showCvv)}
-              rightIcon={showCvv ? <EyeOpenIcon /> : <EyeCloseIcon />}
+              rightIcon={
+                showCvv ? (
+                  <EyeOpenIcon aria-label="Скрыть CVC" />
+                ) : (
+                  <EyeCloseIcon aria-label="Показать CVC" />
+                )
+              }
               placeholder="Введите код"
             />
           </div>

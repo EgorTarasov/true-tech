@@ -50,6 +50,7 @@ class authService {
       const res = await AuthEndpoint.loginVk(code);
       setStoredAuthToken(res.accessToken);
       await this.init();
+      return true;
     } catch {
       this.item = { state: "anonymous", data: null };
     }

@@ -67,13 +67,17 @@ export const DialogBase: FC<DialogBaseProps> = ({
                 className="w-fit transform text-text-primary bg-white border-border-primary border text-left align-middle transition-all rounded-2xl p-5"
                 style={{ width }}>
                 <Dialog.Title className="text-xl font-medium flex gap-1 mb-5 items-center">
-                  <span>{title}</span>
+                  {title && <span>{title}</span>}
                   {description}
                   <div className="flex-1"></div>
                   <SmallSpeechWidget />
                   {onCancel && (
-                    <button aria-label="Закрыть" type="button" className="ml-1">
-                      <CrossIcon className="cursor-pointer" onClick={onCancel} width={24} />
+                    <button
+                      aria-label="Закрыть"
+                      type="button"
+                      onClick={onCancel}
+                      className="ml-1 cursor-pointer">
+                      <CrossIcon width={24} />
                     </button>
                   )}
                 </Dialog.Title>

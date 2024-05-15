@@ -6,6 +6,7 @@ import { Button, Logo } from "@/ui";
 import { SpeechWidget } from "../speech/speech.widget";
 import { observer } from "mobx-react-lite";
 import { AuthService } from "../../../stores/auth.store";
+import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 
 interface LinkProps {
   to: string;
@@ -38,12 +39,22 @@ const RibbonLink: FC<LinkProps> = (x) => {
 };
 
 export const DesktopNavigation = observer(() => {
-  const navigate = useNavigate();
+  const { listening, browserSupportsSpeechRecognition } = useSpeechRecognition();
   useEffect(() => {
-    if (AuthService.item.state === "authenticated") {
-      navigate("/");
-    }
-  }, [AuthService.item.state, navigate]);
+    const toggleVoice = (e: KeyboardEvent) => {
+      if (e.key === "F2") {
+        listening
+          ? SpeechRecognition.stopListening()
+          : SpeechRecognition.startListening({ language: "ru-RU", continuous: true });
+      }
+    };
+
+    document.addEventListener("keydown", toggleVoice);
+
+    return () => {
+      document.removeEventListener("keydown", toggleVoice);
+    };
+  }, [listening]);
 
   if (AuthService.item.state !== "authenticated") {
     return (
@@ -60,18 +71,29 @@ export const DesktopNavigation = observer(() => {
     <nav className="w-full bg-bg">
       <div className="section w-full flex items-center gap-2">
         <ul className="flex items-center">
+          {browserSupportsSpeechRecognition && (
+            <li className="sr-only">
+              <button
+                onClick={() =>
+                  SpeechRecognition.startListening({ language: "ru-RU", continuous: true })
+                }>
+                Желаете включить голосовое управление? Нажмите F2 для активации в любое время
+              </button>
+            </li>
+          )}
           <li>
             <Link to={"/"} className="pl-0">
               Частным клиентам
             </Link>
           </li>
-          <li className="h-6 w-px bg-grey" />
+          <li className="h-6 w-px bg-grey" aria-hidden="true" />
           <li>
             <Link to={"/assistant"} className="pr-2">
               Ассистент
             </Link>
           </li>
         </ul>
+        <div className="flex-1"></div>
         <SpeechWidget />
         <Button onClick={() => AuthService.logout()} appearance="outline">
           Выйти

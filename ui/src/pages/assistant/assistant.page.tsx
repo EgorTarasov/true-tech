@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AssistantViewModel } from "./assistant.vm";
 import { observer } from "mobx-react-lite";
@@ -6,12 +6,22 @@ import { Input } from "@/ui";
 import { SendHorizonal } from "lucide-react";
 import { useSpeechRecognition } from "react-speech-recognition";
 import { debounce } from "@/utils/debounce";
-import PdfIcon from "./pdf.svg";
 
 export const AssistantPage = observer(() => {
+  const chatRef = useRef<HTMLUListElement>(null);
+  const onMessageFinished = () => {
+    if (chatRef.current) {
+      // focus on last message
+      const lastMessage = chatRef.current.children[
+        chatRef.current.children.length - 1
+      ] as HTMLElement | null;
+      console.log(lastMessage);
+      lastMessage?.focus();
+    }
+  };
   const location = useLocation();
   const message = location.state?.message;
-  const [vm] = useState(() => new AssistantViewModel(message ?? ""));
+  const [vm] = useState(() => new AssistantViewModel(message ?? "", onMessageFinished));
   const { transcript, resetTranscript } = useSpeechRecognition();
   const appendText = useMemo(
     () =>
@@ -45,7 +55,6 @@ export const AssistantPage = observer(() => {
       onSpeech();
     }
   }, [transcript, appendText, vm.loading, onSpeech]);
-  console.log(transcript);
 
   return (
     <div className="relative flex h-full w-full py-6 px-4 flex-col gap-4 mx-auto max-w-screen-desktop overflow-hidden max-w-[860px]">
@@ -53,7 +62,9 @@ export const AssistantPage = observer(() => {
         <ul className="flex flex-col gap-3">
           {vm.messages.map((item, index) => (
             <li
-              key={index}
+              key={item?.id ?? index}
+              aria-live={item.isUser ? "assertive" : "polite"}
+              aria-relevant="additions text"
               className={`${item.isUser ? "justify-end" : "justify-start"} flex gap-2`}>
               <div
                 className={`p-5 flex flex-col rounded-2xl text-text-primary max-w-[70%]
@@ -66,25 +77,15 @@ export const AssistantPage = observer(() => {
                 <ul className="space-y-1">
                   {!item.isUser &&
                     item.links?.map((link) => {
-                      const hasStupidCharachters = link.includes("й");
-
                       return (
                         <li key={link}>
-                          {hasStupidCharachters ? (
-                            <p
-                              className="text-[#2c56de] underline underline-offset-4"
-                              rel="noreferrer">
-                              {link}
-                            </p>
-                          ) : (
-                            <a
-                              href={link}
-                              target="_blank"
-                              className="text-[#2c56de] underline underline-offset-4 flex gap-1"
-                              rel="noreferrer">
-                              {link}
-                            </a>
-                          )}
+                          <a
+                            href={link}
+                            target="_blank"
+                            className="text-[#2c56de] underline underline-offset-4 flex gap-1"
+                            rel="noreferrer">
+                            {link}
+                          </a>
                         </li>
                       );
                     })}
@@ -94,7 +95,7 @@ export const AssistantPage = observer(() => {
           ))}
         </ul>
         {!vm.messages.length && (
-          <div className="flex items-center bg-white rounded-2xl p-4 border border-text-primary/20">
+          <div className="flex items-center bg-white rounded-2xl p-4 border border-text-primary/10">
             <div className="flex flex-col gap-2">
               <h2 className="font-semibold text-2xl">Привет! Чем могу помочь?</h2>
               <p className="text-text-primary/80">
@@ -112,10 +113,9 @@ export const AssistantPage = observer(() => {
         }}>
         <Input
           className="w-full max-w-none"
-          rightIcon={<SendHorizonal />}
-          placeholder="Введите вопрос"
+          rightIcon={<SendHorizonal aria-label="Отправить запрос" />}
+          placeholder="Введите ваш вопрос к ассистенту"
           disabled={vm.loading}
-          aria-label="Введите ваш вопрос здесь"
           value={vm.message}
           onChange={(v) => (vm.message = v)}
         />

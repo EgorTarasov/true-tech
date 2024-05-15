@@ -43,28 +43,26 @@ export const SpeechWidget = observer(() => {
     );
   }, [transcript, appendText, vm.sessionId, location.pathname]);
 
-  if (!browserSupportsSpeechRecognition) return null;
-
-  return (
-    <section
-      title="Голосовое управление"
-      className="flex-1 justify-end flex items-center gap-2 pr-3">
-      <button
-        className="h-fit"
-        type="button"
-        role="checkbox"
-        aria-checked={listening}
-        onClick={() => {
-          if (listening) {
-            SpeechRecognition.stopListening();
-            return;
-          }
-          SpeechRecognition.startListening({ language: "ru-RU", continuous: true });
-        }}>
-        <MicrophoneIcon className={cn("size-6", listening ? "text-red" : "text-grey")} />
-        <span className="sr-only">голосовое управление</span>
-      </button>
-    </section>
+  return browserSupportsSpeechRecognition ? (
+    <button
+      className="h-fit"
+      type="button"
+      role="checkbox"
+      aria-checked={listening}
+      onClick={() => {
+        if (listening) {
+          SpeechRecognition.stopListening();
+          return;
+        }
+        SpeechRecognition.startListening({ language: "ru-RU", continuous: true });
+      }}>
+      <MicrophoneIcon className={cn("size-6", listening ? "text-red" : "text-grey")} />
+      <span className="sr-only">голосовое управление</span>
+    </button>
+  ) : (
+    <span className="sr-only">
+      Браузер не поддерживает голосовое управление. Рекомендуем установить Google Chrome
+    </span>
   );
 });
 

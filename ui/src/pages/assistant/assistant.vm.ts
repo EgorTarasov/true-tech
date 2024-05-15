@@ -17,7 +17,10 @@ interface MessageEvent {
 }
 
 export class AssistantViewModel {
-  constructor(public message: string) {
+  constructor(
+    public message: string,
+    private onMessageFinished: () => void
+  ) {
     makeAutoObservable(this);
 
     void this.init();
@@ -68,8 +71,8 @@ export class AssistantViewModel {
       this.messages.push({ message: message.text ?? "", isUser: false, id: message.query_id });
     }
     if (message.last) {
-      say(this.messages[this.messages.length - 1].message);
       this.loading = false;
+      this.onMessageFinished();
     }
   };
 }

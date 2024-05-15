@@ -69,7 +69,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             type={rest.rightIconIsButton ? "button" : undefined}
             onClick={onIconClick}
             aria-hidden={onIconClick ? undefined : true}
-            aria-label="Отправить значение поля"
             className="absolute right-1 p-2 w-10 text-text-primary/60 hover:text-text-primary">
             {rightIcon}
           </button>
