@@ -13,4 +13,11 @@ export namespace AuthDto {
     };
     name: string;
   }
+
+  export interface Card {
+    id: number;
+    name: string;
+    balance: number;
+    cardNumber: number;
+  }
 }

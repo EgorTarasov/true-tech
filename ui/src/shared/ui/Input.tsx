@@ -22,6 +22,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       errorText,
       leftIcon,
       rightIcon,
+      rightIconIsButton,
       onIconClick,
       allowClear,
       label,
@@ -58,7 +59,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {allowClear && rest.value && !rest.disabled && (
           <button
             type="button"
-            aria-label="Очистить поле ввода"
+            aria-label="Очистить поле"
             className="absolute w-5 right-3 text-text-primary/60 hover:text-text-primary"
             onClick={() => onChange?.("")}>
             x
@@ -66,7 +67,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         {rightIcon && !allowClear && (
           <button
-            type={rest.rightIconIsButton ? "button" : undefined}
+            type={rightIconIsButton ? "button" : undefined}
             onClick={onIconClick}
             aria-hidden={onIconClick ? undefined : true}
             className="absolute right-1 p-2 w-10 text-text-primary/60 hover:text-text-primary">

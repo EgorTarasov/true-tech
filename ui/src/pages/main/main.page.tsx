@@ -1,9 +1,9 @@
-import { CustomFormType, MainPageViewModel } from "./main.vm";
+import { MainPageViewModel } from "./main.vm";
 import { observer } from "mobx-react-lite";
 import { Card } from "@/ui/Card";
 import PlusIcon from "@/assets/icons/plus.svg";
 import TemplateIcon from "./assets/template.svg";
-import { Button, DialogBase, IconButton } from "@/ui";
+import { DialogBase } from "@/ui";
 import { Section } from "./components/section.widget";
 import BillIcon from "./assets/bill.svg";
 import { useEffect, useState } from "react";
@@ -12,10 +12,8 @@ import { DynamicForm } from "@/components/dynamic-form/dynamic-form.widget";
 import { MockAside } from "./components/mock-aside.widget";
 import { MockFeatures } from "./components/mock-features.widget";
 import { BankCardForm } from "./components/forms/bank-card.form";
-import HistoryIcon from "./assets/history.svg";
 import { CreateForm } from "./components/forms/create.form";
 import Loader from "@/ui/Loader";
-import { Dialog } from "@headlessui/react";
 
 export const MainPage = observer(() => {
   const [vm] = useState(() => new MainPageViewModel());
@@ -47,6 +45,8 @@ export const MainPage = observer(() => {
             Необходимо заполнить поля:{" "}
             {vm.selectedForm ? vm.selectedForm.form.fields.map((x) => x.label).join(", ") : ""}
             {vm.selectedCustomForm === "bank-form" && "Банковские реквизиты, телефон и сумму"}
+            {vm.selectedCustomForm === "create-form" &&
+              "Название услуги, поля форма или ссылка на форму на сайте мтс"}
           </div>
         }
         onCancel={hideForm}
@@ -58,7 +58,7 @@ export const MainPage = observer(() => {
             "create-form": <CreateForm vm={vm} />
           }[vm.selectedCustomForm]}
       </DialogBase>
-      <MockAside />
+      <MockAside vm={vm} />
       <div className="space-y-12 w-full">
         <Section title="Шаблоны и автоплатежи">
           {vm.isLoading ? (
@@ -70,18 +70,15 @@ export const MainPage = observer(() => {
                 text="Пополнить телефон"
                 onClick={() => (vm.selectedCustomForm = "bank-form")}
               />
-              <Card.Icon
-                icon={<HistoryIcon />}
-                text="Перевести деньги"
-                onClick={() => (vm.selectedCustomForm = "create-form")}
-              />
               {vm.forms.map((x) => (
                 <Card.Icon
                   key={x.id}
                   icon={<TemplateIcon />}
                   text={x.name}
                   onClick={() => {
-                    vm.selectedForm = new DynamicFormViewModel(x);
+                    vm.selectedForm = new DynamicFormViewModel(x, {
+                      onSubmit: (v) => vm.submitDynamicForm(v)
+                    });
                     vm.selectedCustomForm = null;
                   }}
                 />

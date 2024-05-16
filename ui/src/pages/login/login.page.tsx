@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { VKButton } from "@/components/buttons/VkLoginButton";
 
-const mockEmail = "tarasov.egor@mail.com";
+const mockEmail = "tarasov.egor@larek.tech";
 const mockPass = "Test123456";
 
 export const LoginPage = observer(() => {

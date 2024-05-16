@@ -47,12 +47,24 @@ export const DesktopNavigation = observer(() => {
           ? SpeechRecognition.stopListening()
           : SpeechRecognition.startListening({ language: "ru-RU", continuous: true });
       }
+
+      if (e.key === "F3") {
+        SpeechRecognition.startListening({ language: "ru-RU", continuous: true });
+      }
+    };
+
+    const toggleRadio = (e: KeyboardEvent) => {
+      if (e.key === "F3") {
+        SpeechRecognition.stopListening();
+      }
     };
 
     document.addEventListener("keydown", toggleVoice);
+    document.addEventListener("keyup", toggleRadio);
 
     return () => {
       document.removeEventListener("keydown", toggleVoice);
+      document.removeEventListener("keyup", toggleRadio);
     };
   }, [listening]);
 
@@ -77,7 +89,8 @@ export const DesktopNavigation = observer(() => {
                 onClick={() =>
                   SpeechRecognition.startListening({ language: "ru-RU", continuous: true })
                 }>
-                Желаете включить голосовое управление? Нажмите F2 для активации в любое время
+                Желаете включить голосовое управление? Нажмите F2 для фоновой работы. Или нажмите F3
+                для режима рации
               </button>
             </li>
           )}

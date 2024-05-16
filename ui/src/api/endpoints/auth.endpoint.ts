@@ -19,11 +19,11 @@ export namespace AuthEndpoint {
     return api.get<AuthDto.Item>("/auth/me");
   };
 
-  export const account = () => {
-    return api.get<AuthDto.Account>("/accounts/my");
-  };
-
   export const loginVk = (code: string) => {
     return api.post<{ accessToken: string }>(`/auth/vk?code=${code}`);
+  };
+
+  export const getCards = () => {
+    return api.get<{ accounts: AuthDto.Card[] }>("/accounts/my");
   };
 }

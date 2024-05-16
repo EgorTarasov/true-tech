@@ -73,7 +73,7 @@ export const DialogBase: FC<DialogBaseProps> = ({
                   <SmallSpeechWidget />
                   {onCancel && (
                     <button
-                      aria-label="Закрыть"
+                      aria-label="Закрыть форму"
                       type="button"
                       onClick={onCancel}
                       className="ml-1 cursor-pointer">

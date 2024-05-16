@@ -101,7 +101,7 @@ export const BankCardForm: FC<{
               label="CVC"
               name="CVC"
               type={showCvv ? "text" : "password"}
-              rightIconIsButton
+              rightIconIsButton={true}
               onIconClick={() => setShowCvv(!showCvv)}
               rightIcon={
                 showCvv ? (
@@ -122,6 +122,7 @@ export const BankCardForm: FC<{
               href="https://static.mts.ru/upload/images/Oferta_MTS_Apple.html"
               target="_blank"
               className="text-link"
+              aria-label="Договор оферты"
               rel="noreferrer">
               Договором оферты
             </a>

@@ -1,10 +1,13 @@
 import { FormDto } from "api/models/form.model";
 import { makeAutoObservable } from "mobx";
+import { toast } from "sonner";
+
+type DynamicFormResult = [label: string, value: string];
 
 export class DynamicFormViewModel {
   constructor(
     public form: FormDto.Item,
-    public options?: { onSubmit?: () => void }
+    public options: { onSubmit: (entries: DynamicFormResult[]) => void }
   ) {
     makeAutoObservable(this);
   }
@@ -22,11 +25,21 @@ export class DynamicFormViewModel {
   }
 
   async onSubmit() {
-    const formValues = Object.fromEntries(
-      Object.entries(this.fields).map(([key, value]) => [key, value])
-    );
+    const formValues: DynamicFormResult[] = [];
+    Object.entries(this.fields).forEach(([key, value]) => {
+      formValues.push([this.form.fields.find((x) => x.id === +key)!.label, value]);
+    });
 
-    console.log(formValues);
+    setTimeout(() => {
+      toast.success("Форма успешно отправлена", {
+        description: `Заполненные поля: ${formValues
+          .map(([label, value]) => `${label}: ${value}`)
+          .join(", ")}`,
+        important: true
+      });
+    }, 2000);
+
+    this.options.onSubmit(formValues);
   }
 
   async onBankCardSubmit(values: FormDto.MobileTopUpTemplate) {

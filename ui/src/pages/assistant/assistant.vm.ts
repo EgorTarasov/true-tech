@@ -7,6 +7,7 @@ interface MessageItem {
   message: string;
   isUser: boolean;
   links?: string[];
+  last?: boolean;
 }
 
 interface MessageEvent {
@@ -16,10 +17,10 @@ interface MessageEvent {
   last?: boolean;
 }
 
-export class AssistantViewModel {
+class AssistantViewModel {
   constructor(
     public message: string,
-    private onMessageFinished: () => void
+    public onMessageFinished: () => void
   ) {
     makeAutoObservable(this);
 
@@ -27,12 +28,6 @@ export class AssistantViewModel {
   }
 
   async init() {
-    await when(() => AuthService.item.state === "authenticated");
-
-    let userId: string = crypto.randomUUID();
-    if (AuthService.item.state === "authenticated") {
-      userId = AuthService.item.data.user.user_id.toString();
-    }
     this.ws = new WebSocket(import.meta.env.VITE_SOCKET_URL);
 
     this.ws.addEventListener("open", () => {
@@ -72,7 +67,10 @@ export class AssistantViewModel {
     }
     if (message.last) {
       this.loading = false;
+      this.messages[this.messages.length - 1].last = true;
       this.onMessageFinished();
     }
   };
 }
+
+export const AssistantStore = new AssistantViewModel("", () => {});

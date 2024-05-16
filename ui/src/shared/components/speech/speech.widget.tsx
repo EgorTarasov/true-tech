@@ -7,6 +7,7 @@ import { cn } from "@/utils/cn";
 import { SpeechService } from "./speech.vm";
 import { toast } from "sonner";
 import { useLocation } from "react-router-dom";
+import { AssistantStore } from "../../../pages/assistant/assistant.vm";
 
 export const SpeechWidget = observer(() => {
   const vm = SpeechService;
@@ -19,14 +20,23 @@ export const SpeechWidget = observer(() => {
       debounce((text: string) => {
         if (text.length === 0) return; // prevent first debounce
 
+        if (location.pathname === "/assistant") {
+          const input = document.getElementById("assistant-input") as HTMLInputElement | null;
+          if (input) {
+            AssistantStore.message = text;
+            AssistantStore.sendMessage();
+            resetTranscript();
+          }
+          toast.success("Сообщение отправлено", { id: vm.sessionId });
+          return;
+        }
         vm.updateSearch(" " + text, true);
         resetTranscript();
       }, 2000),
-    [vm, resetTranscript]
+    [vm, resetTranscript, location]
   );
 
   useEffect(() => {
-    if (location.pathname === "/assistant") return;
     appendText(transcript);
     if (transcript.length === 0) return;
 
@@ -44,21 +54,26 @@ export const SpeechWidget = observer(() => {
   }, [transcript, appendText, vm.sessionId, location.pathname]);
 
   return browserSupportsSpeechRecognition ? (
-    <button
-      className="h-fit"
-      type="button"
-      role="checkbox"
-      aria-checked={listening}
-      onClick={() => {
-        if (listening) {
-          SpeechRecognition.stopListening();
-          return;
-        }
-        SpeechRecognition.startListening({ language: "ru-RU", continuous: true });
-      }}>
-      <MicrophoneIcon className={cn("size-6", listening ? "text-red" : "text-grey")} />
-      <span className="sr-only">голосовое управление</span>
-    </button>
+    <section title="Голосовое управление" className="flex items-center gap-3">
+      <p className="text-grey text-sm">
+        <kbd className="text-xs">F3</kbd> - режим рации
+      </p>
+      <button
+        className="h-fit"
+        type="button"
+        role="checkbox"
+        aria-checked={listening}
+        onClick={() => {
+          if (listening) {
+            SpeechRecognition.stopListening();
+            return;
+          }
+          SpeechRecognition.startListening({ language: "ru-RU", continuous: true });
+        }}>
+        <MicrophoneIcon className={cn("size-6", listening ? "text-red" : "text-grey")} />
+        <span className="sr-only">голосовое управление</span>
+      </button>
+    </section>
   ) : (
     <span className="sr-only">
       Браузер не поддерживает голосовое управление. Рекомендуем установить Google Chrome
@@ -83,7 +98,7 @@ export const SmallSpeechWidget = observer(() => {
         SpeechRecognition.startListening({ language: "ru-RU", continuous: true });
       }}>
       <MicrophoneIcon
-        stroke-width="1"
+        strokeWidth="1"
         className={cn("size-5", listening ? "text-red" : "text-grey")}
       />
       <span className="sr-only">голосовое управление</span>

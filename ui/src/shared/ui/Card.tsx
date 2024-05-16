@@ -33,7 +33,7 @@ const CardBase: FC<Props> = (x) => {
     const mutationObserver = new MutationObserver(toggleHeight);
 
     resizeObserver.observe(ref.current);
-    mutationObserver.observe(ref.current, { childList: true });
+    mutationObserver.observe(ref.current, { childList: true, subtree: true, attributes: true });
 
     return () => {
       resizeObserver.disconnect();
@@ -81,7 +81,10 @@ interface IconCardProps {
 const Icon: FC<IconCardProps> = (x) => {
   return (
     <button
-      className={twMerge("text-black space-y-5 rounded-[28px] p-8 bg-white", x.className)}
+      className={twMerge(
+        "text-black space-y-5 rounded-[28px] p-8 bg-white flex flex-col justify-between",
+        x.className
+      )}
       onClick={x.onClick}>
       <div
         className="size-16 flex items-center justify-center *:size-5 rounded-full bg-stroke"

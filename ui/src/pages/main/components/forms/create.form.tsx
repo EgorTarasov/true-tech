@@ -14,6 +14,7 @@ export const CreateForm: FCVM<MainPageViewModel> = observer(({ vm }) => {
     <div className="flex flex-col gap-8">
       <Input
         label="Название услуги"
+        id="service-name"
         value={formVm.name}
         onChange={(v) => (formVm.name = v)}
         placeholder="Новая услуга"
@@ -26,8 +27,15 @@ export const CreateForm: FCVM<MainPageViewModel> = observer(({ vm }) => {
           compare={(v) => v.label}
           render={(v) => (
             <div className="flex flex-col">
-              <span>{v.label}</span>
-              <span className="text-xs text-grey23">{v.name}</span>
+              <span>{v.label} </span>
+              <span className="text-xs text-grey23" title="">
+                <span className="sr-only">
+                  ,
+                  <br />
+                  Кодовый ключ для поля: ,
+                </span>
+                {v.name}
+              </span>
             </div>
           )}
           onChange={(v) => (formVm.selectedFields = v)}
@@ -42,6 +50,7 @@ export const CreateForm: FCVM<MainPageViewModel> = observer(({ vm }) => {
       </div>
       <Input
         label="Ссылка на форму"
+        id="form-url"
         placeholder="https://mts.ru/myform"
         value={formVm.formUrl}
         onChange={(v) => (formVm.formUrl = v)}

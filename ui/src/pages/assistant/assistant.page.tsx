@@ -1,60 +1,43 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { AssistantViewModel } from "./assistant.vm";
+import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import { Input } from "@/ui";
 import { SendHorizonal } from "lucide-react";
-import { useSpeechRecognition } from "react-speech-recognition";
-import { debounce } from "@/utils/debounce";
+import { AssistantStore } from "./assistant.vm";
 
 export const AssistantPage = observer(() => {
   const chatRef = useRef<HTMLUListElement>(null);
+  const assistantInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+  const vm = AssistantStore;
+
   const onMessageFinished = () => {
     if (chatRef.current) {
-      // focus on last message
       const lastMessage = chatRef.current.children[
         chatRef.current.children.length - 1
       ] as HTMLElement | null;
-      console.log(lastMessage);
       lastMessage?.focus();
     }
   };
-  const location = useLocation();
-  const message = location.state?.message;
-  const [vm] = useState(() => new AssistantViewModel(message ?? "", onMessageFinished));
-  const { transcript, resetTranscript } = useSpeechRecognition();
-  const appendText = useMemo(
-    () =>
-      debounce((text: string) => {
-        if (text.length === 0) return; // prevent first debounce
-
-        vm.message = text;
-      }, 300),
-    [vm]
-  );
 
   useEffect(() => {
-    return () => resetTranscript();
-  }, [resetTranscript]);
-
-  const onSpeech = useMemo(
-    () =>
-      debounce(() => {
-        vm.sendMessage();
-        resetTranscript();
-      }, 4000),
-    [resetTranscript, vm]
-  );
+    vm.onMessageFinished = onMessageFinished;
+  }, [vm, onMessageFinished]);
 
   useEffect(() => {
-    if (vm.loading) {
-      resetTranscript();
-    }
-    appendText(transcript);
-    if (transcript.length > 0) {
-      onSpeech();
-    }
-  }, [transcript, appendText, vm.loading, onSpeech]);
+    const onKeydown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        navigate("/");
+      }
+    };
+
+    window.addEventListener("keydown", onKeydown);
+    return () => window.removeEventListener("keydown", onKeydown);
+  }, [navigate]);
+
+  useEffect(() => {
+    assistantInputRef.current?.focus();
+  }, []);
 
   return (
     <div className="relative flex h-full w-full py-6 px-4 flex-col gap-4 mx-auto max-w-screen-desktop overflow-hidden max-w-[860px]">
@@ -63,8 +46,8 @@ export const AssistantPage = observer(() => {
           {vm.messages.map((item, index) => (
             <li
               key={item?.id ?? index}
-              aria-live={item.isUser ? "assertive" : "polite"}
-              aria-relevant="additions text"
+              aria-busy={!item.isUser && !item.last}
+              aria-live="polite"
               className={`${item.isUser ? "justify-end" : "justify-start"} flex gap-2`}>
               <div
                 className={`p-5 flex flex-col rounded-2xl text-text-primary max-w-[70%]
@@ -111,10 +94,16 @@ export const AssistantPage = observer(() => {
           e.preventDefault();
           vm.sendMessage();
         }}>
+        <label id="hidden-label" htmlFor="assistant-input" className="sr-only">
+          Введите ваш вопрос к ассистенту
+        </label>
         <Input
+          id="assistant-input"
+          ref={assistantInputRef}
           className="w-full max-w-none"
           rightIcon={<SendHorizonal aria-label="Отправить запрос" />}
           placeholder="Введите ваш вопрос к ассистенту"
+          aria-description="Для возврата к услугам нажмите клавишу Esc"
           disabled={vm.loading}
           value={vm.message}
           onChange={(v) => (vm.message = v)}
