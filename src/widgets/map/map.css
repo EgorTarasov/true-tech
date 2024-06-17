@@ -1,0 +1,39 @@
+.leaflet-control-attribution {
+  display: none;
+}
+
+.leaflet-top.leaflet-right {
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+}
+
+.dark .leaflet-top.leaflet-right * {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+}
+
+.leaflet-pane {
+  z-index: 2;
+}
+
+.dark .leaflet-tile-container.leaflet-zoom-animated img {
+  filter: invert(1) hue-rotate(180deg) grayscale(0.7);
+}
+
+.leaflet-popup-content-wrapper {
+  background: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border-radius: 6px;
+  padding: 16px 12px;
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  margin-top: 6px;
+}
+
+.leaflet-popup-tip {
+  background: hsl(var(--secondary));
+  border: 0;
+}

@@ -1,6 +1,0 @@
-grpcio
-grpcio-tools
-sentence-transformers
-clickhouse_driver
-ollama
-pydantic
