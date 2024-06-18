@@ -15,15 +15,17 @@ class incidentsPageViewModel {
     makeAutoObservable(this);
   }
 
-  public items = new AsyncPagedViewModel<Incident.Item>(async (offset, limit) => {
-    this.loading = true;
-    try {
-      const res = await IncidentsEndpoint.getRecents(offset, limit);
-      return res.map((v) => Incident.convertDto(v));
-    } finally {
-      this.loading = false;
-    }
-  });
+  public items = new AsyncPagedViewModel<Incident.Item>(
+    async (offset, limit) => {
+      this.loading = true;
+      try {
+        const res = await IncidentsEndpoint.getRecents(offset, limit);
+        return res.map((v) => Incident.convertDto(v));
+      } finally {
+        this.loading = false;
+      }
+    },
+  );
 
   //#region filters
   selectedTab: IncidentFilters.Tab = "heat-source";
@@ -43,7 +45,9 @@ class incidentsPageViewModel {
     }
 
     const items = this.items.paginatedItems.filter(
-      (i) => i.type === "heat-source" && (!this.issueType || i.incidentIssue === this.issueType)
+      (i) =>
+        i.type === "heat-source" &&
+        (!this.issueType || i.incidentIssue === this.issueType),
     ) as Incident.HeatItem[];
     return items;
   }
@@ -51,7 +55,7 @@ class incidentsPageViewModel {
   get consumers(): Incident.ConsumerItem[] {
     if (this.selectedTab === "consumer") {
       return this.items.paginatedItems.filter(
-        (i) => i.type === "consumer"
+        (i) => i.type === "consumer",
       ) as Incident.ConsumerItem[];
     }
     return [];
@@ -59,7 +63,8 @@ class incidentsPageViewModel {
   //#endregion
 
   async select(unom: string) {
-    this.selected = this.items.paginatedItems.find((i) => i.unom.toString() === unom) || null;
+    this.selected =
+      this.items.paginatedItems.find((i) => i.unom.toString() === unom) || null;
     this.drawerOpen = false;
   }
 

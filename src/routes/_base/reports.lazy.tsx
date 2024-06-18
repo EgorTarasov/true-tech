@@ -10,7 +10,7 @@ import {
   TableFooter,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -23,16 +23,17 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { FileEndpoint } from "@/api/endpoints/file.endpoint";
 
 // export function TableDemo() {
 //   return (
@@ -60,18 +61,35 @@ import { useState } from "react";
 const Page = observer(() => {
   const [district, setDistrict] = useState("Восточный административный округ");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // const getReport = async () => {
+    //   const res = await FileEndpoint.predict(
+    //     "Восточный административный округ",
+    //     "06-06-2024",
+    //     "06-06-2025",
+    //   );
+    //   console.log(res);
+    // };
+    // getReport();
+  }, []);
   return (
     <>
       <main className="mx-auto flex flex-col w-full max-w-screen-md pt-20 h-full overflow-hidden px-4">
         <Card>
           <CardHeader>
             <CardTitle>Составить отчёт</CardTitle>
-            <CardDescription>Укажите округ и промежуток дат для генерации отчёта</CardDescription>
+            <CardDescription>
+              Укажите округ и промежуток дат для генерации отчёта
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="bg-card flex gap-2 text-left px-3 w-96">
+                <Button
+                  variant="outline"
+                  className="bg-card flex gap-2 text-left px-3 w-96"
+                >
                   <Text.Subtle className="flex-1">{district}</Text.Subtle>
                   <ChevronDownIcon className="size-4 text-muted-foreground" />
                 </Button>
@@ -90,9 +108,12 @@ const Page = observer(() => {
                     "Центральный административный округ",
                     "Юго-Восточный административный округ",
                     "Юго-Западный административный округ",
-                    "Южный административный округ"
+                    "Южный административный округ",
                   ].map((item) => (
-                    <DropdownMenuItem key={item} onClick={() => setDistrict(item)}>
+                    <DropdownMenuItem
+                      key={item}
+                      onClick={() => setDistrict(item)}
+                    >
                       {item}
                     </DropdownMenuItem>
                   ))}
@@ -123,5 +144,5 @@ const Page = observer(() => {
 });
 
 export const Route = createFileRoute("/_base/reports")({
-  component: Page
+  component: Page,
 });

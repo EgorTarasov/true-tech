@@ -7,7 +7,10 @@ export class AsyncPagedViewModel<T> {
   loading: boolean = true;
   fetchItems: (offset: number, limit: number) => Promise<T[]>;
 
-  constructor(fetchItems: (offset: number, limit: number) => Promise<T[]>, pageSize: number = 50) {
+  constructor(
+    fetchItems: (offset: number, limit: number) => Promise<T[]>,
+    pageSize: number = 50,
+  ) {
     this.pageSize = pageSize;
     this.fetchItems = fetchItems;
     makeAutoObservable(this);
