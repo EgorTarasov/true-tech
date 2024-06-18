@@ -1,11 +1,12 @@
 import { IncidentsEndpoint } from "@/api/endpoints/incidents.endpoint";
 import { AsyncPagedViewModel } from "@/stores/async-paged.vm";
+import { AuthService } from "@/stores/auth.service";
 import { IncidentFilters } from "@/types/incident-filters";
 import { Incident } from "@/types/incident.type";
 import { Issue } from "@/types/issue.type";
 import { Priority } from "@/types/priority.type";
 import { debounce } from "@/utils/debounce";
-import { makeAutoObservable, toJS } from "mobx";
+import { makeAutoObservable, toJS, when } from "mobx";
 
 class incidentsPageViewModel {
   drawerOpen = false;
@@ -19,6 +20,7 @@ class incidentsPageViewModel {
     async (offset, limit) => {
       this.loading = true;
       try {
+        await when(() => AuthService.auth.state === "authenticated");
         const res = await IncidentsEndpoint.getRecents(offset, limit);
         return res.map((v) => Incident.convertDto(v));
       } finally {
