@@ -5,6 +5,7 @@ import mock from "@/constants/mock-issue.json";
 
 export namespace IncidentsEndpoint {
   export const getRecents = (offset: number, limit: number) => {
+    console.log(offset, limit);
     try {
       // return IncidentDto.Item.array().parse(mock);
       return api.get(
