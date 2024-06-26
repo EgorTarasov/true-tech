@@ -4,7 +4,7 @@ export namespace ConsumersDto {
   export const Filters = z
     .object({
       filterName: z.string(),
-      values: z.string().array()
+      values: z.string().array(),
     })
     .array();
 
@@ -15,11 +15,11 @@ export namespace ConsumersDto {
     purpose: z.string(),
     type: z.string(),
     area: z.string().nullable(),
-    floors: z.string(),
+    floors: z.string().nullable(),
     propertyClass: z.string(),
     unom: z.number(),
     События: EventDto.Item.array().nullable(),
-    priority: z.number()
+    priority: z.number(),
   });
   export type StateHeat = z.infer<typeof StateHeat>;
 
@@ -49,10 +49,10 @@ export namespace ConsumersDto {
         serviceElevator: z.number(),
         totalNonLivingArea: z.number().or(z.string()),
         typesOfHousingStock: z.number(),
-        События: EventDto.Item.array().nullable()
+        События: EventDto.Item.array().nullable(),
       })
       .array()
-      .nullable()
+      .nullable(),
   });
   export type Item = z.infer<typeof Item>;
 }

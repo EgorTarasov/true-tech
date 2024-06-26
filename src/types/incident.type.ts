@@ -5,6 +5,7 @@ import { Issue } from "./issue.type";
 import { MapFilters } from "./map-filters";
 import { Priority } from "./priority.type";
 import { format } from "date-fns";
+import { toJS } from "mobx";
 
 /*
 openedAt: Открыто в
@@ -57,12 +58,6 @@ export namespace Incident {
   export type Item = HeatItem | ConsumerItem | GarbageItem;
 
   export const convertDto = (dto: IncidentDto.Item): Incident.Item => {
-    const dependentObjects: Incident.DependentObjects = {
-      tps: "", // Populate based on dto
-      heatSource: null, // Convert dto to HeatDistributor.Item
-      consumers: [] // Convert dto to array of Consumer.Item
-    };
-
     const baseProps: Incident.BaseProps = {
       number: dto.id.toString(),
       address: dto.addressInEvent,
@@ -70,31 +65,39 @@ export namespace Incident {
         "Открыто в": format(dto.externalCreated, "dd.MM.yyyy HH:mm"),
         УНОМ: dto.unom.toString(),
         "Вид ТП": dto.heatPoint?.heating_point_type ?? undefined,
-        "Дата ввода в эксплуатацию": dto.heatPoint?.commissioning_date.toString(),
+        "Дата ввода в эксплуатацию": dto.heatPoint
+          ? new Date(dto.heatPoint.commissioning_date).toLocaleDateString()
+          : undefined,
         "Источник отопления": dto.heatPoint?.heating_point_src,
         "Номер точки отопления": dto.heatPoint?.heating_point_number,
         "Тип точки отопления": dto.heatPoint?.heating_point_type,
-        "Тип расположения точки отопления": dto.heatPoint?.heating_point_location_type,
+        "Тип расположения точки отопления":
+          dto.heatPoint?.heating_point_location_type,
         "Муниципальный район": dto.heatPoint?.municipal_district,
-        "Полный адрес потребителя": dto.heatPoint?.consumer_full_address.address,
-        "Полный адрес точки отопления": dto.heatPoint?.heating_point_full_address.address
+        "Полный адрес потребителя":
+          dto.heatPoint?.consumer_full_address.address,
+        "Полный адрес точки отопления":
+          dto.heatPoint?.heating_point_full_address.address,
       },
       incidentIssue: dto.system === "ml" ? Issue.PREDICTION : Issue.EMERGENCY,
       incidentStatus: dto.completed ? "closed" : "active",
       date: new Date(dto.externalCreated),
       heatPolygon: dto.heatPoint?.heating_point_full_address.border?.find(
-        (v) => v.Key === "coordinates"
+        (v) => v.Key === "coordinates",
       )?.Value,
       comments: [], // Add comments if available
       unom: dto.unom,
-      issueText: dto.stateConsumers?.at(0)?.События?.at(0)?.title ?? "Аварийная ситуация",
+      issueText:
+        dto.description ??
+        dto.stateConsumers?.at(0)?.События?.at(0)?.title ??
+        "Аварийная ситуация",
       dependentObjects: {
         tps: dto.heatPoint?.heating_point_src ?? "ТЭЦ-21",
         heatSource: dto.heatPoint
           ? HeatDistributor.convertDto(
               { ...dto.heatPoint, consumers: [] },
               dto.system === "ml",
-              dto.heatPoint.priority ?? Priority.LOW
+              dto.heatPoint.priority ?? Priority.LOW,
             )
           : null,
         consumers:
@@ -107,10 +110,10 @@ export namespace Incident {
             issue: dto.system === "ml" ? Issue.PREDICTION : Issue.EMERGENCY,
             name: v.municipalDistrict,
             priority: dto.heatPoint?.priority ?? Priority.LOW,
-            unom: v.unom.toString()
-          })) ?? []
+            unom: v.unom.toString(),
+          })) ?? [],
         // consumers: dto.relatedObjects.heatingPoint ? dto.relatedObjects.heatingPoint.consumers?.map(v =)
-      }
+      },
     };
 
     // Assuming we need to determine the type based on some DTO fields
@@ -121,20 +124,21 @@ export namespace Incident {
         data: HeatDistributor.convertDto(
           { ...dto.heatPoint, consumers: [] },
           dto.system === "ml",
-          dto.heatPoint.priority ?? Priority.LOW
-        )
+          dto.heatPoint.priority ?? Priority.LOW,
+        ),
       };
     }
 
     if (dto.heatPoint?.consumer_full_address.unom === baseProps.unom) {
+      console.log("found");
       return {
         ...baseProps,
         type: "heat-source",
         data: HeatDistributor.convertDto(
           { ...dto.heatPoint, consumers: [] },
           dto.system === "ml",
-          dto.heatPoint.priority ?? Priority.LOW
-        )
+          dto.heatPoint.priority ?? Priority.LOW,
+        ),
       };
     }
 
@@ -161,9 +165,9 @@ export namespace Incident {
               Площадь: v.area ? v.area : undefined,
               Этажи: v.floors,
               "Класс недвижимости": v.propertyClass,
-              УНОМ: v.unom.toString()
-            }
-          }
+              УНОМ: v.unom.toString(),
+            },
+          },
         };
       }
     });
@@ -171,7 +175,7 @@ export namespace Incident {
     return {
       ...baseProps,
       type: "unknown",
-      data: null
+      data: null,
     };
 
     // } else if (dto.stateConsumers) {

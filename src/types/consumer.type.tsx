@@ -131,7 +131,7 @@ export namespace Consumer {
           Материал: item.material,
           "Муниципальный район": item.municupalDistrict,
           Площадь: item.area ? item.area : undefined,
-          Этажи: item.floors,
+          Этажи: item.floors ?? undefined,
           "Класс недвижимости": item.propertyClass,
           УНОМ: item.unom.toString(),
         },

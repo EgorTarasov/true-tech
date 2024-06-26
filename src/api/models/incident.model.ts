@@ -20,15 +20,18 @@ export namespace IncidentDto {
         .array(
           z.object({
             Key: z.string(),
-            Value: z.string().or(z.number().array().length(2).array().array()).or(z.any())
-          })
+            Value: z
+              .string()
+              .or(z.number().array().length(2).array().array())
+              .or(z.any()),
+          }),
         )
         .nullable(),
       municipalDistrict: z.string(),
       center: z.object({
         type: z.string(),
-        coordinates: z.array(z.number()).nullable()
-      })
+        coordinates: z.array(z.number()).nullable(),
+      }),
     }),
     heating_point_full_address: z.object({
       unom: z.number(),
@@ -38,14 +41,17 @@ export namespace IncidentDto {
         .array(
           z.object({
             Key: z.string(),
-            Value: z.string().or(z.number().array().length(2).array().array()).or(z.any())
-          })
+            Value: z
+              .string()
+              .or(z.number().array().length(2).array().array())
+              .or(z.any()),
+          }),
         )
         .nullable(),
       center: z.object({
         type: z.string(),
-        coordinates: z.array(z.number()).nullable()
-      })
+        coordinates: z.array(z.number()).nullable(),
+      }),
     }),
     consumers: z
       .object({
@@ -54,18 +60,21 @@ export namespace IncidentDto {
           .array(
             z.object({
               Key: z.string(),
-              Value: z.string().or(z.number().array().length(2).array().array()).or(z.any())
-            })
+              Value: z
+                .string()
+                .or(z.number().array().length(2).array().array())
+                .or(z.any()),
+            }),
           )
           .nullable(),
         center: z.object({
           type: z.string(),
-          coordinates: z.array(z.number()).nullable()
+          coordinates: z.array(z.number()).nullable(),
         }),
         unom: z.number(),
-        municipalDistrict: z.string()
+        municipalDistrict: z.string(),
       })
-      .array()
+      .array(),
   });
 
   export const Item = z.object({
@@ -81,7 +90,7 @@ export namespace IncidentDto {
     uploadId: z.string().or(z.number()).nullable(),
     heatPoint: IncidentHeatingPoints.nullable(),
     stateConsumers: ConsumersDto.StateHeat.array().nullable(),
-    measurements: z.null() // wtf???
+    measurements: z.null(), // wtf???
   });
   export type Item = z.infer<typeof Item>;
 }

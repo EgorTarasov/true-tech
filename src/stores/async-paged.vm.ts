@@ -9,7 +9,7 @@ export class AsyncPagedViewModel<T> {
 
   constructor(
     fetchItems: (offset: number, limit: number) => Promise<T[]>,
-    pageSize: number = 50,
+    pageSize: number = 220,
   ) {
     this.pageSize = pageSize;
     this.fetchItems = fetchItems;
