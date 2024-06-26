@@ -8,7 +8,7 @@ import PriorityLowAlternateIcon from "@/assets/priority-alternate-low.svg";
 export enum Priority {
   HIGH = 3,
   MEDIUM = 2,
-  LOW = 1
+  LOW = 1,
 }
 
 export const PriorityLocaleMap = {
@@ -18,7 +18,7 @@ export const PriorityLocaleMap = {
     color: "#EF4444",
     backgroundColor: "rgba(247, 119, 0, 0.2)",
     icon: <PriorityHighIcon />,
-    alternateIcon: <PriorityHighAlternateIcon />
+    alternateIcon: <PriorityHighAlternateIcon />,
   },
   [Priority.MEDIUM]: {
     locale: "Средний",
@@ -26,7 +26,7 @@ export const PriorityLocaleMap = {
     color: "#F78500",
     backgroundColor: "rgba(247, 119, 0, 0.2)",
     icon: <PriorityMediumIcon />,
-    alternateIcon: <PriorityMediumAlternateIcon />
+    alternateIcon: <PriorityMediumAlternateIcon />,
   },
   [Priority.LOW]: {
     locale: "Низкий",
@@ -34,6 +34,6 @@ export const PriorityLocaleMap = {
     color: "#FFA903",
     backgroundColor: "rgba(247, 119, 0, 0.2)",
     icon: <PriorityLowIcon />,
-    alternateIcon: <PriorityLowAlternateIcon />
-  }
+    alternateIcon: <PriorityLowAlternateIcon />,
+  },
 };

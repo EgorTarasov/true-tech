@@ -13,15 +13,22 @@ export const IssueCard: FC<{ data: Issue; text?: string }> = (x) => {
       className="py-1 px-1.5 w-fit space-x-2 rounded-sm flex gap-1 text-sm items-center dark:opacity-80"
       style={{
         backgroundColor: v.backgroundColor,
-        color: v.color
-      }}>
+        color: v.color,
+      }}
+    >
       <span className="*:size-4">{v.icon}</span>
       {x.text ?? v.locale}
     </div>
   );
 };
 
-export const IssueIcon = ({ data, className }: { data: Issue; className?: string }) => {
+export const IssueIcon = ({
+  data,
+  className,
+}: {
+  data: Issue;
+  className?: string;
+}) => {
   const v = IssueLocaleMap[data];
   return (
     <span className={className} style={{ color: v.color }}>
@@ -37,9 +44,11 @@ export const IssueLink: FC<{ unom: string; count: number }> = observer((x) => (
     onClick={() => {
       IncidentsPageViewModel.search = x.unom;
     }}
-    params={{ unom: x.unom }}>
+    params={{ unom: x.unom }}
+  >
     <p>
-      Имеется информация о {x.count} {pluralizeIncident(x.count)}, связанных с этим объектом
+      Имеется информация о {x.count} {pluralizeIncident(x.count)}, связанных с
+      этим объектом
     </p>
     <div className="flex items-center gap-2 text-muted-foreground">
       Перейти к инцидентам <ChevronRightIcon className="size-5" />

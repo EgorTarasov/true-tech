@@ -3,15 +3,14 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import "./globals.css";
 import { configure } from "mobx";
-// import * as VKID from "@vkid/sdk";
+import { registerSW } from "virtual:pwa-register";
 
-// VKID.Config.set({
-//   app: import.meta.env.VITE_APP_ID,
-//   redirectUrl: window.location.origin + "/login-vk"
-// });
+registerSW({
+  immediate: true,
+});
 
 configure({
-  enforceActions: "never"
+  enforceActions: "never",
 });
 // Import the generated route tree
 import { routeTree } from "../routeTree.gen";

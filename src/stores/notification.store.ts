@@ -17,8 +17,8 @@ class notificationStore {
       description:
         "В зоне аварии находятся N потребителей. Предположительная дата устранения поломки по адресу ул. Московская, 11  — 01.08.2024.",
       title: "Произошла авария на источнике тепла",
-      priority: Priority.HIGH
-    }
+      priority: Priority.HIGH,
+    },
   ];
 
   sort: NotificationFilters.Sort = NotificationFilters.Sort.Priority;

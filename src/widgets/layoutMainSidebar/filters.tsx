@@ -8,7 +8,7 @@ const vm = MapStore;
 
 export const MainSidebarFilters = observer(() => {
   return (
-    <div className="px-4 pb-4 gap-3 h-full overflow-hidden flex flex-col">
+    <div className="px-4 pb-4 gap-3 h-full overflow-auto flex flex-col">
       <Text.UiMedium className="text-muted-foreground">Фильтры</Text.UiMedium>
       <div className="space-y-3 flex-1">
         {vm.filters.map((f, i) => (

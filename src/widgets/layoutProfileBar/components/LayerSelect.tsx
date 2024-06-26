@@ -5,7 +5,7 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MapFilters, MapFiltersLocale } from "@/types/map-filters";
 import { ChevronDownIcon } from "lucide-react";
@@ -19,10 +19,15 @@ export const LayerSelect: FC<{
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="bg-card flex gap-2 w-72 text-left px-3">
+        <Button
+          variant="outline"
+          className="bg-card flex gap-2 w-72 text-left px-3"
+        >
           <span className="*:size-4">{MapFiltersLocale.Layer[value].icon}</span>
 
-          <Text.Subtle className="flex-1">{MapFiltersLocale.Layer[value].locale}</Text.Subtle>
+          <Text.Subtle className="flex-1">
+            {MapFiltersLocale.Layer[value].locale}
+          </Text.Subtle>
           <ChevronDownIcon className="size-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -33,7 +38,8 @@ export const LayerSelect: FC<{
               <Button
                 variant="ghost"
                 className="flex gap-2 w-full text-left"
-                onClick={() => onChange?.(key as MapFilters.Layer)}>
+                onClick={() => onChange?.(key as MapFilters.Layer)}
+              >
                 <span className="*:size-4">{v.icon}</span>
                 <Text.Subtle className="flex-1">{v.locale}</Text.Subtle>
               </Button>

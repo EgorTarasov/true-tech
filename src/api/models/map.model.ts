@@ -9,14 +9,17 @@ export namespace MapDto {
       .array(
         z.object({
           Key: z.string(),
-          Value: z.string().or(z.number().array().length(2).array().array()).or(z.any())
-        })
+          Value: z
+            .string()
+            .or(z.number().array().length(2).array().array())
+            .or(z.any()),
+        }),
       )
       .nullable(),
     center: z.object({
       type: z.string(),
-      coordinates: z.array(z.number()).nullable()
-    })
+      coordinates: z.array(z.number()).nullable(),
+    }),
   });
 
   export const ConsumerPointAddress = z.object({
@@ -26,15 +29,18 @@ export namespace MapDto {
       .array(
         z.object({
           Key: z.string(),
-          Value: z.string().or(z.number().array().length(2).array().array()).or(z.any())
-        })
+          Value: z
+            .string()
+            .or(z.number().array().length(2).array().array())
+            .or(z.any()),
+        }),
       )
       .nullable(),
     municipalDistrict: z.string(),
     center: z.object({
       type: z.string(),
-      coordinates: z.array(z.number()).nullable()
-    })
+      coordinates: z.array(z.number()).nullable(),
+    }),
   });
 
   export const Property = z.object({
@@ -47,7 +53,8 @@ export namespace MapDto {
     municipal_district: z.string(),
     consumer_full_address: ConsumerPointAddress,
     heating_point_full_address: HeatingPointAddress,
-    consumers: ConsumerPointAddress.array().nullable()
+    consumers: ConsumerPointAddress.array().nullable(),
+    priority: z.number(),
   });
   export type Property = z.infer<typeof Property>;
 }

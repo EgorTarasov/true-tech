@@ -6,12 +6,15 @@ export namespace MapEndpoint {
   export const getProperty = (
     latitude: number,
     longitude: number,
-    radius: number
+    radius: number,
     // signal: GenericAbortSignal
   ) =>
     api
       .get("/consumers/q", MapDto.Property.array(), {
-        params: { latitude, longitude, radius }
+        params: { latitude, longitude, radius },
+        headers: {
+          Vary: "X-Unique-ID",
+        },
       })
       .then((v) => {
         console.log(v[0]);

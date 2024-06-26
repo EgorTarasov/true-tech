@@ -26,6 +26,6 @@ export const authToken = Object.assign(
   {
     get,
     set,
-    remove
-  }
+    remove,
+  },
 );

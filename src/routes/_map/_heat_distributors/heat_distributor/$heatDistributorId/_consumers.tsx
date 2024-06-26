@@ -5,14 +5,14 @@ import {
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LoadingWrapper } from "@/components/ui/loaders/LoadingWrapper";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -20,7 +20,12 @@ import { Separator } from "@/components/ui/separator";
 import { MapStore } from "@/stores/map.store";
 import { MainSidebar } from "@/widgets/layoutMainSidebar/main-sidebar.widget";
 import { PaginationWidget } from "@/widgets/pagination/pagination.widget";
-import { Link, Outlet, createFileRoute, useMatches } from "@tanstack/react-router";
+import {
+  Link,
+  Outlet,
+  createFileRoute,
+  useMatches,
+} from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDownIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
@@ -29,15 +34,20 @@ import React, { useEffect, useRef, useState } from "react";
 const transitionProps = {
   initial: { opacity: 0, translateY: 20 },
   animate: { opacity: 1, translateY: 0 },
-  exit: { opacity: 0, translateY: 20 }
+  exit: { opacity: 0, translateY: 20 },
 };
 
 const PriorityDropdown = observer(() => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
-      <Button variant="outline" className="bg-card flex gap-2 w-56 text-left px-3 mx-4">
+      <Button
+        variant="outline"
+        className="bg-card flex gap-2 w-56 text-left px-3 mx-4"
+      >
         <Text.Subtle className="flex-1">
-          {MapStore.showPriorityFirst ? "Сначала приоритетные" : "Сначала остывшие"}
+          {MapStore.showPriorityFirst
+            ? "Сначала приоритетные"
+            : "Сначала остывшие"}
         </Text.Subtle>
         <ChevronDownIcon className="size-4 text-muted-foreground" />
       </Button>
@@ -61,7 +71,9 @@ const PageBreadcrumbs = () => (
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        <BreadcrumbPage className="cursor-default">Потребители тепла</BreadcrumbPage>
+        <BreadcrumbPage className="cursor-default">
+          Потребители тепла
+        </BreadcrumbPage>
       </BreadcrumbItem>
     </BreadcrumbList>
   </Breadcrumb>
@@ -84,7 +96,9 @@ const Page = observer(() => {
     <>
       <MainSidebar>
         <div className="gap-3 h-full overflow-hidden flex flex-col">
-          <Text.UiMedium className="px-4 text-muted-foreground">Реестр объектов</Text.UiMedium>
+          <Text.UiMedium className="px-4 text-muted-foreground">
+            Реестр объектов
+          </Text.UiMedium>
           <PageBreadcrumbs />
           <PriorityDropdown />
           <ScrollArea ref={ref}>
@@ -94,8 +108,9 @@ const Page = observer(() => {
                   to="/heat_distributor/$heatDistributorId/consumers/$consumerId"
                   params={{
                     heatDistributorId,
-                    consumerId: v.id.toString()
-                  }}>
+                    consumerId: v.id.toString(),
+                  }}
+                >
                   <ConsumerCard data={v} />
                 </Link>
                 <Separator />
@@ -122,7 +137,7 @@ const Page = observer(() => {
 });
 
 export const Route = createFileRoute(
-  "/_map/_heat_distributors/heat_distributor/$heatDistributorId/_consumers"
+  "/_map/_heat_distributors/heat_distributor/$heatDistributorId/_consumers",
 )({
-  component: Page
+  component: Page,
 });

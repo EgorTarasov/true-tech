@@ -14,8 +14,8 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as MapImport } from './routes/_map'
+import { Route as IncidentsImport } from './routes/_incidents'
 import { Route as MapHeatdistributorsImport } from './routes/_map/_heat_distributors'
-import { Route as BaseIncidentsImport } from './routes/_base/_incidents'
 import { Route as MapHeatdistributorsHeatdistributorHeatDistributorIdConsumersImport } from './routes/_map/_heat_distributors/heat_distributor/$heatDistributorId/_consumers'
 
 // Create Virtual Routes
@@ -28,16 +28,16 @@ const BaseLoginLazyImport = createFileRoute('/_base/login')()
 const MapHeatdistributorsIndexLazyImport = createFileRoute(
   '/_map/_heat_distributors/',
 )()
+const IncidentsIncidentsIndexLazyImport = createFileRoute(
+  '/_incidents/incidents/',
+)()
+const IncidentsIncidentsUnomLazyImport = createFileRoute(
+  '/_incidents/incidents/$unom',
+)()
 const MapHeatdistributorsHeatdistributorHeatDistributorIdImport =
   createFileRoute(
     '/_map/_heat_distributors/heat_distributor/$heatDistributorId',
   )()
-const BaseIncidentsIncidentsIndexLazyImport = createFileRoute(
-  '/_base/_incidents/incidents/',
-)()
-const BaseIncidentsIncidentsUnomLazyImport = createFileRoute(
-  '/_base/_incidents/incidents/$unom',
-)()
 const MapHeatdistributorsHeatdistributorHeatDistributorIdIndexLazyImport =
   createFileRoute(
     '/_map/_heat_distributors/heat_distributor/$heatDistributorId/',
@@ -60,6 +60,11 @@ const BaseLazyRoute = BaseLazyImport.update({
 
 const MapRoute = MapImport.update({
   id: '/_map',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const IncidentsRoute = IncidentsImport.update({
+  id: '/_incidents',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -90,11 +95,6 @@ const MapHeatdistributorsRoute = MapHeatdistributorsImport.update({
   getParentRoute: () => MapRoute,
 } as any)
 
-const BaseIncidentsRoute = BaseIncidentsImport.update({
-  id: '/_incidents',
-  getParentRoute: () => BaseLazyRoute,
-} as any)
-
 const MapHeatdistributorsIndexLazyRoute =
   MapHeatdistributorsIndexLazyImport.update({
     path: '/',
@@ -103,31 +103,28 @@ const MapHeatdistributorsIndexLazyRoute =
     import('./routes/_map/_heat_distributors/index.lazy').then((d) => d.Route),
   )
 
+const IncidentsIncidentsIndexLazyRoute =
+  IncidentsIncidentsIndexLazyImport.update({
+    path: '/incidents/',
+    getParentRoute: () => IncidentsRoute,
+  } as any).lazy(() =>
+    import('./routes/_incidents/incidents/index.lazy').then((d) => d.Route),
+  )
+
+const IncidentsIncidentsUnomLazyRoute = IncidentsIncidentsUnomLazyImport.update(
+  {
+    path: '/incidents/$unom',
+    getParentRoute: () => IncidentsRoute,
+  } as any,
+).lazy(() =>
+  import('./routes/_incidents/incidents/$unom.lazy').then((d) => d.Route),
+)
+
 const MapHeatdistributorsHeatdistributorHeatDistributorIdRoute =
   MapHeatdistributorsHeatdistributorHeatDistributorIdImport.update({
     path: '/heat_distributor/$heatDistributorId',
     getParentRoute: () => MapHeatdistributorsRoute,
   } as any)
-
-const BaseIncidentsIncidentsIndexLazyRoute =
-  BaseIncidentsIncidentsIndexLazyImport.update({
-    path: '/incidents/',
-    getParentRoute: () => BaseIncidentsRoute,
-  } as any).lazy(() =>
-    import('./routes/_base/_incidents/incidents/index.lazy').then(
-      (d) => d.Route,
-    ),
-  )
-
-const BaseIncidentsIncidentsUnomLazyRoute =
-  BaseIncidentsIncidentsUnomLazyImport.update({
-    path: '/incidents/$unom',
-    getParentRoute: () => BaseIncidentsRoute,
-  } as any).lazy(() =>
-    import('./routes/_base/_incidents/incidents/$unom.lazy').then(
-      (d) => d.Route,
-    ),
-  )
 
 const MapHeatdistributorsHeatdistributorHeatDistributorIdIndexLazyRoute =
   MapHeatdistributorsHeatdistributorHeatDistributorIdIndexLazyImport.update({
@@ -177,6 +174,13 @@ const MapHeatdistributorsHeatdistributorHeatDistributorIdConsumersConsumersConsu
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_incidents': {
+      id: '/_incidents'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof IncidentsImport
+      parentRoute: typeof rootRoute
+    }
     '/_map': {
       id: '/_map'
       path: ''
@@ -190,13 +194,6 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof BaseLazyImport
       parentRoute: typeof rootRoute
-    }
-    '/_base/_incidents': {
-      id: '/_base/_incidents'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof BaseIncidentsImport
-      parentRoute: typeof BaseLazyImport
     }
     '/_map/_heat_distributors': {
       id: '/_map/_heat_distributors'
@@ -233,26 +230,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BaseReportsLazyImport
       parentRoute: typeof BaseLazyImport
     }
+    '/_incidents/incidents/$unom': {
+      id: '/_incidents/incidents/$unom'
+      path: '/incidents/$unom'
+      fullPath: '/incidents/$unom'
+      preLoaderRoute: typeof IncidentsIncidentsUnomLazyImport
+      parentRoute: typeof IncidentsImport
+    }
+    '/_incidents/incidents/': {
+      id: '/_incidents/incidents/'
+      path: '/incidents'
+      fullPath: '/incidents'
+      preLoaderRoute: typeof IncidentsIncidentsIndexLazyImport
+      parentRoute: typeof IncidentsImport
+    }
     '/_map/_heat_distributors/': {
       id: '/_map/_heat_distributors/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof MapHeatdistributorsIndexLazyImport
       parentRoute: typeof MapHeatdistributorsImport
-    }
-    '/_base/_incidents/incidents/$unom': {
-      id: '/_base/_incidents/incidents/$unom'
-      path: '/incidents/$unom'
-      fullPath: '/incidents/$unom'
-      preLoaderRoute: typeof BaseIncidentsIncidentsUnomLazyImport
-      parentRoute: typeof BaseIncidentsImport
-    }
-    '/_base/_incidents/incidents/': {
-      id: '/_base/_incidents/incidents/'
-      path: '/incidents'
-      fullPath: '/incidents'
-      preLoaderRoute: typeof BaseIncidentsIncidentsIndexLazyImport
-      parentRoute: typeof BaseIncidentsImport
     }
     '/_map/_heat_distributors/heat_distributor/$heatDistributorId': {
       id: '/_map/_heat_distributors/heat_distributor/$heatDistributorId'
@@ -295,6 +292,10 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren({
+  IncidentsRoute: IncidentsRoute.addChildren({
+    IncidentsIncidentsUnomLazyRoute,
+    IncidentsIncidentsIndexLazyRoute,
+  }),
   MapRoute: MapRoute.addChildren({
     MapHeatdistributorsRoute: MapHeatdistributorsRoute.addChildren({
       MapHeatdistributorsIndexLazyRoute,
@@ -312,10 +313,6 @@ export const routeTree = rootRoute.addChildren({
     }),
   }),
   BaseLazyRoute: BaseLazyRoute.addChildren({
-    BaseIncidentsRoute: BaseIncidentsRoute.addChildren({
-      BaseIncidentsIncidentsUnomLazyRoute,
-      BaseIncidentsIncidentsIndexLazyRoute,
-    }),
     BaseLoginLazyRoute,
     BaseProfileLazyRoute,
     BaseRegisterLazyRoute,
@@ -331,8 +328,16 @@ export const routeTree = rootRoute.addChildren({
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
+        "/_incidents",
         "/_map",
         "/_base"
+      ]
+    },
+    "/_incidents": {
+      "filePath": "_incidents.tsx",
+      "children": [
+        "/_incidents/incidents/$unom",
+        "/_incidents/incidents/"
       ]
     },
     "/_map": {
@@ -344,19 +349,10 @@ export const routeTree = rootRoute.addChildren({
     "/_base": {
       "filePath": "_base.lazy.tsx",
       "children": [
-        "/_base/_incidents",
         "/_base/login",
         "/_base/profile",
         "/_base/register",
         "/_base/reports"
-      ]
-    },
-    "/_base/_incidents": {
-      "filePath": "_base/_incidents.tsx",
-      "parent": "/_base",
-      "children": [
-        "/_base/_incidents/incidents/$unom",
-        "/_base/_incidents/incidents/"
       ]
     },
     "/_map/_heat_distributors": {
@@ -383,17 +379,17 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_base/reports.lazy.tsx",
       "parent": "/_base"
     },
+    "/_incidents/incidents/$unom": {
+      "filePath": "_incidents/incidents/$unom.lazy.tsx",
+      "parent": "/_incidents"
+    },
+    "/_incidents/incidents/": {
+      "filePath": "_incidents/incidents/index.lazy.tsx",
+      "parent": "/_incidents"
+    },
     "/_map/_heat_distributors/": {
       "filePath": "_map/_heat_distributors/index.lazy.tsx",
       "parent": "/_map/_heat_distributors"
-    },
-    "/_base/_incidents/incidents/$unom": {
-      "filePath": "_base/_incidents/incidents/$unom.lazy.tsx",
-      "parent": "/_base/_incidents"
-    },
-    "/_base/_incidents/incidents/": {
-      "filePath": "_base/_incidents/incidents/index.lazy.tsx",
-      "parent": "/_base/_incidents"
     },
     "/_map/_heat_distributors/heat_distributor/$heatDistributorId": {
       "filePath": "_map/_heat_distributors/heat_distributor/$heatDistributorId",

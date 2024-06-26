@@ -7,7 +7,7 @@ export const buildFilterKey = <T,>(
     getValue: (v: T) => string | null;
     name: string;
   }[],
-  map: Map<string, Set<string>>
+  map: Map<string, Set<string>>,
 ) => {
   keys.forEach((k) => {
     const value = k.getValue(item);
@@ -33,7 +33,7 @@ export class Filter<T> {
   constructor(
     public readonly name: string,
     public readonly options: string[],
-    public readonly getValue: (v: T) => string | null
+    public readonly getValue: (v: T) => string | null,
   ) {
     makeAutoObservable(this);
   }
@@ -53,7 +53,7 @@ export class Filter<T> {
         }
         this._value = v;
       },
-      render: (v) => v
+      render: (v) => v,
     };
   }
 

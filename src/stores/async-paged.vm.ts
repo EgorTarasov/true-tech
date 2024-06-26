@@ -20,7 +20,7 @@ export class AsyncPagedViewModel<T> {
   get totalPages(): number {
     // Total pages calculation needs an async total count fetch or needs to be computed differently.
     // Placeholder as an example, assuming we don't have total item count.
-    return 99999999;
+    return 41930;
   }
 
   get paginatedItems(): T[] {

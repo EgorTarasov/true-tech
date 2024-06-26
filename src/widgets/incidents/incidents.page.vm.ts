@@ -21,7 +21,7 @@ class incidentsPageViewModel {
       this.loading = true;
       try {
         await when(() => AuthService.auth.state === "authenticated");
-        const res = await IncidentsEndpoint.getRecents(offset, limit);
+        const res = await IncidentsEndpoint.getRecents(offset + 220, limit);
         return res.map((v) => Incident.convertDto(v));
       } finally {
         this.loading = false;

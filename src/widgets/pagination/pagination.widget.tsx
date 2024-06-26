@@ -6,7 +6,7 @@ import {
   PaginationItem,
   PaginationLink,
   PaginationNext,
-  PaginationPrevious
+  PaginationPrevious,
 } from "@/components/ui/pagination";
 import { FC } from "react";
 
@@ -27,10 +27,13 @@ export const PaginationWidget: FC<Props> = observer(
         for (let i = 1; i <= totalPages; i++) {
           pages.push(
             <PaginationItem key={i}>
-              <PaginationLink onClick={() => onPageChange(i)} isActive={i === currentPage}>
+              <PaginationLink
+                onClick={() => onPageChange(i)}
+                isActive={i === currentPage}
+              >
                 {i}
               </PaginationLink>
-            </PaginationItem>
+            </PaginationItem>,
           );
         }
       } else {
@@ -38,7 +41,7 @@ export const PaginationWidget: FC<Props> = observer(
           pages.push(
             <PaginationItem key={1}>
               <PaginationLink onClick={() => onPageChange(1)}>1</PaginationLink>
-            </PaginationItem>
+            </PaginationItem>,
           );
         }
 
@@ -46,29 +49,35 @@ export const PaginationWidget: FC<Props> = observer(
           pages.push(
             <PaginationItem key={2}>
               <PaginationLink onClick={() => onPageChange(2)}>2</PaginationLink>
-            </PaginationItem>
+            </PaginationItem>,
           );
         }
 
         if (currentPage > 3) {
-          pages.push(<PaginationEllipsis key="ellipsis1">...</PaginationEllipsis>);
+          pages.push(
+            <PaginationEllipsis key="ellipsis1">...</PaginationEllipsis>,
+          );
         }
 
         pages.push(
           <PaginationItem key={currentPage}>
             <PaginationLink isActive>{currentPage}</PaginationLink>
-          </PaginationItem>
+          </PaginationItem>,
         );
 
         if (currentPage < totalPages - 1) {
-          pages.push(<PaginationEllipsis key="ellipsis2">...</PaginationEllipsis>);
+          pages.push(
+            <PaginationEllipsis key="ellipsis2">...</PaginationEllipsis>,
+          );
         }
 
         if (currentPage < totalPages) {
           pages.push(
             <PaginationItem key={totalPages}>
-              <PaginationLink onClick={() => onPageChange(totalPages)}>{totalPages}</PaginationLink>
-            </PaginationItem>
+              <PaginationLink onClick={() => onPageChange(totalPages)}>
+                {totalPages}
+              </PaginationLink>
+            </PaginationItem>,
           );
         }
       }
@@ -85,11 +94,13 @@ export const PaginationWidget: FC<Props> = observer(
           />
           {renderPageNumbers()}
           <PaginationNext
-            onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
+            onClick={() =>
+              currentPage < totalPages && onPageChange(currentPage + 1)
+            }
             disabled={currentPage === totalPages}
           />
         </PaginationContent>
       </Pagination>
     );
-  }
+  },
 );

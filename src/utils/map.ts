@@ -4,16 +4,18 @@ import { FeatureCollection } from "geojson";
 import L from "leaflet";
 import "leaflet.vectorgrid";
 
-export const buildPropertyFeature = (v: MapDto.Property): MapConstants.PolygonFeature | null => {
-  const coords = v.consumer_full_address.border?.find((p) => p.Key === "coordinates")?.Value as
-    | number[][][]
-    | undefined;
+export const buildPropertyFeature = (
+  v: MapDto.Property,
+): MapConstants.PolygonFeature | null => {
+  const coords = v.consumer_full_address.border?.find(
+    (p) => p.Key === "coordinates",
+  )?.Value as number[][][] | undefined;
   if (coords) {
     return {
       type: "Feature",
       geometry: {
         type: "Polygon",
-        coordinates: [coords[0].map((v) => [v[0], v[1]] as [number, number])]
+        coordinates: [coords[0].map((v) => [v[0], v[1]] as [number, number])],
       },
       properties: {
         type: "consumer",
@@ -29,10 +31,10 @@ export const buildPropertyFeature = (v: MapDto.Property): MapConstants.PolygonFe
             address: v.consumer_full_address.address,
             center: {
               coordinates: v.consumer_full_address.center.coordinates,
-              type: v.consumer_full_address.center.type
+              type: v.consumer_full_address.center.type,
             },
             municipalDistrict: v.consumer_full_address.municipalDistrict,
-            unom: v.consumer_full_address.unom
+            unom: v.consumer_full_address.unom,
           },
           consumers: [],
           heatingPointAddress: {
@@ -41,11 +43,15 @@ export const buildPropertyFeature = (v: MapDto.Property): MapConstants.PolygonFe
             unom: v.heating_point_full_address.unom,
             center: {
               type: "Point",
-              coordinates: v.heating_point_full_address.center.coordinates as [number, number]
-            }
-          }
-        }
-      }
+              coordinates: v.heating_point_full_address.center.coordinates as [
+                number,
+                number,
+              ],
+            },
+          },
+          priority: v.priority,
+        },
+      },
     };
   }
 
@@ -57,11 +63,11 @@ export const buildSlicerLayer = (
   colors: MapConstants.LayerProperty,
   opt?: {
     onClick?: (e: MapConstants._ConsumerFeatureProperty) => void;
-  }
+  },
 ): L.VectorGrid.Slicer => {
   const featureCollection: FeatureCollection = {
     type: "FeatureCollection" as const,
-    features: polygons
+    features: polygons,
   };
 
   const layer = L.vectorGrid.slicer(featureCollection, {
@@ -72,18 +78,19 @@ export const buildSlicerLayer = (
         color: colors.border,
         opacity: 1,
         fill: true,
-        fillOpacity: 1,
-        fillColor: colors.fill
-      }
+        fillOpacity: 0.6,
+        fillColor: colors.fill,
+      },
     },
     maxZoom: 24,
     maxNativeZoom: 24,
-    interactive: true
+    interactive: true,
   });
 
   layer.on("click", (e: L.LeafletEvent) => {
     if (opt?.onClick) {
-      const feature = e.propagatedFrom.properties as MapConstants.PolygonFeatureProperty;
+      const feature = e.propagatedFrom
+        .properties as MapConstants.PolygonFeatureProperty;
       if (feature.type !== "consumer") {
         return;
       }

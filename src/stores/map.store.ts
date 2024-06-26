@@ -10,7 +10,7 @@ import L from "leaflet";
 import "leaflet.vectorgrid";
 import { buildPropertyFeature, buildSlicerLayer } from "@/utils/map";
 import { MapConstants } from "@/constants/map";
-import { debounce } from "lodash";
+import { cloneDeep, debounce } from "lodash";
 import { HeatDistributor } from "@/types/heat.type";
 import { Issue } from "@/types/issue.type";
 import { Consumer } from "@/types/consumer.type";
@@ -20,7 +20,9 @@ import { NavigateFn } from "@tanstack/react-router";
 // patch canvas for click events
 L.Canvas.Tile.include({
   _onClick: function (e: L.LeafletEvent) {
-    const point = this._map.mouseEventToLayerPoint(e).subtract(this.getOffset());
+    const point = this._map
+      .mouseEventToLayerPoint(e)
+      .subtract(this.getOffset());
     let layer;
     let clickedLayer;
 
@@ -37,7 +39,7 @@ L.Canvas.Tile.include({
     if (clickedLayer) {
       clickedLayer.fireEvent(e.type, undefined, true);
     }
-  }
+  },
 });
 
 const filterKeys: {
@@ -46,28 +48,32 @@ const filterKeys: {
 }[] = [
   {
     name: "Районы",
-    getValue: (v) => v.properties.data.municipal_district.split("район ")[1] || null
+    getValue: (v) =>
+      v.properties.data.municipal_district.split("район ")[1] || null,
   },
   {
     name: "Подключение к ТЭЦ",
-    getValue: (v) => v.properties.data.heating_point_src || null
+    getValue: (v) => v.properties.data.heating_point_src || null,
   },
   {
     name: "Тип источника",
-    getValue: (v) => v.properties.data.heating_point_type || null
+    getValue: (v) => v.properties.data.heating_point_type || null,
   },
   {
     name: "Муниципальный район адреса потребителя",
-    getValue: (v) => v.properties.data.consumerAddress.municipalDistrict || null
+    getValue: (v) =>
+      v.properties.data.consumerAddress.municipalDistrict || null,
   },
   {
     name: "Дата ввода в эксплуатацию",
-    getValue: (v) => new Date(v.properties.data.commissioning_date).toLocaleDateString() || null
+    getValue: (v) =>
+      new Date(v.properties.data.commissioning_date).toLocaleDateString() ||
+      null,
   },
   {
     name: "Номер теплового пункта",
-    getValue: (v) => v.properties.data.heating_point_number || null
-  }
+    getValue: (v) => v.properties.data.heating_point_number || null,
+  },
 ];
 
 class mapStore implements DisposableVm {
@@ -81,7 +87,7 @@ class mapStore implements DisposableVm {
         this.search,
         this.filters.map((f) => f.values),
         this.consumers.length,
-        this.showPriorityFirst
+        this.showPriorityFirst,
       ],
       () => {
         this.consumersPaged.loading = true;
@@ -90,7 +96,7 @@ class mapStore implements DisposableVm {
         this.heatSourcesPaged.updateItems([]);
         this.filterConsumers();
         this.filterHeatSources();
-      }
+      },
     );
   }
 
@@ -107,6 +113,8 @@ class mapStore implements DisposableVm {
 
     const filters: Map<string, Set<string>> = new Map();
 
+    console.log(res.slice(0, 20));
+
     res.forEach((v) => {
       const feature = buildPropertyFeature(v);
 
@@ -119,19 +127,23 @@ class mapStore implements DisposableVm {
     this.consumers = polygons;
     this.filters = Array.from(filters.entries()).map(
       ([name, values]) =>
-        new Filter(name, Array.from(values), filterKeys.find((k) => k.name === name)!.getValue)
+        new Filter(
+          name,
+          Array.from(values),
+          filterKeys.find((k) => k.name === name)!.getValue,
+        ),
     );
   }
   dateRange: DateRange = {
     from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-    to: new Date()
+    to: new Date(),
   };
   layer: MapFilters.Layer = MapFilters.Layer.AllObjects;
 
   reset() {
     this.dateRange = {
       from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-      to: new Date()
+      to: new Date(),
     };
     this.datesWithEvents = [new Date()];
     this.layer = MapFilters.Layer.AllObjects;
@@ -151,21 +163,35 @@ class mapStore implements DisposableVm {
 
     this.consumers.forEach((v) => {
       if (v.properties.data.consumerAddress.address) {
-        if (!filteredConsumers.get(v.properties.data.consumerAddress.unom.toString())) {
-          const valid = this.filters.every((f) => f.values.includes(f.getValue(v)!));
-          if (valid && v.properties.data.consumerAddress.unom.toString().includes(this.search)) {
+        if (
+          !filteredConsumers.get(
+            v.properties.data.consumerAddress.unom.toString(),
+          )
+        ) {
+          const valid = this.filters.every((f) =>
+            f.values.includes(f.getValue(v)!),
+          );
+          if (
+            valid &&
+            v.properties.data.consumerAddress.unom
+              .toString()
+              .includes(this.search)
+          ) {
             filteredConsumersPolygons.push(v);
-            filteredConsumers.set(v.properties.data.consumerAddress.unom.toString(), {
-              address: v.properties.data.consumerAddress.address,
-              consumerType: "социальный",
-              id: v.properties.data.consumerAddress.unom,
-              incidentCount: 2,
-              issue: Issue.EMERGENCY,
-              info: {},
-              name: v.properties.data.consumerAddress.address,
-              priority: Priority.HIGH,
-              unom: v.properties.data.consumerAddress.unom.toString()
-            });
+            filteredConsumers.set(
+              v.properties.data.consumerAddress.unom.toString(),
+              {
+                address: v.properties.data.consumerAddress.address,
+                consumerType: "социальный",
+                id: v.properties.data.consumerAddress.unom,
+                incidentCount: 2,
+                issue: Issue.EMERGENCY,
+                info: {},
+                name: v.properties.data.consumerAddress.address,
+                priority: Priority.HIGH,
+                unom: v.properties.data.consumerAddress.unom.toString(),
+              },
+            );
           }
         }
       }
@@ -193,7 +219,9 @@ class mapStore implements DisposableVm {
     this.consumers.forEach((v) => {
       const heatSourceUnom = v.properties.data.heatingPointAddress.unom;
       if (!heatSources.get(heatSourceUnom)) {
-        const valid = this.filters.every((f) => f.values.includes(f.getValue(v)!));
+        const valid = this.filters.every((f) =>
+          f.values.includes(f.getValue(v)!),
+        );
         if (valid && heatSourceUnom.toString().includes(this.search)) {
           heatSources.set(heatSourceUnom, {
             address: v.properties.data.heatingPointAddress.address,
@@ -205,7 +233,7 @@ class mapStore implements DisposableVm {
             number: v.properties.data.heating_point_number,
             priority: Priority.HIGH,
             info: null,
-            unom: heatSourceUnom.toString()
+            unom: heatSourceUnom.toString(),
           });
         }
       } else {
@@ -228,44 +256,87 @@ class mapStore implements DisposableVm {
 
     this.map = m;
 
-    if (this.featureLayer) {
-      this.featureLayer.addTo(this.map);
-    } else {
-      when(() => this.featureLayer !== null).then(() => {
-        this.featureLayer!.addTo(this.map!);
-      });
-    }
+    when(() => {
+      if (
+        this.lowPriorityLayer ||
+        this.mediumPriorityLayer ||
+        this.highPriorityLayer
+      )
+        return true;
+
+      return false;
+    }).then(() => {
+      this.lowPriorityLayer?.addTo(this.map!);
+      this.mediumPriorityLayer?.addTo(this.map!);
+      this.highPriorityLayer?.addTo(this.map!);
+    });
   }
 
   consumers: MapConstants.PolygonFeature[] = [];
 
-  featureLayer: L.VectorGrid.Slicer | null = null;
+  lowPriorityLayer: L.VectorGrid.Slicer | null = null;
+  mediumPriorityLayer: L.VectorGrid.Slicer | null = null;
+  highPriorityLayer: L.VectorGrid.Slicer | null = null;
   buildFeatureLayer() {
-    if (this.featureLayer) {
-      this.featureLayer.remove();
+    if (this.lowPriorityLayer) {
+      this.lowPriorityLayer.remove();
+      this.mediumPriorityLayer?.remove();
+      this.highPriorityLayer?.remove();
     }
 
     if (!this.filteredConsumersPolygons?.length) {
-      this.featureLayer?.remove();
+      this.lowPriorityLayer?.remove();
+      this.mediumPriorityLayer?.remove();
+      this.highPriorityLayer?.remove();
       return;
     }
 
-    const layer = buildSlicerLayer(
-      toJS(this.filteredConsumersPolygons),
-      MapConstants.PolygonProperties.priority.high,
-      {
-        onClick: (v) => this.onLayerClick(v)
+    const lowLayer: MapConstants.PolygonFeature[] = [];
+    const mediumLayer: MapConstants.PolygonFeature[] = [];
+    const highLayer: MapConstants.PolygonFeature[] = [];
+
+    this.filteredConsumersPolygons.forEach((v) => {
+      switch (v.properties.data.priority) {
+        case 1:
+          lowLayer.push(v);
+          break;
+        case 2:
+          mediumLayer.push(v);
+          break;
+        case 3:
+          highLayer.push(v);
+          break;
       }
+    });
+
+    this.lowPriorityLayer = buildSlicerLayer(
+      cloneDeep(lowLayer),
+      MapConstants.PolygonProperties.priority.low,
+      {
+        onClick: (v) => this.onLayerClick(v),
+      },
     );
 
-    console.log(this.filteredConsumersPolygons.length);
+    this.mediumPriorityLayer = buildSlicerLayer(
+      cloneDeep(mediumLayer),
+      MapConstants.PolygonProperties.priority.medium,
+      {
+        onClick: (v) => this.onLayerClick(v),
+      },
+    );
 
-    this.featureLayer = layer;
+    this.highPriorityLayer = buildSlicerLayer(
+      cloneDeep(highLayer),
+      MapConstants.PolygonProperties.priority.high,
+      {
+        onClick: (v) => this.onLayerClick(v),
+      },
+    );
+
     if (this.map) {
-      if (this.map.hasLayer(this.featureLayer)) {
-        this.featureLayer.remove();
-      }
-      this.featureLayer.addTo(this.map);
+      this.lowPriorityLayer.addTo(this.map);
+      this.mediumPriorityLayer.addTo(this.map);
+      this.highPriorityLayer.addTo(this.map);
     }
   }
 
@@ -274,8 +345,8 @@ class mapStore implements DisposableVm {
       to: "/heat_distributor/$heatDistributorId/consumers/$consumerId",
       params: {
         heatDistributorId: v.heatingPointAddress.unom.toString(),
-        consumerId: v.consumerAddress.unom.toString()
-      }
+        consumerId: v.consumerAddress.unom.toString(),
+      },
     });
   }
 

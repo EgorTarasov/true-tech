@@ -25,39 +25,39 @@ export namespace MapConstants {
     priority: {
       high: {
         border: "#EF4444",
-        fill: "#EF4444"
+        fill: "#EF4444",
       },
       medium: {
         border: "#F75900",
-        fill: "#F75900"
+        fill: "#F75900",
       },
       low: {
         border: "#FACC15",
-        fill: "#FACC15"
+        fill: "#FACC15",
       },
       unknown: {
         border: "#aaaaaa",
-        fill: "#aaaaaa"
-      }
+        fill: "#aaaaaa",
+      },
     },
     temperature: {
       high: {
         border: "#1D4ED8",
-        fill: "#1D4ED8"
+        fill: "#1D4ED8",
       },
       medium: {
         border: "#57C9FF",
-        fill: "#57C9FF"
+        fill: "#57C9FF",
       },
       low: {
         border: "#16A34A",
-        fill: "#16A34A"
+        fill: "#16A34A",
       },
       unknown: {
         border: "#aaaaaa",
-        fill: "#aaaaaa"
-      }
-    }
+        fill: "#aaaaaa",
+      },
+    },
   };
 
   export type _ConsumerFeatureProperty = Omit<

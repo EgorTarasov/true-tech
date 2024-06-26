@@ -1,39 +1,38 @@
 import { GrantsService } from "@/stores/grant.service";
 import { MapLoading } from "@/widgets/map/map-loading";
-import { Link, Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import React, { Suspense, useEffect, useState } from "react";
 import {
   SidebarContent,
-  MainSidebarContext
+  MainSidebarContext,
 } from "@/widgets/layoutMainSidebar/main-sidebar.context";
 import { checkGrant } from "@/utils/check-grant";
-import { Text } from "@/components/typography/Text";
-import { ELEVATION } from "@/constants/elevation";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/utils/cn";
 import { observer } from "mobx-react-lite";
 import { MapStore } from "@/stores/map.store";
 
 const MainSidebarView = React.lazy(() =>
   import("@/widgets/layoutMainSidebar/main-sidebar.view").then((x) => ({
-    default: x.MainSidebarView
-  }))
+    default: x.MainSidebarView,
+  })),
 );
 const Map = React.lazy(() => import("@/widgets/map/map.widget"));
 const BottomRightBar = React.lazy(() =>
   import("@/widgets/layoutBottomRight/bottom-right-bar").then((x) => ({
-    default: x.BottomRightBar
-  }))
+    default: x.BottomRightBar,
+  })),
 );
 
 const ProfileBar = React.lazy(() =>
-  import("@/widgets/layoutProfileBar/profile-bar.widget").then((m) => ({ default: m.ProfileBar }))
+  import("@/widgets/layoutProfileBar/profile-bar.widget").then((m) => ({
+    default: m.ProfileBar,
+  })),
 );
 
 const Page = observer(() => {
   const navigate = useNavigate();
   const [content, _setContent] = useState<SidebarContent | null>(null);
-  const [secondaryContent, setSecondaryContent] = useState<SidebarContent | null>(null);
+  const [secondaryContent, setSecondaryContent] =
+    useState<SidebarContent | null>(null);
   const [isOpen, setIsOpen] = useState(true);
 
   const setContent = (v: SidebarContent | null) => {
@@ -53,8 +52,9 @@ const Page = observer(() => {
         content,
         setContent,
         secondaryContent,
-        setSecondaryContent
-      }}>
+        setSecondaryContent,
+      }}
+    >
       <div className="h-full w-full relative appear">
         {/* <div
           className="flex md:hidden flex-col absolute inset-0 bg-background items-center justify-center text-center"
@@ -82,5 +82,5 @@ export const Route = createFileRoute("/_map")({
   component: Page,
   loader: () => {
     checkGrant(GrantsService.canReadMap);
-  }
+  },
 });

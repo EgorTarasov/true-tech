@@ -49,23 +49,6 @@ class AuthServiceViewModel {
     await when(() => this.auth.state !== "loading");
   }
 
-  // loginViaVk = async (code: unknown): Promise<boolean> => {
-  //   try {
-  //     await AuthEndpoint.loginViaVk(code);
-
-  //     const user = await UserEndpoint.current();
-  //     this.auth = { state: "authenticated", user };
-  //     return true;
-  //   } catch {
-  //     toast({
-  //       variant: "destructive",
-  //       description: "Не удалось войти через ВКонтакте",
-  //       title: "Ошибка входа"
-  //     });
-  //     return false;
-  //   }
-  // };
-
   register = async (v: AuthEndpoint.RegisterTemplate): Promise<boolean> => {
     try {
       const token = await AuthEndpoint.register(v);

@@ -4,7 +4,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
-  BreadcrumbPage
+  BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 import { LoadingWrapper } from "@/components/ui/loaders/LoadingWrapper";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,7 +12,13 @@ import { Separator } from "@/components/ui/separator";
 import { MapStore } from "@/stores/map.store";
 import { MainSidebar } from "@/widgets/layoutMainSidebar/main-sidebar.widget";
 import { PaginationWidget } from "@/widgets/pagination/pagination.widget";
-import { Link, Outlet, createFileRoute, useMatch, useMatches } from "@tanstack/react-router";
+import {
+  Link,
+  Outlet,
+  createFileRoute,
+  useMatch,
+  useMatches,
+} from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useRef } from "react";
@@ -21,14 +27,15 @@ const vm = MapStore;
 const transitionProps = {
   initial: { opacity: 0, translateY: 20 },
   animate: { opacity: 1, translateY: 0 },
-  exit: { opacity: 0, translateY: 20 }
+  exit: { opacity: 0, translateY: 20 },
 };
 
 const Page = observer(() => {
   const ref = useRef<HTMLDivElement>(null);
   const m = useMatches();
 
-  const isConsumersView = m.find((v) => v.pathname.includes("consumers")) !== undefined;
+  const isConsumersView =
+    m.find((v) => v.pathname.includes("consumers")) !== undefined;
 
   useEffect(() => {
     if (ref.current) {
@@ -42,7 +49,9 @@ const Page = observer(() => {
     <>
       <MainSidebar>
         <div className="gap-3 h-full overflow-hidden flex flex-col">
-          <Text.UiMedium className="px-4 text-muted-foreground">Реестр объектов</Text.UiMedium>
+          <Text.UiMedium className="px-4 text-muted-foreground">
+            Реестр объектов
+          </Text.UiMedium>
           <Breadcrumb className="px-4">
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -56,8 +65,9 @@ const Page = observer(() => {
                 <Link
                   to="/heat_distributor/$heatDistributorId"
                   params={{
-                    heatDistributorId: v.id.toString()
-                  }}>
+                    heatDistributorId: v.id.toString(),
+                  }}
+                >
                   <HeatDistributorCard data={v} />
                 </Link>
                 <Separator />
@@ -84,5 +94,5 @@ const Page = observer(() => {
 });
 
 export const Route = createFileRoute("/_map/_heat_distributors")({
-  component: Page
+  component: Page,
 });

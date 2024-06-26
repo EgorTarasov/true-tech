@@ -1,10 +1,8 @@
-import { FCVM } from "@/utils/vm";
 import { observer } from "mobx-react-lite";
 import { IncidentsPageViewModel } from "./incidents.page.vm";
-import { IconInput, Input } from "@/components/ui/input";
+import { IconInput } from "@/components/ui/input";
 import { MenuIcon, SearchIcon } from "lucide-react";
 import { Text } from "@/components/typography/Text";
-import { IncidentsTabs } from "./incidents-tabs";
 import {
   Drawer,
   DrawerContent,
@@ -13,7 +11,6 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import React, { FC } from "react";
-import { LayerSelect } from "../layoutProfileBar/components/LayerSelect";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Link } from "@tanstack/react-router";
 import { HeatDistributorCard } from "@/components/cards/heat-distributor.card";
@@ -21,7 +18,6 @@ import { Separator } from "@/components/ui/separator";
 import { LoadingWrapper } from "@/components/ui/loaders/LoadingWrapper";
 import { ConsumerCard } from "@/components/cards/consumer.card";
 import { IssueSelect } from "./IssueSelect";
-import { PaginationWidget } from "../pagination/pagination.widget";
 import {
   Pagination,
   PaginationContent,
@@ -30,6 +26,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { PaginationWidget } from "../pagination/pagination.widget";
 
 const vm = IncidentsPageViewModel;
 
@@ -89,29 +86,12 @@ export const IncidentsContent: FC<{ isMobile?: boolean }> = observer(
           ))}
           {vm.loading && <LoadingWrapper />}
         </ScrollArea>
-        <Pagination className="hidden mt-auto pt-4">
-          <PaginationContent>
-            <PaginationPrevious
-              onClick={() =>
-                paged.currentPage > 1 &&
-                !paged.loading &&
-                paged.setPage(paged.currentPage - 1)
-              }
-              disabled={paged.currentPage === 1 || paged.loading}
-            />
-            <PaginationItem>
-              <PaginationLink>{paged.currentPage}</PaginationLink>
-            </PaginationItem>
-            <PaginationNext
-              disabled={paged.loading}
-              onClick={() => !paged.loading && paged.nextPage()}
-            />
-          </PaginationContent>
-        </Pagination>
-        {/* <PaginationWidget
-        currentPage={vm.items.currentPage}
-        onPageChange={(page) => vm.items.setPage(page)}
-      /> */}
+        <PaginationWidget
+          className="px-4 mt-auto"
+          totalPages={vm.items.totalPages}
+          currentPage={vm.items.currentPage}
+          onPageChange={(page) => vm.items.setPage(page)}
+        />
       </>
     );
   },
@@ -135,10 +115,9 @@ export const IncidentsSidebarMobile = observer(() => {
           className="flex md:hidden absolute left-4 top-4 z-10 bg-card gap-2 px-2"
         >
           <MenuIcon />
-          Список инцидентов
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="flex flex-col text-foreground pb-10 max-h-[90%] overflow-hidden">
+      <DrawerContent className="flex flex-col text-foreground pb-10 max-h-[90%] overflow-auto">
         <ScrollArea className="flex-1">
           <DrawerHeader>Инциденты</DrawerHeader>
           <IncidentsContent isMobile />

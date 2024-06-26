@@ -3,7 +3,6 @@ import react from "@vitejs/plugin-react-swc";
 import { TanStackRouterVite } from "@tanstack/router-vite-plugin";
 import path from "path";
 import svgr from "vite-plugin-svgr";
-import basicSsl from "@vitejs/plugin-basic-ssl";
 import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
@@ -14,24 +13,41 @@ export default defineConfig({
     svgr({
       exportAsDefault: true,
       svgrOptions: {
-        exportType: "default"
-      }
+        exportType: "default",
+      },
     }),
     VitePWA({
-      registerType: "autoUpdate"
-    })
+      registerType: "autoUpdate",
+      workbox: {
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/api\.lct\.larek\.tech\/consumers\/q$/,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "api-cache",
+              expiration: {
+                maxEntries: 1, // Keep only one entry
+              },
+              cacheableResponse: {
+                statuses: [0, 200], // Cache successful responses and opaque responses
+              },
+            },
+          },
+        ],
+      },
+    }),
     // basicSsl()
   ],
   build: {
-    target: "esnext"
+    target: "esnext",
   },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      api: path.resolve(__dirname, "./src/api")
-    }
+      api: path.resolve(__dirname, "./src/api"),
+    },
   },
   server: {
-    proxy: {}
-  }
+    proxy: {},
+  },
 });

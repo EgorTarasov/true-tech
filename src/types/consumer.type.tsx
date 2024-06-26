@@ -106,11 +106,11 @@ export namespace Consumer {
           "Грузовой лифт": item.serviceElevator.toString(),
           "Общая нежилая площадь": item.totalNonLivingArea.toString(),
           "Виды жилищного фонда": item.typesOfHousingStock.toString(),
-          "Вид ТП": "ЦТП"
+          "Вид ТП": "ЦТП",
         },
         incidentCount: item.События?.length ?? 0,
         unom: item.unom.toString(),
-        consumerType: item.wallMaterial.toString()
+        consumerType: item.wallMaterial.toString(),
       };
     } else {
       const item = dto.stateHeatConsumers[0];
@@ -133,8 +133,8 @@ export namespace Consumer {
           Площадь: item.area ? item.area : undefined,
           Этажи: item.floors,
           "Класс недвижимости": item.propertyClass,
-          УНОМ: item.unom.toString()
-        }
+          УНОМ: item.unom.toString(),
+        },
       };
     }
   };

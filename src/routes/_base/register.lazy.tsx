@@ -1,6 +1,12 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { zz } from "@/utils/zz";
 import { useForm } from "react-hook-form";
@@ -12,14 +18,14 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-  Form
+  Form,
 } from "@/components/ui/form";
 
 const loginSchema = zz.object({
   email: zz.string().email(),
   password: zz.string().min(6),
   firstName: zz.string().min(2),
-  lastName: zz.string().min(2)
+  lastName: zz.string().min(2),
 });
 
 export const Page = () => {
@@ -28,15 +34,15 @@ export const Page = () => {
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
-      password: ""
-    }
+      password: "",
+    },
   });
 
   const onSubmit = async (v: zz.infer<typeof loginSchema>) => {
     const res = await AuthService.register(v);
     if (res) {
       navigate({
-        to: "/"
+        to: "/",
       });
     }
   };
@@ -47,7 +53,9 @@ export const Page = () => {
     <Card className="m-auto max-w-md w-full">
       <CardHeader>
         <CardTitle className="text-2xl">Регистрация</CardTitle>
-        <CardDescription>Введите информацию для создания аккаунта</CardDescription>
+        <CardDescription>
+          Введите информацию для создания аккаунта
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -60,7 +68,11 @@ export const Page = () => {
                   <FormItem>
                     <FormLabel>Имя</FormLabel>
                     <FormControl>
-                      <Input {...field} disabled={disabled} placeholder="Иван" />
+                      <Input
+                        {...field}
+                        disabled={disabled}
+                        placeholder="Иван"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -73,7 +85,11 @@ export const Page = () => {
                   <FormItem>
                     <FormLabel>Фамилия</FormLabel>
                     <FormControl>
-                      <Input {...field} disabled={disabled} placeholder="Иванов" />
+                      <Input
+                        {...field}
+                        disabled={disabled}
+                        placeholder="Иванов"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -87,7 +103,11 @@ export const Page = () => {
                 <FormItem>
                   <FormLabel>Почта</FormLabel>
                   <FormControl>
-                    <Input {...field} disabled={disabled} placeholder="me@example.com" />
+                    <Input
+                      {...field}
+                      disabled={disabled}
+                      placeholder="me@example.com"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -123,5 +143,5 @@ export const Page = () => {
 };
 
 export const Route = createFileRoute("/_base/register")({
-  component: () => <Page />
+  component: () => <Page />,
 });

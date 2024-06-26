@@ -44,7 +44,7 @@ export namespace HeatDistributor {
   export const convertDto = (
     v: MapDto.Property,
     isMl?: boolean,
-    priority?: number
+    priority?: number,
   ): HeatDistributor.Item => ({
     id: v.consumer_full_address.unom,
     number: v.heating_point_number,
@@ -64,7 +64,7 @@ export namespace HeatDistributor {
       "Тип расположения точки отопления": v.heating_point_location_type,
       "Муниципальный район": v.municipal_district,
       "Полный адрес потребителя": v.consumer_full_address.address,
-      "Полный адрес точки отопления": v.heating_point_full_address.address
-    }
+      "Полный адрес точки отопления": v.heating_point_full_address.address,
+    },
   });
 }

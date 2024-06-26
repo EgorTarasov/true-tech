@@ -4,7 +4,7 @@ import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger
+  AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { IssueLocaleMap } from "@/types/issue.type";
@@ -58,15 +58,23 @@ const Page = observer(() => {
 
   return (
     <div className="flex flex-col gap-6 px-4 w-full appear">
-      <Button className={cn("w-fit")} disabled={vm.selected.incidentStatus === "closed"}>
-        {vm.selected.incidentStatus === "active" ? "Решить задачу" : "Задача решена"}
+      <Button
+        className={cn("w-fit")}
+        disabled={vm.selected.incidentStatus === "closed"}
+      >
+        {vm.selected.incidentStatus === "active"
+          ? "Решить задачу"
+          : "Задача решена"}
       </Button>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <IncidentInfo data={item} />
         <div className="flex flex-col gap-2">
           <IncidentCardWrapper
             className="border-2 h-fit gap-2"
-            style={{ borderColor: IssueLocaleMap[item.incidentIssue].borderColor }}>
+            style={{
+              borderColor: IssueLocaleMap[item.incidentIssue].borderColor,
+            }}
+          >
             <IssueCard data={item.incidentIssue} text={item.issueText} />
             <p>
               <span className="font-medium">Дата фиксации события: </span>
@@ -94,32 +102,37 @@ const Page = observer(() => {
               {[
                 {
                   text: `${random.randomInRange(14, 25).toFixed(0)}°С`,
-                  title: "Расчётная температура объекта в данный момент"
+                  title: "Расчётная температура объекта в данный момент",
                 },
                 {
                   text: `${random.randomInRange(-8, 1).toFixed(0)}%`,
-                  title: "Температура воды, поступающей в тепловую сеть"
+                  title: "Температура воды, поступающей в тепловую сеть",
                 },
                 {
                   text: `${random.randomInRange(-12, 0).toFixed(1)}%`,
-                  title: "Давление в падающем трубопроводе"
+                  title: "Давление в падающем трубопроводе",
                 },
                 {
                   text: `${random.randomInRange(-0.1, 0).toFixed(2)} кгс/см^2`,
-                  title: "Давление в обратном трубопроводе"
+                  title: "Давление в обратном трубопроводе",
                 },
                 {
                   text: `${random.randomInRange(-6, 6).toFixed(0)}%`,
-                  title: "Среднесуточная температура обратной воды из тепловой сети"
-                }
+                  title:
+                    "Среднесуточная температура обратной воды из тепловой сети",
+                },
               ].map((v, i) => (
-                <IncidentCardWrapper key={i} className="items-center gap-3 flex-row px-6 py-6">
+                <IncidentCardWrapper
+                  key={i}
+                  className="items-center gap-3 flex-row px-6 py-6"
+                >
                   <Text.H2
                     className={cn(
                       "text-green-600 whitespace-nowrap",
                       i === 0 && "text-[#1D4ED8]",
-                      (i === 1 || i === 4) && "text-destructive"
-                    )}>
+                      (i === 1 || i === 4) && "text-destructive",
+                    )}
+                  >
                     {v.text}
                   </Text.H2>
                   <p>{v.title}</p>
@@ -137,6 +150,6 @@ const Page = observer(() => {
   );
 });
 
-export const Route = createFileRoute("/_base/_incidents/incidents/$unom")({
-  component: Page
+export const Route = createFileRoute("/_incidents/incidents/$unom")({
+  component: Page,
 });

@@ -1,6 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { MapStore } from "@/stores/map.store";
 import { cn } from "@/utils/cn";
 import { format } from "date-fns";
@@ -20,23 +24,24 @@ export const TimelineWidget = observer(() => {
             variant={"outline"}
             className={cn(
               "w-72 justify-start text-left font-normal bg-card",
-              !vm.dateRange && "text-muted-foreground"
-            )}>
+              !vm.dateRange && "text-muted-foreground",
+            )}
+          >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {vm.dateRange.from ? (
               vm.dateRange.to ? (
                 <>
                   {format(vm.dateRange.from, "LLL dd, y", {
-                    locale: ru
+                    locale: ru,
                   })}{" "}
                   -{" "}
                   {format(vm.dateRange.to, "LLL dd, y", {
-                    locale: ru
+                    locale: ru,
                   })}
                 </>
               ) : (
                 format(vm.dateRange.from, "LLL dd, y", {
-                  locale: ru
+                  locale: ru,
                 })
               )
             ) : (

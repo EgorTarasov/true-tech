@@ -1,6 +1,12 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { zz } from "@/utils/zz";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,7 +16,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -18,7 +24,7 @@ import { AuthService } from "@/stores/auth.service";
 
 const loginSchema = zz.object({
   email: zz.string().email(),
-  password: zz.string()
+  password: zz.string(),
 });
 
 export const Page = () => {
@@ -27,15 +33,15 @@ export const Page = () => {
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
-      password: ""
-    }
+      password: "",
+    },
   });
 
   const onSubmit = async (v: zz.infer<typeof loginSchema>) => {
     const res = await AuthService.login(v);
     if (res) {
       navigate({
-        to: "/"
+        to: "/",
       });
     } else {
       toast.error("Неверная почта или пароль");
@@ -48,7 +54,9 @@ export const Page = () => {
     <Card className="m-auto max-w-sm w-full">
       <CardHeader>
         <CardTitle className="text-2xl">Вход</CardTitle>
-        <CardDescription>Введите вашу почту чтобы войти в аккаунт</CardDescription>
+        <CardDescription>
+          Введите вашу почту чтобы войти в аккаунт
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -79,13 +87,21 @@ export const Page = () => {
                   <div className="flex justify-between items-center">
                     <FormLabel className="flex">Пароль</FormLabel>
                     <Link
-                      onClick={() => toast.info("Обратитесь к администратору системы")}
-                      className="ml-auto inline-block text-sm underline text-foreground">
+                      onClick={() =>
+                        toast.info("Обратитесь к администратору системы")
+                      }
+                      className="ml-auto inline-block text-sm underline text-foreground"
+                    >
                       Забыли пароль?
                     </Link>
                   </div>
                   <FormControl>
-                    <Input {...field} name="password" disabled={disabled} type="password" />
+                    <Input
+                      {...field}
+                      name="password"
+                      disabled={disabled}
+                      type="password"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -108,5 +124,5 @@ export const Page = () => {
 };
 
 export const Route = createFileRoute("/_base/login")({
-  component: () => <Page />
+  component: () => <Page />,
 });

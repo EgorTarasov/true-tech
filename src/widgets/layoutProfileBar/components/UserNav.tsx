@@ -3,10 +3,21 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { AuthService } from "@/stores/auth.service";
 import { isLoggedIn } from "@/utils/auth";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { BellIcon, Bot, HelpCircle, LogOutIcon, OctagonAlertIcon, PieChart } from "lucide-react";
+import {
+  BellIcon,
+  Bot,
+  HelpCircle,
+  LogOutIcon,
+  OctagonAlertIcon,
+  PieChart,
+} from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { NotificationWidget } from "@/widgets/notification/notification.widget";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const UserNav = observer(() => {
   const navigate = useNavigate();
@@ -16,7 +27,7 @@ export const UserNav = observer(() => {
   const logout = () => {
     AuthService.logout();
     navigate({
-      to: "/login"
+      to: "/login",
     });
   };
 
@@ -25,7 +36,10 @@ export const UserNav = observer(() => {
       <NotificationWidget />
       <Tooltip>
         <TooltipTrigger asChild>
-          <Link to="/incidents" className={buttonVariants({ variant: "ghost", size: "icon" })}>
+          <Link
+            to="/incidents"
+            className={buttonVariants({ variant: "ghost", size: "icon" })}
+          >
             <OctagonAlertIcon />
           </Link>
         </TooltipTrigger>
@@ -33,7 +47,10 @@ export const UserNav = observer(() => {
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Link to="/reports" className={buttonVariants({ variant: "ghost", size: "icon" })}>
+          <Link
+            to="/reports"
+            className={buttonVariants({ variant: "ghost", size: "icon" })}
+          >
             <PieChart />
           </Link>
         </TooltipTrigger>

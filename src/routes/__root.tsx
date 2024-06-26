@@ -8,11 +8,13 @@ import { Outlet, createRootRoute } from "@tanstack/react-router";
 import React from "react";
 
 const Toaster = React.lazy(() =>
-  import("@/components/ui/sonner").then((m) => ({ default: m.Toaster }))
+  import("@/components/ui/sonner").then((m) => ({ default: m.Toaster })),
 );
 
 const MobileNav = React.lazy(() =>
-  import("@/widgets/layoutProfileBar/mobile-nav.widget").then((m) => ({ default: m.MobileNav }))
+  import("@/widgets/layoutProfileBar/mobile-nav.widget").then((m) => ({
+    default: m.MobileNav,
+  })),
 );
 
 const Page = () => {
@@ -23,10 +25,12 @@ const Page = () => {
           fallback={
             <div
               className="absolute inset-0 flex justify-center items-center"
-              style={{ zIndex: ELEVATION.SIDEBAR }}>
+              style={{ zIndex: ELEVATION.SIDEBAR }}
+            >
               <LoadingWrapper />
             </div>
-          }>
+          }
+        >
           <Outlet />
           <MobileNav />
           <Toaster richColors />
@@ -40,5 +44,5 @@ export const Route = createRootRoute({
   component: Page,
   pendingComponent: LoadingWrapper,
   notFoundComponent: NotFoundPage,
-  beforeLoad: () => AuthService.waitInit()
+  beforeLoad: () => AuthService.waitInit(),
 });

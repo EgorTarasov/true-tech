@@ -16,6 +16,6 @@ const Page = () => {
   );
 };
 
-export const Route = createFileRoute("/_base/_incidents/incidents/")({
-  component: Page
+export const Route = createFileRoute("/_incidents/incidents/")({
+  component: Page,
 });

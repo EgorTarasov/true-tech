@@ -1,14 +1,19 @@
 import { IncidentsOverlay } from "@/widgets/incidents/incidents-overlay";
-import { MobileNav } from "@/widgets/layoutProfileBar/mobile-nav.widget";
-import { createFileRoute, createLazyFileRoute, useMatch, useMatches } from "@tanstack/react-router";
+import {
+  createLazyFileRoute,
+  useMatch,
+  useMatches,
+} from "@tanstack/react-router";
 import React from "react";
 
 const AnimatedOutlet = React.lazy(() =>
-  import("@/components/router/animated-outlet").then((m) => ({ default: m.AnimatedOutlet }))
+  import("@/components/router/animated-outlet").then((m) => ({
+    default: m.AnimatedOutlet,
+  })),
 );
 
 const AnimatePresence = React.lazy(() =>
-  import("framer-motion").then((m) => ({ default: m.AnimatePresence }))
+  import("framer-motion").then((m) => ({ default: m.AnimatePresence })),
 );
 
 const Page = () => {
@@ -30,5 +35,5 @@ const Page = () => {
 };
 
 export const Route = createLazyFileRoute("/_base")({
-  component: Page
+  component: Page,
 });
